@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.DataAccess
 {
@@ -17,6 +18,12 @@ namespace TelegramLanguageTeacher.DataAccess
         }
 
         public async Task<T> Find<T>(Expression<Func<T, bool>> predicate) where T: class
+        {
+            var item = await _context.Set<T>().FirstOrDefaultAsync(predicate);
+            return item;
+        }
+
+        public async Task<T> FindInclude<T>(Expression<Func<T, bool>> predicate) where T : class
         {
             var item = await _context.Set<T>().FirstOrDefaultAsync(predicate);
             return item;

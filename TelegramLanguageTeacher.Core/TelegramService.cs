@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramLanguageTeacher.Core
 {
     public interface ITelegramService
     {
         Task<Update> GetUpdate(int lastUpdateId);
-        Task SendMessage(int username, string text);
+        Task SendMessage(int username, string text, bool addReplyButton);
     }
 
     public class TelegramService : ITelegramService
@@ -26,9 +27,21 @@ namespace TelegramLanguageTeacher.Core
             return updates.OrderByDescending(u => u.Id).FirstOrDefault();
         }
 
-        public async Task SendMessage(int username, string text)
+        public async Task SendMessage(int username, string text, bool addReplyButton)
         {
-            await _bot.SendTextMessageAsync(new ChatId(username), text);
+            if (addReplyButton)
+            {
+                await _bot.SendTextMessageAsync(new ChatId(username), text,
+                    replyMarkup: new ReplyKeyboardMarkup(new[]
+                    {
+                        new KeyboardButton("Stop Repeating")
+                    }));
+            }
+            else
+            {
+                await _bot.SendTextMessageAsync(new ChatId(username), text,
+                    replyMarkup: new ReplyKeyboardRemove());
+            }
         }
     }
 }

@@ -34,7 +34,10 @@ namespace TelegramLanguageTeacher
                 _lastUpdateId = update.Id + 1;
                 var userId = update.Message.From.Id;
 
-                if (update.Type == UpdateType.Message && update.Message.Type == MessageType.Text && !update.Message.From.IsBot)
+                if (update.Type == UpdateType.Message 
+                    && update.Message.Type == MessageType.Text 
+                    && !update.Message.From.IsBot 
+                    && !update.Message.Text.Contains("/"))
                 {
                     var translated = await TranslatorService.Translate(update.Message.Text);
                     if (!string.IsNullOrWhiteSpace(translated))

@@ -24,16 +24,21 @@ namespace TelegramLanguageTeacher.Core
 
         public async Task<bool> AddWord(int userId, Word word)
         {
-            var now = DateTime.UtcNow;
-            word.NextRepeat = now.AddDays(1);
-            word.AddedDate = now;
-            word.LastRepeat = now;
-
             var user = await _repository.Find<User>(u => u.TelegramUserId == userId);
             if (user == null)
                 return false;
 
-            user.Dicts.FirstOrDefault()?.Words.Add(word);
+            var defaultDict = await _repository.Find<Dict>(d => d.UserId == user.Id);
+            if (defaultDict == null)
+                throw new ArgumentException("Dictionary is not found");
+
+            var now = DateTime.UtcNow;
+            word.DictId = defaultDict.Id;
+            word.NextRepeat = now.AddDays(1);
+            word.AddedDate = now;
+            word.LastRepeat = now;
+
+            _repository.Add(word);
 
             await _repository.SaveChanges();
 
