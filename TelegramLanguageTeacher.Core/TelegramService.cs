@@ -2,14 +2,18 @@
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.Core
 {
     public interface ITelegramService
     {
         Task<Update> GetUpdate(int lastUpdateId);
-        Task SendMessage(int username, string text, bool addReplyButton);
+        Task SendMessage(int userId, string text);
+        Task SendMessageWithReplyButton(int userId, string text, Word word);
+        Task SendMessageWithQualityButtons(int userId, string text, Word word);
     }
 
     public class TelegramService : ITelegramService
@@ -27,21 +31,33 @@ namespace TelegramLanguageTeacher.Core
             return updates.OrderByDescending(u => u.Id).FirstOrDefault();
         }
 
-        public async Task SendMessage(int username, string text, bool addReplyButton)
+        public async Task SendMessage(int userId, string text)
         {
-            if (addReplyButton)
+            await _bot.SendTextMessageAsync(new ChatId(userId), text);
+        }
+
+        public async Task SendMessageWithReplyButton(int userId, string text, Word word)
+        {
+            var reply = new InlineKeyboardMarkup(new[]
             {
-                await _bot.SendTextMessageAsync(new ChatId(username), text,
-                    replyMarkup: new ReplyKeyboardMarkup(new[]
-                    {
-                        new KeyboardButton("Stop Repeating")
-                    }));
-            }
-            else
+                new InlineKeyboardButton() { CallbackData = $"reply_{word.Id}", Text = "Show translation" }
+            });
+
+            await _bot.SendTextMessageAsync(new ChatId(userId), text,
+                replyMarkup: reply, parseMode: ParseMode.Markdown);
+        }
+
+        public async Task SendMessageWithQualityButtons(int userId, string text, Word word)
+        {
+            var reply = new InlineKeyboardMarkup(new[]
             {
-                await _bot.SendTextMessageAsync(new ChatId(username), text,
-                    replyMarkup: new ReplyKeyboardRemove());
-            }
+                new InlineKeyboardButton() { CallbackData = $"3_{word.Id}", Text = "Easy" },
+                new InlineKeyboardButton() { CallbackData = $"2_{word.Id}", Text = "Good" },
+                new InlineKeyboardButton() { CallbackData = $"1_{word.Id}", Text = "Bad" }
+            });
+
+            await _bot.SendTextMessageAsync(new ChatId(userId), text,
+                replyMarkup: reply, parseMode: ParseMode.Markdown);
         }
     }
 }

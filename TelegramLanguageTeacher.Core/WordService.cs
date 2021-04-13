@@ -10,7 +10,8 @@ namespace TelegramLanguageTeacher.Core
     {
         Task<bool> AddWord(int userId, Word word);
         Task<Word> GetNextWord(int userId);
-        Task RateWord(int userId, string word, int rate);
+        Task RateWord(int userId, Guid wordId, int rate);
+        Task<Word> GetWord(int userId, Guid wordId);
     }
 
     public class WordService : IWordService
@@ -32,6 +33,12 @@ namespace TelegramLanguageTeacher.Core
             if (defaultDict == null)
                 throw new ArgumentException("Dictionary is not found");
 
+            var isDuplicateWork = defaultDict.Words.Any(
+                w => w.Original.Equals(word.Original, StringComparison.InvariantCultureIgnoreCase));
+
+            if (isDuplicateWork)
+                return true;
+
             var now = DateTime.UtcNow;
             word.DictId = defaultDict.Id;
             word.NextRepeat = now.AddDays(1);
@@ -45,11 +52,11 @@ namespace TelegramLanguageTeacher.Core
             return true;
         }
 
-        public async Task RateWord(int userId, string word, int rate)
+        public async Task RateWord(int userId, Guid wordId, int rate)
         {
-            var user = await _repository.Find<User>(u => u.TelegramUserId == userId);
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var dbWord = user.Dicts.FirstOrDefault()?.Words
-                .FirstOrDefault(w => w.Original.Equals(word, StringComparison.InvariantCultureIgnoreCase));
+                .FirstOrDefault(w => w.Id == wordId);
 
             var now = DateTime.UtcNow;
             if (dbWord != null)
@@ -61,11 +68,20 @@ namespace TelegramLanguageTeacher.Core
             }
         }
 
+        public async Task<Word> GetWord(int userId, Guid wordId)
+        {
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
+            var dbWord = user.Dicts.FirstOrDefault()?.Words
+                .FirstOrDefault(w => w.Id == wordId);
+
+            return dbWord;
+        }
+
         public async Task<Word> GetNextWord(int userId)
         {
-            var user = await _repository.Find<User>(u => u.TelegramUserId == userId);
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
-            var word = user?.Dicts.FirstOrDefault()?.Words.OrderByDescending(w => w.NextRepeat).FirstOrDefault();
+            var word = user?.Dicts.FirstOrDefault()?.Words.OrderBy(w => w.NextRepeat).FirstOrDefault();
             return word;
         }
 

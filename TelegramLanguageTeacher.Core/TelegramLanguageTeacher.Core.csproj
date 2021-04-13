@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LemmaSharp-std" Version="1.0.1" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="Telegram.Bot" Version="15.7.1" />
   </ItemGroup>

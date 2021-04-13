@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using LemmaSharp;
 using Telegram.Bot.Types.Enums;
 using TelegramLanguageTeacher.Core;
 using TelegramLanguageTeacher.DataAccess;
@@ -23,6 +25,10 @@ namespace TelegramLanguageTeacher
 
         static async Task Main(string[] args)
         {
+            var dataFilepath = "Data/full7z-mlteast-en.lem";
+            var stream = File.OpenRead(dataFilepath);
+            var lemmatizer = new Lemmatizer(stream);
+
             while (true)
             {
                 ApplicationDbContext.CreateDb();
@@ -32,14 +38,24 @@ namespace TelegramLanguageTeacher
                     continue;
 
                 _lastUpdateId = update.Id + 1;
-                var userId = update.Message.From.Id;
+               
+                var isTextToTranslate = update.Type == UpdateType.Message
+                                        && update.Message.Type == MessageType.Text
+                                        && !update.Message.From.IsBot
+                                        && !update.Message.Text.Contains("/");
 
-                if (update.Type == UpdateType.Message 
-                    && update.Message.Type == MessageType.Text 
-                    && !update.Message.From.IsBot 
-                    && !update.Message.Text.Contains("/"))
+                var isCommand = update.Type == UpdateType.Message
+                                        && update.Message.Type == MessageType.Text
+                                        && !update.Message.From.IsBot
+                                        && update.Message.Text.Contains("/");
+
+                if (isTextToTranslate)
                 {
-                    var translated = await TranslatorService.Translate(update.Message.Text);
+                    var userId = update.Message.From.Id;
+
+                    var result = lemmatizer.Lemmatize(update.Message.Text);
+
+                    var translated = await TranslatorService.Translate(result);
                     if (!string.IsNullOrWhiteSpace(translated))
                     {
                         var wordModel = new Word() { Original = update.Message.Text, Translate = translated };
@@ -58,16 +74,49 @@ namespace TelegramLanguageTeacher
                         await TelegramService.SendMessage(userId, translated);
                     }
                 }
-                else if(update.Type == UpdateType.CallbackQuery)
+                else if (isCommand && update.Message.Text.Equals("/learn", StringComparison.InvariantCultureIgnoreCase))
                 {
+                    var userId = update.Message.From.Id;
                     var nextWord = await WordService.GetNextWord(userId);
                     if (nextWord != null)
                     {
-                        await TelegramService.SendMessage(userId, nextWord.Original);
+                        await TelegramService.SendMessage(userId, "We will start repeating your words. If you want to stop, just don't click on answer buttons.");
+                        await TelegramService.SendMessageWithReplyButton(userId, nextWord.Original, nextWord);
                     }
                     else
                     {
                         await TelegramService.SendMessage(userId, "You don't have any words for today.");
+                    }
+                }
+                else if(update.Type == UpdateType.CallbackQuery)
+                {
+                    var userId = update.CallbackQuery.From.Id;
+
+                    if (update.CallbackQuery.Data.Contains("reply"))
+                    {
+                        string[] callbackData = update.CallbackQuery.Data.Split('_');
+                        Guid wordId = Guid.Parse(callbackData[1]);
+
+                        var originalWord = await WordService.GetWord(userId, wordId);
+                        await TelegramService.SendMessageWithQualityButtons(userId, originalWord.Translate, originalWord);
+                    }
+                    else if(update.CallbackQuery.Data.Contains("_"))
+                    {
+                        string[] callbackData = update.CallbackQuery.Data.Split('_');
+                        Guid wordId = Guid.Parse(callbackData[1]);
+                        int rate = int.Parse(callbackData[0]);
+
+                        await WordService.RateWord(userId, wordId, rate);
+
+                        var nextWord = await WordService.GetNextWord(userId);
+                        if (nextWord != null)
+                        {
+                            await TelegramService.SendMessageWithReplyButton(userId, nextWord.Original, nextWord);
+                        }
+                        else
+                        {
+                            await TelegramService.SendMessage(userId, "You don't have any words for today.");
+                        }
                     }
                 }
             }
