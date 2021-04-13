@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
+using LemmaSharp;
 using RestSharp;
 
-namespace TelegramLanguageTeacher.Core
+namespace TelegramLanguageTeacher.Core._3rdPartyServices
 {
     public interface ITranslatorService
     {
@@ -11,6 +12,12 @@ namespace TelegramLanguageTeacher.Core
     public class TranslatorService : ITranslatorService
     {
         private readonly RestClient _restClient = new RestClient("https://textum-dictionary-api.azure-api.net/");
+        private readonly Lemmatizer _lemmatizer;
+
+        public TranslatorService(Lemmatizer lemmatizer)
+        {
+            _lemmatizer = lemmatizer;
+        }
 
         public async Task<string> Translate(string word, string lang = "eng")
         {
@@ -19,7 +26,7 @@ namespace TelegramLanguageTeacher.Core
             {
                 from = "en",
                 to = "ru",
-                text = word
+                text = _lemmatizer.Lemmatize(word)
             });
 
             var response =

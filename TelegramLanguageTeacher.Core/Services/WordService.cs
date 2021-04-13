@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TelegramLanguageTeacher.DataAccess;
 using TelegramLanguageTeacher.DomainModels;
 
-namespace TelegramLanguageTeacher.Core
+namespace TelegramLanguageTeacher.Core.Services
 {
     public interface IWordService
     {

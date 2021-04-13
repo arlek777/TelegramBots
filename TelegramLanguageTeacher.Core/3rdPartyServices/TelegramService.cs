@@ -6,7 +6,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.DomainModels;
 
-namespace TelegramLanguageTeacher.Core
+namespace TelegramLanguageTeacher.Core._3rdPartyServices
 {
     public interface ITelegramService
     {
@@ -28,7 +28,11 @@ namespace TelegramLanguageTeacher.Core
         public async Task<Update> GetUpdate(int lastUpdateId)
         {
             var updates = await _bot.GetUpdatesAsync(timeout: 2000, offset: lastUpdateId);
-            return updates.OrderByDescending(u => u.Id).FirstOrDefault();
+            return updates.Where(u => (u.Type == UpdateType.Message
+                                      && u.Message.Type == MessageType.Text
+                                      && !u.Message.From.IsBot) || u.Type == UpdateType.CallbackQuery)
+                .OrderByDescending(u => u.Id)
+                .FirstOrDefault();
         }
 
         public async Task SendMessage(int userId, string text)

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using LemmaSharp;
 using Telegram.Bot.Types.Enums;
 using TelegramLanguageTeacher.Core;
+using TelegramLanguageTeacher.Core._3rdPartyServices;
+using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 using TelegramLanguageTeacher.DomainModels;
 
@@ -74,18 +76,18 @@ namespace TelegramLanguageTeacher
                         await TelegramService.SendMessage(userId, translated);
                     }
                 }
-                else if (isCommand && update.Message.Text.Equals("/learn", StringComparison.InvariantCultureIgnoreCase))
+                else if (isCommand && update.Message.Text.Equals(TelegramCommands.StartLearn, StringComparison.InvariantCultureIgnoreCase))
                 {
                     var userId = update.Message.From.Id;
                     var nextWord = await WordService.GetNextWord(userId);
                     if (nextWord != null)
                     {
-                        await TelegramService.SendMessage(userId, "We will start repeating your words. If you want to stop, just don't click on answer buttons.");
+                        await TelegramService.SendMessage(userId, TextConstants.StartLearningGreeting);
                         await TelegramService.SendMessageWithReplyButton(userId, nextWord.Original, nextWord);
                     }
                     else
                     {
-                        await TelegramService.SendMessage(userId, "You don't have any words for today.");
+                        await TelegramService.SendMessage(userId, TextConstants.EmptyVocabulary);
                     }
                 }
                 else if(update.Type == UpdateType.CallbackQuery)
@@ -115,7 +117,7 @@ namespace TelegramLanguageTeacher
                         }
                         else
                         {
-                            await TelegramService.SendMessage(userId, "You don't have any words for today.");
+                            await TelegramService.SendMessage(userId, TextConstants.EmptyVocabulary);
                         }
                     }
                 }
