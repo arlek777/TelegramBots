@@ -15,5 +15,6 @@ namespace TelegramLanguageTeacher.DomainModels
         public DateTime NextRepeat { get; set; }
         public DateTime LastRepeat { get; set; }
         public int RepeatCount { get; set; }
+        public int Rate { get; set; }
     }
 }

@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TelegramLanguageTeacher.Core
+﻿namespace TelegramLanguageTeacher.Core
 {
-    public static class TextConstants
+    public static class TelegramMessageTexts
     {
         public const string StartLearningGreeting =
             "We will start repeating your words. If you want to stop, just don't click on answer buttons.";
 
         public const string EmptyVocabulary = "You don't have any words for today.";
-    }
 
-    public static class AppSettings
-    {
-        public const string LemmaFilePath = "Data/full7z-mlteast-en.lem";
+        public const string ShowTranslation = "Show Translation";
+
+        public const string HardRate = "Hard";
+        public const string NormalRate = "Normal";
+        public const string EasyRate = "Easy";
     }
 
     public static class TelegramCommands

@@ -61,6 +61,7 @@ namespace TelegramLanguageTeacher.Core.Services
             var now = DateTime.UtcNow;
             if (dbWord != null)
             {
+                dbWord.Rate = rate;
                 dbWord.LastRepeat = now;
                 dbWord.NextRepeat = GetNextRepeatDateByRate(dbWord, rate, now);
                 dbWord.RepeatCount += 1;
@@ -81,8 +82,18 @@ namespace TelegramLanguageTeacher.Core.Services
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
-            var word = user?.Dicts.FirstOrDefault()?.Words.OrderBy(w => w.NextRepeat).FirstOrDefault();
+            var word = user?.Dicts.FirstOrDefault()?.Words
+                .Where(w => IsTodayDate(w.NextRepeat))
+                .OrderBy(w => w.NextRepeat)
+                .ThenBy(w => w.Rate)
+                .FirstOrDefault();
             return word;
+        }
+
+        private bool IsTodayDate(DateTime dt)
+        {
+            var now = DateTime.UtcNow;
+            return new DateTime(dt.Year, dt.Month, dt.Day) == new DateTime(now.Year, now.Month, now.Day);
         }
 
         private DateTime GetNextRepeatDateByRate(Word word, int rate, DateTime now)

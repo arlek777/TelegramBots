@@ -82,12 +82,12 @@ namespace TelegramLanguageTeacher
                     var nextWord = await WordService.GetNextWord(userId);
                     if (nextWord != null)
                     {
-                        await TelegramService.SendMessage(userId, TextConstants.StartLearningGreeting);
+                        await TelegramService.SendMessage(userId, TelegramMessageTexts.StartLearningGreeting);
                         await TelegramService.SendMessageWithReplyButton(userId, nextWord.Original, nextWord);
                     }
                     else
                     {
-                        await TelegramService.SendMessage(userId, TextConstants.EmptyVocabulary);
+                        await TelegramService.SendMessage(userId, TelegramMessageTexts.EmptyVocabulary);
                     }
                 }
                 else if(update.Type == UpdateType.CallbackQuery)
@@ -117,7 +117,7 @@ namespace TelegramLanguageTeacher
                         }
                         else
                         {
-                            await TelegramService.SendMessage(userId, TextConstants.EmptyVocabulary);
+                            await TelegramService.SendMessage(userId, TelegramMessageTexts.EmptyVocabulary);
                         }
                     }
                 }

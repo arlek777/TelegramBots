@@ -40,11 +40,16 @@ namespace TelegramLanguageTeacher.Core._3rdPartyServices
             await _bot.SendTextMessageAsync(new ChatId(userId), text);
         }
 
+        public async Task SendTranslateMessage(int userId, string text)
+        {
+            await _bot.SendTextMessageAsync(new ChatId(userId), text);
+        }
+
         public async Task SendMessageWithReplyButton(int userId, string text, Word word)
         {
             var reply = new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton() { CallbackData = $"reply_{word.Id}", Text = "Show translation" }
+                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.ShowTranslate}_{word.Id}", Text = TelegramMessageTexts.ShowTranslation }
             });
 
             await _bot.SendTextMessageAsync(new ChatId(userId), text,
@@ -55,9 +60,9 @@ namespace TelegramLanguageTeacher.Core._3rdPartyServices
         {
             var reply = new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton() { CallbackData = $"3_{word.Id}", Text = "Easy" },
-                new InlineKeyboardButton() { CallbackData = $"2_{word.Id}", Text = "Good" },
-                new InlineKeyboardButton() { CallbackData = $"1_{word.Id}", Text = "Bad" }
+                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_3_{word.Id}", Text = TelegramMessageTexts.EasyRate },
+                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_2_{word.Id}", Text = TelegramMessageTexts.NormalRate  },
+                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_1_{word.Id}", Text = TelegramMessageTexts.HardRate }
             });
 
             await _bot.SendTextMessageAsync(new ChatId(userId), text,
