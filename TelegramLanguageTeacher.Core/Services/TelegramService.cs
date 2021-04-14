@@ -6,12 +6,12 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.DomainModels;
 
-namespace TelegramLanguageTeacher.Core._3rdPartyServices
+namespace TelegramLanguageTeacher.Core.Services
 {
     public interface ITelegramService
     {
         Task<Update> GetUpdate(int lastUpdateId);
-        Task SendMessage(int userId, string text);
+        Task SendPlanTextMessage(int userId, string text);
         Task SendMessageWithReplyButton(int userId, string text, Word word);
         Task SendMessageWithQualityButtons(int userId, string text, Word word);
     }
@@ -35,14 +35,9 @@ namespace TelegramLanguageTeacher.Core._3rdPartyServices
                 .FirstOrDefault();
         }
 
-        public async Task SendMessage(int userId, string text)
+        public async Task SendPlanTextMessage(int userId, string text)
         {
-            await _bot.SendTextMessageAsync(new ChatId(userId), text);
-        }
-
-        public async Task SendTranslateMessage(int userId, string text)
-        {
-            await _bot.SendTextMessageAsync(new ChatId(userId), text);
+            await _bot.SendTextMessageAsync(new ChatId(userId), text, ParseMode.Html);
         }
 
         public async Task SendMessageWithReplyButton(int userId, string text, Word word)

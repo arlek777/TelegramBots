@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using TelegramLanguageTeacher.Core._3rdPartyServices;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers
@@ -27,7 +26,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 Guid wordId = Guid.Parse(callbackData[1]);
 
                 var originalWord = await _wordService.GetWord(userId, wordId);
-                await _telegramService.SendMessageWithQualityButtons(userId, originalWord.Translate, originalWord);
+                var formattedText = TelegramMessageFormatter.FormatTranslationText(originalWord.Original, originalWord.Translate) //TODO move fomratting away
+                await _telegramService.SendMessageWithQualityButtons(userId, formattedText, originalWord);
             }
             else if (update.CallbackQuery.Data.Contains(TelegramCommands.Rate))
             {
@@ -41,11 +41,11 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 var nextWord = await _wordService.GetNextWord(userId);
                 if (nextWord != null)
                 {
-                    await _telegramService.SendMessageWithReplyButton(userId, nextWord.Original, nextWord);
+                    await _telegramService.SendMessageWithReplyButton(userId, TelegramMessageFormatter.FormatBold(nextWord.Original), nextWord);
                 }
                 else
                 {
-                    await _telegramService.SendMessage(userId, TelegramMessageTexts.EmptyVocabulary);
+                    await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.EmptyVocabulary);
                 }
             }
         }

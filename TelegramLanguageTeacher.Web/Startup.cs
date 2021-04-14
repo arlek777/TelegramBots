@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LemmaSharp;
 using Microsoft.EntityFrameworkCore;
-using TelegramLanguageTeacher.Core._3rdPartyServices;
+using TelegramLanguageTeacher.Core;
 using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
@@ -49,7 +49,7 @@ namespace TelegramLanguageTeacher.Web
             services.AddTransient<ITranslatorService, TranslatorService>();
             services.AddTransient<IWordService, WordService>();
             services.AddTransient<IUserService, UserService>();
-            services.AddTransient<ITelegramMessageHandlerManager, TelegramMessageHandlerManager>();
+            services.AddTransient<ITelegramMessageHandlerFactory, TelegramMessageHandlerFactory>();
 
             var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
 

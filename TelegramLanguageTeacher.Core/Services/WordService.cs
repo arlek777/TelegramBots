@@ -41,7 +41,7 @@ namespace TelegramLanguageTeacher.Core.Services
 
             var now = DateTime.UtcNow;
             word.DictId = defaultDict.Id;
-            word.NextRepeat = now.AddDays(1);
+            word.NextRepeat = now;
             word.AddedDate = now;
             word.LastRepeat = now;
 

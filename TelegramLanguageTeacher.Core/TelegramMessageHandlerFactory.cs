@@ -1,31 +1,39 @@
 ﻿using System;
 using System.Threading.Tasks;
+using LemmaSharp;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TelegramLanguageTeacher.Core._3rdPartyServices;
+using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers
+namespace TelegramLanguageTeacher.Core
 {
-    public interface ITelegramMessageHandlerManager
+    public interface ITelegramMessageHandler
+    {
+        Task Handle(Update update);
+    }
+
+    public interface ITelegramMessageHandlerFactory
     {
         Task HandleUpdate(Update update);
     }
 
-    public class TelegramMessageHandlerManager : ITelegramMessageHandlerManager
+    public class TelegramMessageHandlerFactory : ITelegramMessageHandlerFactory
     {
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
         private readonly ITranslatorService _translatorService;
         private readonly ITelegramService _telegramService;
+        private readonly Lemmatizer _lemmatizer;
 
-        public TelegramMessageHandlerManager(IWordService wordService, IUserService userService,
-            ITranslatorService translatorService, ITelegramService telegramService)
+        public TelegramMessageHandlerFactory(IWordService wordService, IUserService userService,
+            ITranslatorService translatorService, ITelegramService telegramService, Lemmatizer lemmatizer)
         {
             _wordService = wordService;
             _userService = userService;
             _translatorService = translatorService;
             _telegramService = telegramService;
+            _lemmatizer = lemmatizer;
         }
 
         public async Task HandleUpdate(Update update)
@@ -42,13 +50,13 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
 
             if (isTextToTranslate)
             {
-                var handler = new AddNewWordMessageHandler(_wordService, _userService, _translatorService, _telegramService);
+                var handler = new TranslateAndAddWordMessageHandler(_wordService, _userService, _translatorService, _telegramService, _lemmatizer);
                 await handler.Handle(update);
             }
             else if (isCommand && update.Message.Text.Equals(TelegramCommands.StartLearn,
                 StringComparison.InvariantCultureIgnoreCase))
             {
-                var handler = new LearnWordsCommandMessageHandler(_wordService, _telegramService);
+                var handler = new StartLearningWordsCommandMessageHandler(_wordService, _telegramService);
                 await handler.Handle(update);
             }
             else if (update.Type == UpdateType.CallbackQuery)

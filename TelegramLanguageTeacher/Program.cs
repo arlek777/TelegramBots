@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using LemmaSharp;
 using Telegram.Bot.Types.Enums;
 using TelegramLanguageTeacher.Core;
-using TelegramLanguageTeacher.Core._3rdPartyServices;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 using TelegramLanguageTeacher.DomainModels;
@@ -73,7 +72,7 @@ namespace TelegramLanguageTeacher
                             await WordService.AddWord(userId, wordModel);
                         }
 
-                        await TelegramService.SendMessage(userId, translated);
+                        await TelegramService.SendPlanTextMessage(userId, translated);
                     }
                 }
                 else if (isCommand && update.Message.Text.Equals(TelegramCommands.StartLearn, StringComparison.InvariantCultureIgnoreCase))
@@ -82,12 +81,12 @@ namespace TelegramLanguageTeacher
                     var nextWord = await WordService.GetNextWord(userId);
                     if (nextWord != null)
                     {
-                        await TelegramService.SendMessage(userId, TelegramMessageTexts.StartLearningGreeting);
+                        await TelegramService.SendPlanTextMessage(userId, TelegramMessageTexts.StartLearningGreeting);
                         await TelegramService.SendMessageWithReplyButton(userId, nextWord.Original, nextWord);
                     }
                     else
                     {
-                        await TelegramService.SendMessage(userId, TelegramMessageTexts.EmptyVocabulary);
+                        await TelegramService.SendPlanTextMessage(userId, TelegramMessageTexts.EmptyVocabulary);
                     }
                 }
                 else if(update.Type == UpdateType.CallbackQuery)
@@ -117,7 +116,7 @@ namespace TelegramLanguageTeacher
                         }
                         else
                         {
-                            await TelegramService.SendMessage(userId, TelegramMessageTexts.EmptyVocabulary);
+                            await TelegramService.SendPlanTextMessage(userId, TelegramMessageTexts.EmptyVocabulary);
                         }
                     }
                 }

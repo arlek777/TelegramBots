@@ -12,6 +12,7 @@
         public const string HardRate = "Hard";
         public const string NormalRate = "Normal";
         public const string EasyRate = "Easy";
+        public const string NoTranslationFound = "Sorry, we could not found any translation :(";
     }
 
     public static class TelegramCommands
