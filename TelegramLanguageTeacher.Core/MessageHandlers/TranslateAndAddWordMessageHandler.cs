@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using LemmaSharp;
 using Telegram.Bot.Types;
+using TelegramLanguageTeacher.Core.Models.Responses;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
 
@@ -32,9 +34,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             var userId = update.Message.From.Id;
 
             var lemmatizedText = _lemmatizer.Lemmatize(update.Message.Text);
-            var translated = await _translatorService.Translate(lemmatizedText);
+            WordTranslationResponse translationResponse = await _translatorService.Translate(lemmatizedText);
 
-            if (string.IsNullOrWhiteSpace(translated))
+            if (!translationResponse.Translations.Any() && string.IsNullOrWhiteSpace(translationResponse.TextTranslation))
             {
                 await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
             }
