@@ -1,21 +1,16 @@
-﻿using System.Linq;
-
-namespace TelegramLanguageTeacher.Core
+﻿namespace TelegramLanguageTeacher.Core
 {
     public static class TelegramMessageFormatter
     {
-        public static string FormatTranslationText(string original, string translation)
+        public static string FormatTranslationText(string original, string translation, string examples)
         {
-            var translations = translation.Split(',').Select(s => s.ToLowerInvariant());
-            string resultText = string.Join("\n", translations);
-            var result = $"\U0001F4D6 **{original}** \n\n{resultText}";
-
+            var result = $"\U0001F4D6 \U00002022 {original} \U00002022 \n\n{translation} \n\n{examples}";
             return result;
         }
 
         public static string FormatBold(string text)
         {
-            return $"<b>{text}</b>";
+            return $"\U00002022 {text} \U00002022";
         }
     }
 }

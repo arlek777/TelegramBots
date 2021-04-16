@@ -25,9 +25,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 string[] callbackData = update.CallbackQuery.Data.Split('_');
                 Guid wordId = Guid.Parse(callbackData[1]);
 
-                var originalWord = await _wordService.GetWord(userId, wordId);
-                var formattedText = TelegramMessageFormatter.FormatTranslationText(originalWord.Original, originalWord.Translate);
-                await _telegramService.SendMessageWithQualityButtons(userId, formattedText, originalWord);
+                var word = await _wordService.GetWord(userId, wordId);
+                var formattedText = TelegramMessageFormatter.FormatTranslationText(word.Original, word.Translate, word.Examples);
+                await _telegramService.SendMessageWithQualityButtons(userId, formattedText, word);
             }
             else if (update.CallbackQuery.Data.Contains(TelegramCommands.Rate))
             {

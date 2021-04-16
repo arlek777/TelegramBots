@@ -32,16 +32,25 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
         public async Task Handle(Update update)
         {
             var userId = update.Message.From.Id;
+            var messageText = update.Message.Text.Trim().ToLowerInvariant();
 
-            var lemmatizedText = _lemmatizer.Lemmatize(update.Message.Text);
+            var lemmatizedText = messageText.Split(' ').Length == 1
+                ? _lemmatizer.Lemmatize(messageText)
+                : messageText;
             WordTranslationResponse translationResponse = await _translatorService.Translate(lemmatizedText);
 
-            if (!translationResponse.Translations.Any() && string.IsNullOrWhiteSpace(translationResponse.TextTranslation))
+            if (!translationResponse.Translations.Any())
             {
                 await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
+                return;
             }
 
-            var wordModel = new Word() { Original = lemmatizedText, Translate = translated };
+            var translations = translationResponse.Translations.Select(t => t.Translation).Take(5);
+            var examples = translationResponse.Examples.Take(4);
+            var separatedTranslations = string.Join('\n', translations);
+            var separatedExamples = string.Join('\n', examples);
+
+            var wordModel = new Word() { Original = lemmatizedText, Translate = separatedTranslations, Examples = separatedExamples };
 
             if (!await _wordService.AddWord(userId, wordModel))
             {
@@ -54,8 +63,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 await _wordService.AddWord(userId, wordModel);
             }
 
-            await _telegramService.SendPlanTextMessage(userId, 
-                TelegramMessageFormatter.FormatTranslationText(lemmatizedText, translated));
+            var formattedText = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
+            await _telegramService.SendPlanTextMessage(userId, formattedText);
         }
     }
 }

@@ -7,6 +7,10 @@
 
         public const string EmptyVocabulary = "You don't have any words for today.";
 
+        public const string Help = "Welcome to Vocablurary Teacher Bot! We are using smart algorithm to help you learing new words. " +
+                                   "\nIt's easy! Just add any word as a message and it will be transalted to you added to the dictionary.\n" +
+                                   "If you want to repeat your words, type /learn command. Good Luck !:)";
+
         public const string ShowTranslation = "Show Translation";
 
         public const string HardRate = "Hard";
@@ -20,5 +24,6 @@
         public const string StartLearn = "/learn";
         public const string ShowTranslate = "reply";
         public const string Rate = "rate";
+        public const string Help = "/help";
     }
 }

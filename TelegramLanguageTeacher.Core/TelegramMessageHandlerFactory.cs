@@ -48,15 +48,22 @@ namespace TelegramLanguageTeacher.Core
                             && !update.Message.From.IsBot
                             && update.Message.Text.Contains("/");
 
+            var messageText = update.Message.Text;
+            var compareStringsMode = StringComparison.InvariantCultureIgnoreCase;
+
             if (isTextToTranslate)
             {
                 var handler = new TranslateAndAddWordMessageHandler(_wordService, _userService, _translatorService, _telegramService, _lemmatizer);
                 await handler.Handle(update);
             }
-            else if (isCommand && update.Message.Text.Equals(TelegramCommands.StartLearn,
-                StringComparison.InvariantCultureIgnoreCase))
+            else if (isCommand && messageText.Equals(TelegramCommands.StartLearn, compareStringsMode))
             {
                 var handler = new StartLearningWordsCommandMessageHandler(_wordService, _telegramService);
+                await handler.Handle(update);
+            }
+            else if (isCommand && messageText.Equals(TelegramCommands.Help, compareStringsMode))
+            {
+                var handler = new HelpCommandMessageHandler(_telegramService);
                 await handler.Handle(update);
             }
             else if (update.Type == UpdateType.CallbackQuery)

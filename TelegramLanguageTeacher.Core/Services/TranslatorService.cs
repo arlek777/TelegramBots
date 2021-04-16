@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
 using TelegramLanguageTeacher.Core.Models.Requests;
 using TelegramLanguageTeacher.Core.Models.Responses;
 
@@ -14,21 +13,6 @@ namespace TelegramLanguageTeacher.Core.Services
 {
     public interface ITranslatorService
     {
-        /// <remarks>
-        /// Sample request:
-        ///
-        ///     POST /word-translation
-        ///     {
-        ///        "from": "en",
-        ///        "to": "ru",
-        ///        "text": "Test"
-        ///     }
-        ///
-        /// </remarks>
-        Task<WordTranslationResponse> GetWordTranslation(TranslationRequest translationRequest);
-
-        Task<IEnumerable<string>> GetExamples(WordExampleRequest wordExampleRequest);
-        Task<TextTranslationResponse> GetTextTranslation(TranslationRequest translationRequest);
         Task<WordTranslationResponse> Translate(string text);
     }
 
@@ -38,6 +22,56 @@ namespace TelegramLanguageTeacher.Core.Services
         private const string endpoint = "https://api.cognitive.microsofttranslator.com/";
         private const string location = "global";
 
+
+        public async Task<WordTranslationResponse> Translate(string text)
+        {
+            var request = new TranslationRequest()
+            {
+                From = "en",
+                To = "ru",
+                Text = text
+            };
+
+            WordTranslationResponse result;
+
+            try
+            {
+                result = await GetWordTranslation(request);
+
+                // If no translations found, try to translate a text directly
+                if (!result.Translations.Any())
+                {
+                    var textTranslation = await GetTextTranslation(request);
+                    bool translationFound = !textTranslation.Translation.Equals(text, StringComparison.InvariantCultureIgnoreCase);
+
+                    if (translationFound)
+                    {
+                        var wordTranslation = new WordTranslation() {Translation = textTranslation.Translation};
+                        result.Translations = result.Translations.Append(wordTranslation).ToList();
+                    }
+                }
+                // If there are translations try to find examples for them
+                else if (result.Translations.Any())
+                {
+                    var examples = await GetExamples(new WordExampleRequest()
+                    {
+                        From = "en",
+                        To = "ru",
+                        Text = text,
+                        Translation = result.Translations.FirstOrDefault()?.Translation
+                    });
+                    result.Examples = examples.OrderByDescending(e => e.Length);
+                }
+
+            }
+            catch (Exception e)
+            {
+                return new WordTranslationResponse();
+            }
+
+            return result;
+        }
+
         /// <remarks>
         /// Sample request:
         ///
@@ -49,7 +83,7 @@ namespace TelegramLanguageTeacher.Core.Services
         ///     }
         ///
         /// </remarks>
-        public async Task<WordTranslationResponse> GetWordTranslation(TranslationRequest translationRequest)
+        private async Task<WordTranslationResponse> GetWordTranslation(TranslationRequest translationRequest)
         {
             // See many translation options
             string route =
@@ -94,7 +128,7 @@ namespace TelegramLanguageTeacher.Core.Services
             }
         }
 
-        public async Task<IEnumerable<string>> GetExamples(WordExampleRequest wordExampleRequest)
+        private async Task<IEnumerable<string>> GetExamples(WordExampleRequest wordExampleRequest)
         {
             // See examples of terms in context
             string route =
@@ -123,7 +157,7 @@ namespace TelegramLanguageTeacher.Core.Services
             }
         }
 
-        public async Task<TextTranslationResponse> GetTextTranslation(TranslationRequest translationRequest)
+        private async Task<TextTranslationResponse> GetTextTranslation(TranslationRequest translationRequest)
         {
             // Input and output languages are defined as parameters.
             string route = $"/translate?api-version=3.0&from={translationRequest.From}&to={translationRequest.To}";
@@ -155,48 +189,6 @@ namespace TelegramLanguageTeacher.Core.Services
                     Translation = translation
                 };
             }
-        }
-
-        public async Task<WordTranslationResponse> Translate(string text)
-        {
-            var request = new TranslationRequest()
-            {
-                From = "en",
-                To = "ru",
-                Text = text
-            };
-            var result = await GetWordTranslation(request);
-
-            var textTranslation = await GetTextTranslation(request);
-            result.TextTranslation = textTranslation?.Translation;
-
-            return result;
-        }
-    }
-
-    public interface ITranslatorOldService
-    {
-        Task<string> Translate(string word, string lang = "eng");
-    }
-
-    public class TranslatorOldService : ITranslatorOldService
-    {
-        private readonly RestClient _restClient = new RestClient("https://textum-dictionary-api.azure-api.net/");
-
-        public async Task<string> Translate(string word, string lang = "eng")
-        {
-            RestRequest request = new RestRequest("v1/dictionary/lookup", Method.POST, DataFormat.Json);
-            request.AddJsonBody(new
-            {
-                from = "en",
-                to = "ru",
-                text = word
-            });
-
-            var response =
-                await _restClient.ExecuteAsync<dynamic>(request);
-
-            return string.Join(",", response.Data["translations"]);
         }
     }
 }
