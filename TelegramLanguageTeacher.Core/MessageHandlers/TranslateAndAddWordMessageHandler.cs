@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using LemmaSharp;
+using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Models.Responses;
 using TelegramLanguageTeacher.Core.Services;
@@ -14,19 +15,19 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
         private readonly IUserService _userService;
         private readonly ITranslatorService _translatorService;
         private readonly ITelegramService _telegramService;
-        private readonly Lemmatizer _lemmatizer;
+        private readonly IWordNormalizationService _normalizationService;
 
         public TranslateAndAddWordMessageHandler(IWordService wordService, 
             IUserService userService, 
             ITranslatorService translatorService, 
-            ITelegramService telegramService, 
-            Lemmatizer lemmatizer)
+            ITelegramService telegramService,
+            IWordNormalizationService normalizationService)
         {
             _wordService = wordService;
             _userService = userService;
             _translatorService = translatorService;
             _telegramService = telegramService;
-            _lemmatizer = lemmatizer;
+            _normalizationService = normalizationService;
         }
 
         public async Task Handle(Update update)
@@ -35,9 +36,11 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             var messageText = update.Message.Text.Trim().ToLowerInvariant();
 
             var lemmatizedText = messageText.Split(' ').Length == 1
-                ? _lemmatizer.Lemmatize(messageText)
+                ? _normalizationService.Normalize(messageText)
                 : messageText;
             WordTranslationResponse translationResponse = await _translatorService.Translate(lemmatizedText);
+
+            await _userService.Log("Transalted: " + JsonConvert.SerializeObject(translationResponse));
 
             if (!translationResponse.Translations.Any())
             {
@@ -63,8 +66,12 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 await _wordService.AddWord(userId, wordModel);
             }
 
+            await _userService.Log("Added to db Word: " + JsonConvert.SerializeObject(wordModel));
+
             var formattedText = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
             await _telegramService.SendPlanTextMessage(userId, formattedText);
+
+            await _userService.Log("SendPlanTextMessage with Transaltion: " + formattedText);
         }
     }
 }

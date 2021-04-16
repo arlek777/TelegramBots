@@ -22,6 +22,7 @@ namespace TelegramLanguageTeacher.DataAccess
         {
             optionsBuilder.UseSqlServer(_connStr);
         }
+        public DbSet<Log> Logs { get; set; }
 
         public DbSet<Dict> Dicts { get; set; }
         public DbSet<Word> Words { get; set; }

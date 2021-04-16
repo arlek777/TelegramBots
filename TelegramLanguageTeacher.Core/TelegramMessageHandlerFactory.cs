@@ -24,16 +24,16 @@ namespace TelegramLanguageTeacher.Core
         private readonly IUserService _userService;
         private readonly ITranslatorService _translatorService;
         private readonly ITelegramService _telegramService;
-        private readonly Lemmatizer _lemmatizer;
+        private readonly IWordNormalizationService _normalizationService;
 
         public TelegramMessageHandlerFactory(IWordService wordService, IUserService userService,
-            ITranslatorService translatorService, ITelegramService telegramService, Lemmatizer lemmatizer)
+            ITranslatorService translatorService, ITelegramService telegramService, IWordNormalizationService normalizationService)
         {
             _wordService = wordService;
             _userService = userService;
             _translatorService = translatorService;
             _telegramService = telegramService;
-            _lemmatizer = lemmatizer;
+            _normalizationService = normalizationService;
         }
 
         public async Task HandleUpdate(Update update)
@@ -53,7 +53,7 @@ namespace TelegramLanguageTeacher.Core
 
             if (isTextToTranslate)
             {
-                var handler = new TranslateAndAddWordMessageHandler(_wordService, _userService, _translatorService, _telegramService, _lemmatizer);
+                var handler = new TranslateAndAddWordMessageHandler(_wordService, _userService, _translatorService, _telegramService, _normalizationService);
                 await handler.Handle(update);
             }
             else if (isCommand && messageText.Equals(TelegramCommands.StartLearn, compareStringsMode))

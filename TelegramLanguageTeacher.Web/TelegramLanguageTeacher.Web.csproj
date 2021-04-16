@@ -1,11 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>8ff20d9e-70c9-4eed-9dad-c32d8742c135</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Data\full7z-mlteast-en.lem" />
+    <Content Include="Data\full7z-multext-en.lem" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TelegramLanguageTeacher.Core\TelegramLanguageTeacher.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 

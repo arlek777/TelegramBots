@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using System.IO;
 using LemmaSharp;
 using Microsoft.EntityFrameworkCore;
 using TelegramLanguageTeacher.Core;
+using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 
@@ -39,13 +41,17 @@ namespace TelegramLanguageTeacher.Web
             services.AddTransient<IWordService, WordService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITelegramMessageHandlerFactory, TelegramMessageHandlerFactory>();
+            services.AddTransient<IWordNormalizationService, WordNormalizationFakeService>();
 
-            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
+            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.WebRootKey);
 
-            var dataFilepath = contentRoot + "/Data/full7z-mlteast-en.lem";
-            var stream = File.OpenRead(dataFilepath);
+            //string path = Environment.GetEnvironmentVariable("HOME") +
+                         // "\\site\\wwwroot\\Data\\full7z-mlteast-en.lem";
 
-            services.AddSingleton(i => new Lemmatizer(stream));
+            //var dataFilepath = contentRoot + "/Data/full7z-mlteast-en.lem";
+            //var stream = File.OpenRead(dataFilepath);
+
+            //services.AddSingleton(i => new Lemmatizer(stream));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
