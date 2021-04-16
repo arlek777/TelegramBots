@@ -1,20 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using LemmaSharp;
 using Microsoft.EntityFrameworkCore;
 using TelegramLanguageTeacher.Core;
-using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 
@@ -34,9 +25,7 @@ namespace TelegramLanguageTeacher.Web
         {
             services.AddControllers();
 
-            string telegramToken = "1716552741:AAFXAUHKsmdLP_P5JoQZ0YvvGjplRe5IScE";
-            string connString =
-                @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=TelegramLanguageTeacher;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            string connString = Configuration.GetConnectionString("Default");
 
             services.AddTransient<DbContext>(d =>
             {
@@ -45,7 +34,7 @@ namespace TelegramLanguageTeacher.Web
                 return context;
             });
             services.AddTransient<IGenericRepository, EntityFrameworkRepository>();
-            services.AddTransient<ITelegramService>(t => new TelegramService(telegramToken));
+            services.AddTransient<ITelegramService>(t => new TelegramService(AppCredentials.TelegramToken));
             services.AddTransient<ITranslatorService, TranslatorService>();
             services.AddTransient<IWordService, WordService>();
             services.AddTransient<IUserService, UserService>();
@@ -62,10 +51,10 @@ namespace TelegramLanguageTeacher.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+           // {
                 app.UseDeveloperExceptionPage();
-            }
+            //}
 
             app.UseHttpsRedirection();
 

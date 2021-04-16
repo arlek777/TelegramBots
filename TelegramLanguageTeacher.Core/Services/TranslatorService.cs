@@ -18,9 +18,8 @@ namespace TelegramLanguageTeacher.Core.Services
 
     public class TranslatorService : ITranslatorService
     {
-        private const string subscriptionKey = "dd80f5d8979941d59943a87b4d23d208";
-        private const string endpoint = "https://api.cognitive.microsofttranslator.com/";
-        private const string location = "global";
+        private const string Endpoint = "https://api.cognitive.microsofttranslator.com/";
+        private const string Location = "global";
 
 
         public async Task<WordTranslationResponse> Translate(string text)
@@ -97,10 +96,10 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 // Build the request.
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(endpoint + route);
+                request.RequestUri = new Uri(Endpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", location);
+                request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", Location);
 
                 // Send the request and get response.
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
@@ -141,10 +140,10 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 // Build the request.
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(endpoint + route);
+                request.RequestUri = new Uri(Endpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", location);
+                request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", Location);
 
                 // Send the request and get response.
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
@@ -170,10 +169,10 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 // Build the request.
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(endpoint + route);
+                request.RequestUri = new Uri(Endpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", location);
+                request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", Location);
 
                 // Send the request and get response.
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);

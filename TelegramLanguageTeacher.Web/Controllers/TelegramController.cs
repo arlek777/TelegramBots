@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core;
-using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Web.Controllers
@@ -31,7 +32,18 @@ namespace TelegramLanguageTeacher.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> OnNewUpdate(Update update)
         {
-            await _messageHandlerFactory.HandleUpdate(update);
+            _logger.LogInformation("OnNewUpdate, data: " + JsonConvert.SerializeObject(update));
+
+            try
+            {
+                await _messageHandlerFactory.HandleUpdate(update);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("OnNewUpdate", e);
+                return StatusCode(500);
+            }
+
             return Ok();
         }
 
@@ -39,18 +51,26 @@ namespace TelegramLanguageTeacher.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUpdate()
         {
-            while (true)
+            try
             {
-                var update = await _telegramService.GetUpdate(_lastUpdateId);
-                if (update == null)
-                    continue;
+                while (true)
+                {
+                    var update = await _telegramService.GetUpdate(_lastUpdateId);
+                    if (update == null)
+                        continue;
 
-                _lastUpdateId = update.Id + 1;
+                    _logger.LogInformation("GetUpdate, data: " + JsonConvert.SerializeObject(update));
 
-                await _messageHandlerFactory.HandleUpdate(update);
+                    _lastUpdateId = update.Id + 1;
+
+                    await _messageHandlerFactory.HandleUpdate(update);
+                }
             }
-
-            return Ok();
+            catch (Exception e)
+            {
+                _logger.LogError("GetUpdate", e);
+                return StatusCode(500);
+            }
         }
     }
 }
