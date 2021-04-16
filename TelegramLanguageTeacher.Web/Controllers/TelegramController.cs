@@ -28,6 +28,14 @@ namespace TelegramLanguageTeacher.Web.Controllers
             _telegramService = telegramService;
         }
 
+        [Route("SetWebHook")]
+        [HttpGet]
+        public async Task<IActionResult> SetWebHook()
+        {
+            await _telegramService.SetWebHook("https://telegramenglishteacher.azurewebsites.net/Telegram/OnNewUpdate");
+            return Ok();
+        }
+
         [Route("OnNewUpdate")]
         [HttpGet]
         public async Task<IActionResult> OnNewUpdate(Update update)

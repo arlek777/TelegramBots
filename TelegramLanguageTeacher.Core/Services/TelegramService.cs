@@ -14,6 +14,7 @@ namespace TelegramLanguageTeacher.Core.Services
         Task SendPlanTextMessage(int userId, string text);
         Task SendMessageWithReplyButton(int userId, string text, Word word);
         Task SendMessageWithQualityButtons(int userId, string text, Word word);
+        Task SetWebHook(string url);
     }
 
     public class TelegramService : ITelegramService
@@ -62,6 +63,11 @@ namespace TelegramLanguageTeacher.Core.Services
 
             await _bot.SendTextMessageAsync(new ChatId(userId), text,
                 replyMarkup: reply, parseMode: ParseMode.Markdown);
+        }
+
+        public async Task SetWebHook(string url)
+        {
+            await _bot.SetWebhookAsync(url);
         }
     }
 }
