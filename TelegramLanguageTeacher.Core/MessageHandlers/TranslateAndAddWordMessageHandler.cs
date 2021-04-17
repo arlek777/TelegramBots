@@ -16,18 +16,21 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
         private readonly ITranslatorService _translatorService;
         private readonly ITelegramService _telegramService;
         private readonly IWordNormalizationService _normalizationService;
+        private readonly ILogger _logger;
 
         public TranslateAndAddWordMessageHandler(IWordService wordService, 
             IUserService userService, 
             ITranslatorService translatorService, 
             ITelegramService telegramService,
-            IWordNormalizationService normalizationService)
+            IWordNormalizationService normalizationService, 
+            ILogger logger)
         {
             _wordService = wordService;
             _userService = userService;
             _translatorService = translatorService;
             _telegramService = telegramService;
             _normalizationService = normalizationService;
+            _logger = logger;
         }
 
         public async Task Handle(Update update)
@@ -40,7 +43,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 : messageText;
             WordTranslationResponse translationResponse = await _translatorService.Translate(lemmatizedText);
 
-            await _userService.Log("Transalted: " + JsonConvert.SerializeObject(translationResponse));
+            await _logger.Log("Transalted: " + JsonConvert.SerializeObject(translationResponse));
 
             if (!translationResponse.Translations.Any())
             {
@@ -66,12 +69,12 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 await _wordService.AddWord(userId, wordModel);
             }
 
-            await _userService.Log("Added to db Word: " + JsonConvert.SerializeObject(wordModel));
+            await _logger.Log("Added to db Word: " + JsonConvert.SerializeObject(wordModel));
 
             var formattedText = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
             await _telegramService.SendPlanTextMessage(userId, formattedText);
 
-            await _userService.Log("SendPlanTextMessage with Transaltion: " + formattedText);
+            await _logger.Log("SendPlanTextMessage with Transaltion: " + formattedText);
         }
     }
 }

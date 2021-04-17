@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core;
 using TelegramLanguageTeacher.Core.Services;
+using ILogger = TelegramLanguageTeacher.Core.Services.ILogger;
 
 namespace TelegramLanguageTeacher.Web.Controllers
 {
@@ -15,62 +16,66 @@ namespace TelegramLanguageTeacher.Web.Controllers
     [Route("[controller]")]
     public class TelegramController : ControllerBase
     {
-        private readonly ILogger<TelegramController> _logger;
         private readonly ITelegramMessageHandlerFactory _messageHandlerFactory;
         private readonly ITelegramService _telegramService;
+        private readonly ILogger _logger;
         private readonly IUserService _userService;
+        private readonly IHostEnvironment _environment;
 
         private static int _lastUpdateId;
+        private static string _token = "englishTelegramTeacher";
 
-        public TelegramController(ILogger<TelegramController> logger, 
+        public TelegramController(ILogger logger, 
             ITelegramMessageHandlerFactory messageHandlerFactory, 
-            ITelegramService telegramService, IUserService userService)
+            ITelegramService telegramService,
+            IUserService userService, IHostEnvironment environment)
         {
-            _logger = logger;
             _messageHandlerFactory = messageHandlerFactory;
             _telegramService = telegramService;
             _userService = userService;
-        }
-
-        [Route("SetWebHook")]
-        [HttpGet]
-        public async Task<IActionResult> SetWebHook()
-        {
-            await _telegramService.SetWebHook("https://telegramenglishteacher.azurewebsites.net/Telegram/OnNewUpdate");
-            return Ok();
+            _environment = environment;
+            _logger = logger;
         }
 
         [Route("GetLogs")]
         [HttpGet]
-        public async Task<IActionResult> GetLogs()
+        public async Task<IActionResult> GetLogs([FromQuery] string token)
         {
-            var logs = await _userService.GetLogs();
-            return Ok(string.Join("\n", logs.OrderByDescending(l => l.Date).Select(l => l.Text).ToList()));
+            //if (!_token.Equals(token))
+              //  return BadRequest();
+
+            var logs = await _logger.GetLogs();
+            return Ok(string.Join("\n\n", logs.OrderByDescending(l => l.Date).Select(l => l.Text + " - " + l.Date).ToList()));
+        }
+
+        [Route("GetStats")]
+        [HttpGet]
+        public async Task<IActionResult> GetStats([FromQuery] string token)
+        {
+            //if (!_token.Equals(token))
+              //  return BadRequest();
+
+            var result = await _userService.GetAllUsers();
+            return Ok(JsonConvert.SerializeObject(result));
         }
 
         [Route("OnNewUpdate")]
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            await _userService.Log("OnNewUpdate called ");
-
-            var req = Request.Body; //get Request from telegram 
-            var responsString = new StreamReader(req).ReadToEnd(); //read request
-            Update update = JsonConvert.DeserializeObject<Update>(responsString);
-
-            await _userService.Log("OnNewUpdate, data: " + JsonConvert.SerializeObject(update));
-
-
-            //_logger.LogInformation("OnNewUpdate, data: " + JsonConvert.SerializeObject(update));
-
             try
             {
+                var req = Request.Body;
+                var updateJson = await new StreamReader(req).ReadToEndAsync();
+
+                await _logger.Log("OnNewUpdate called with data: " + updateJson);
+
+                Update update = JsonConvert.DeserializeObject<Update>(updateJson);
                 await _messageHandlerFactory.HandleUpdate(update);
             }
             catch (Exception e)
             {
-                await _userService.Log(e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
-                _logger.LogError("OnNewUpdate", e);
+                await _logger.Log("ERROR: " + e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
                 return StatusCode(500);
             }
 
@@ -81,27 +86,28 @@ namespace TelegramLanguageTeacher.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUpdate()
         {
-            try
+
+            while (true)
             {
-                while (true)
+                try
                 {
                     var update = await _telegramService.GetUpdate(_lastUpdateId);
                     if (update == null)
                         continue;
 
-                    _logger.LogInformation("GetUpdate, data: " + JsonConvert.SerializeObject(update));
+                    await _logger.Log("GetUpdate, data: " + JsonConvert.SerializeObject(update));
 
                     _lastUpdateId = update.Id + 1;
 
                     await _messageHandlerFactory.HandleUpdate(update);
                 }
+                catch (Exception e)
+                {
+                    await _logger.Log(e.Message + " " + e.StackTrace + " " + e.Source);
+                }
             }
-            catch (Exception e)
-            {
-                await _userService.Log(e.Message);
-                _logger.LogError("GetUpdate", e);
-                return StatusCode(500);
-            }
+
+            return Ok();
         }
     }
 }

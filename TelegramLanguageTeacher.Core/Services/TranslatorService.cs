@@ -63,7 +63,7 @@ namespace TelegramLanguageTeacher.Core.Services
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new WordTranslationResponse();
             }

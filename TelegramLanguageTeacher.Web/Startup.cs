@@ -41,17 +41,15 @@ namespace TelegramLanguageTeacher.Web
             services.AddTransient<IWordService, WordService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITelegramMessageHandlerFactory, TelegramMessageHandlerFactory>();
-            services.AddTransient<IWordNormalizationService, WordNormalizationFakeService>();
+            services.AddTransient<IWordNormalizationService, WordNormalizationService>();
+            services.AddTransient<ILogger, DefaultLogger>();
 
-            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.WebRootKey);
+            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
 
-            //string path = Environment.GetEnvironmentVariable("HOME") +
-                         // "\\site\\wwwroot\\Data\\full7z-mlteast-en.lem";
+            var dataFilepath = contentRoot + "\\Data\\full7z-mlteast-en.lem";
+            var stream = File.OpenRead(dataFilepath);
 
-            //var dataFilepath = contentRoot + "/Data/full7z-mlteast-en.lem";
-            //var stream = File.OpenRead(dataFilepath);
-
-            //services.AddSingleton(i => new Lemmatizer(stream));
+            services.AddSingleton(i => new Lemmatizer(stream));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

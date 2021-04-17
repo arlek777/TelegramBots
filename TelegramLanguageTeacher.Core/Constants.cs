@@ -22,7 +22,7 @@
 
         public const string Help = "Welcome to Vocablurary Teacher Bot! We are using smart algorithm to help you learing new words. " +
                                    "\nIt's easy! Just add any word as a message and it will be transalted to you added to the dictionary.\n" +
-                                   "If you want to repeat your words, type /learn command. Good Luck !:)";
+                                   "If you want to repeat your words, type /learn command. \nGood Luck !:)";
 
         public const string ShowTranslation = "Show Translation";
 
@@ -38,5 +38,6 @@
         public const string ShowTranslate = "reply";
         public const string Rate = "rate";
         public const string Help = "/help";
+        public const string Start = "/start";
     }
 }

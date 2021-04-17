@@ -83,17 +83,17 @@ namespace TelegramLanguageTeacher.Core.Services
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
             var word = user?.Dicts.FirstOrDefault()?.Words
-                .Where(w => IsTodayDate(w.NextRepeat))
+                .Where(w => IsTodayOrPastDate(w.NextRepeat))
                 .OrderBy(w => w.NextRepeat)
                 .ThenBy(w => w.Rate)
                 .FirstOrDefault();
             return word;
         }
 
-        private bool IsTodayDate(DateTime dt)
+        private bool IsTodayOrPastDate(DateTime dt)
         {
             var now = DateTime.UtcNow;
-            return new DateTime(dt.Year, dt.Month, dt.Day) == new DateTime(now.Year, now.Month, now.Day);
+            return new DateTime(now.Year, now.Month, now.Day) >= new DateTime(dt.Year, dt.Month, dt.Day);
         }
 
         private DateTime GetNextRepeatDateByRate(Word word, int rate, DateTime now)

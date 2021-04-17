@@ -10,8 +10,7 @@ namespace TelegramLanguageTeacher.Core.Services
     {
         Task CreateNewUser(User user);
         Task<User> GetUser(string username);
-        Task Log(string info);
-        Task<IEnumerable<Log>> GetLogs();
+        Task<IEnumerable<User>> GetAllUsers();
     }
 
     public class UserService : IUserService
@@ -23,15 +22,9 @@ namespace TelegramLanguageTeacher.Core.Services
             _repository = repository;
         }
 
-        public async Task Log(string info)
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-            _repository.Add(new Log() { Text = info, Date = DateTime.UtcNow });
-            await _repository.SaveChanges();
-        }
-
-        public async Task<IEnumerable<Log>> GetLogs()
-        {
-            return await _repository.GetAll<Log>();
+            return await _repository.GetUserListInclude(u => u.TelegramUserId > 0);
         }
 
         public async Task CreateNewUser(User user)

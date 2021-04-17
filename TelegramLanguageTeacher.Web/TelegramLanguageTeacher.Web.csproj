@@ -6,8 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Data\full7z-mlteast-en.lem" />
-    <Content Include="Data\full7z-multext-en.lem" />
+    <Content Include="Data\full7z-mlteast-en.lem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\full7z-multext-en.lem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
