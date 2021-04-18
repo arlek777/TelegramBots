@@ -18,11 +18,13 @@
                                    "To repeat your words, type /learn command. \nGood Luck !:)";
 
         public const string ShowTranslation = "Show Translation";
+        public const string NoTranslationFound = "Sorry, we could not found any translation :(";
+
 
         public const string HardRate = "Hard";
         public const string NormalRate = "Normal";
         public const string EasyRate = "Easy";
-        public const string NoTranslationFound = "Sorry, we could not found any translation :(";
+        public const string RemoveWord = "Remove";
     }
 
     public static class TelegramCommands

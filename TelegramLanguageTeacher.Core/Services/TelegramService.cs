@@ -56,6 +56,7 @@ namespace TelegramLanguageTeacher.Core.Services
         {
             var reply = new InlineKeyboardMarkup(new[]
             {
+                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_0_{word.Id}", Text = TelegramMessageTexts.RemoveWord },
                 new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_1_{word.Id}", Text = TelegramMessageTexts.HardRate },
                 new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_2_{word.Id}", Text = TelegramMessageTexts.NormalRate  },
                 new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_3_{word.Id}", Text = TelegramMessageTexts.EasyRate }

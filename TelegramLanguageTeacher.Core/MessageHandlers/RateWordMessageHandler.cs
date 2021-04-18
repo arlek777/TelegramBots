@@ -36,7 +36,14 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 int rate = int.Parse(callbackData[1]);
                 Guid wordId = Guid.Parse(callbackData[2]);
 
-                await _wordService.RateWord(userId, wordId, rate);
+                if (rate == 0)
+                {
+                    await _wordService.RemoveWord(userId, wordId);
+                }
+                else
+                {
+                    await _wordService.RateWord(userId, wordId, rate);
+                }
 
                 var nextWord = await _wordService.GetNextWord(userId);
                 if (nextWord != null)

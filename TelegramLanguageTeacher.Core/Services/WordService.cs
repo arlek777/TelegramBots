@@ -12,6 +12,7 @@ namespace TelegramLanguageTeacher.Core.Services
         Task<Word> GetNextWord(int userId);
         Task RateWord(int userId, Guid wordId, int rate);
         Task<Word> GetWord(int userId, Guid wordId);
+        Task RemoveWord(int userId, Guid wordId);
     }
 
     public class WordService : IWordService
@@ -76,6 +77,13 @@ namespace TelegramLanguageTeacher.Core.Services
                 .FirstOrDefault(w => w.Id == wordId);
 
             return dbWord;
+        }
+
+        public async Task RemoveWord(int userId, Guid wordId)
+        {
+            var word = await _repository.Find<Word>(w => w.Id == wordId);
+            _repository.Remove(word);
+            await _repository.SaveChanges();
         }
 
         public async Task<Word> GetNextWord(int userId)
