@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core;
@@ -20,20 +19,19 @@ namespace TelegramLanguageTeacher.Web.Controllers
         private readonly ITelegramService _telegramService;
         private readonly ILogger _logger;
         private readonly IUserService _userService;
-        private readonly IHostEnvironment _environment;
 
         private static int _lastUpdateId;
         private static string _token = "englishTelegramTeacher";
 
-        public TelegramController(ILogger logger, 
+        public TelegramController(
+            ILogger logger, 
             ITelegramMessageHandlerFactory messageHandlerFactory, 
             ITelegramService telegramService,
-            IUserService userService, IHostEnvironment environment)
+            IUserService userService)
         {
             _messageHandlerFactory = messageHandlerFactory;
             _telegramService = telegramService;
             _userService = userService;
-            _environment = environment;
             _logger = logger;
         }
 
@@ -41,8 +39,8 @@ namespace TelegramLanguageTeacher.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLogs([FromQuery] string token)
         {
-            //if (!_token.Equals(token))
-              //  return BadRequest();
+            if (!_token.Equals(token))
+                return BadRequest();
 
             var logs = await _logger.GetLogs();
             return Ok(string.Join("\n\n", logs.OrderByDescending(l => l.Date).Select(l => l.Text + " - " + l.Date).ToList()));
@@ -52,11 +50,22 @@ namespace TelegramLanguageTeacher.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStats([FromQuery] string token)
         {
-            //if (!_token.Equals(token))
-              //  return BadRequest();
+            if (!_token.Equals(token))
+                return BadRequest();
 
             var result = await _userService.GetAllUsers();
             return Ok(JsonConvert.SerializeObject(result));
+        }
+
+        [Route("ClearUserWords")]
+        [HttpGet]
+        public async Task<IActionResult> ClearUserWords([FromQuery] string token, [FromQuery] string userId)
+        {
+            if (!_token.Equals(token))
+                return BadRequest();
+
+            await _userService.RemoveUserWords(userId);
+            return Ok();
         }
 
         [Route("OnNewUpdate")]

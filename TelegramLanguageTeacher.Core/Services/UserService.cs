@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TelegramLanguageTeacher.DataAccess;
 using TelegramLanguageTeacher.DomainModels;
@@ -9,8 +10,8 @@ namespace TelegramLanguageTeacher.Core.Services
     public interface IUserService
     {
         Task CreateNewUser(User user);
-        Task<User> GetUser(string username);
         Task<IEnumerable<User>> GetAllUsers();
+        Task RemoveUserWords(string userId);
     }
 
     public class UserService : IUserService
@@ -27,6 +28,13 @@ namespace TelegramLanguageTeacher.Core.Services
             return await _repository.GetUserListInclude(u => u.TelegramUserId > 0);
         }
 
+        public async Task RemoveUserWords(string userId)
+        {
+            var user = await _repository.FindUserInclude(u => u.Id == Guid.Parse(userId));
+            user.Dicts.FirstOrDefault().Words.Clear();
+            await _repository.SaveChanges();
+        }
+
         public async Task CreateNewUser(User user)
         {
             user.Dicts.Add(new Dict()
@@ -37,12 +45,6 @@ namespace TelegramLanguageTeacher.Core.Services
 
             _repository.Add(user);
             await _repository.SaveChanges();
-        }
-
-        public async Task<User> GetUser(string username)
-        {
-            var user = await _repository.Find<User>(u => u.UserName == username);
-            return user;
         }
     }
 }
