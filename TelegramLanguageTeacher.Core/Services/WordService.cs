@@ -8,7 +8,7 @@ namespace TelegramLanguageTeacher.Core.Services
 {
     public interface IWordService
     {
-        Task<bool> AddWord(int userId, Word word);
+        Task<Word> AddWord(int userId, Word word);
         Task<Word> GetNextWord(int userId);
         Task RateWord(int userId, Guid wordId, int rate);
         Task<Word> GetWord(int userId, Guid wordId);
@@ -24,21 +24,21 @@ namespace TelegramLanguageTeacher.Core.Services
             _repository = repository;
         }
 
-        public async Task<bool> AddWord(int userId, Word word)
+        public async Task<Word> AddWord(int userId, Word word)
         {
             var user = await _repository.Find<User>(u => u.TelegramUserId == userId);
             if (user == null)
-                return false;
+                return null;
 
             var defaultDict = await _repository.Find<Dict>(d => d.UserId == user.Id);
             if (defaultDict == null)
                 throw new ArgumentException("Dictionary is not found");
 
-            var isDuplicateWork = defaultDict.Words.Any(
+            var duplicatedWord = defaultDict.Words.FirstOrDefault(
                 w => w.Original.Equals(word.Original, StringComparison.InvariantCultureIgnoreCase));
 
-            if (isDuplicateWork)
-                return true;
+            if (duplicatedWord != null)
+                return duplicatedWord;
 
             var now = DateTime.UtcNow;
             word.DictId = defaultDict.Id;
@@ -50,7 +50,7 @@ namespace TelegramLanguageTeacher.Core.Services
 
             await _repository.SaveChanges();
 
-            return true;
+            return word;
         }
 
         public async Task RateWord(int userId, Guid wordId, int rate)

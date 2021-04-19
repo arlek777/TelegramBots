@@ -57,8 +57,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             var separatedExamples = string.Join('\n', examples);
 
             var wordModel = new Word() { Original = lemmatizedText, Translate = separatedTranslations, Examples = separatedExamples };
+            var word = await _wordService.AddWord(userId, wordModel);
 
-            if (!await _wordService.AddWord(userId, wordModel))
+            if (word == null)
             {
                 await _userService.CreateNewUser(new DomainModels.User()
                 {
@@ -66,15 +67,15 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                     TelegramUserId = update.Message.From.Id
                 });
 
-                await _wordService.AddWord(userId, wordModel);
+                word = await _wordService.AddWord(userId, wordModel);
             }
 
             await _logger.Log("Added to db Word: " + JsonConvert.SerializeObject(wordModel));
 
-            var formattedText = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
-            await _telegramService.SendPlanTextMessage(userId, formattedText);
+            var formattedTranslation = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
+            await _telegramService.SendRemoveButtonMessage(userId, formattedTranslation, word);
 
-            await _logger.Log("SendPlanTextMessage with Transaltion: " + formattedText);
+            await _logger.Log("SendPlanTextMessage with translation: " + formattedTranslation);
         }
     }
 }

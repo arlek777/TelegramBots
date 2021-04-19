@@ -25,13 +25,19 @@
         public const string NormalRate = "Normal";
         public const string EasyRate = "Easy";
         public const string RemoveWord = "Remove";
+        public const string Done = "Done";
+    }
+
+    public static class TelegramCallbackCommands
+    {
+        public const string ShowTranslate = "reply";
+        public const string Rate = "rate";
+        public const string RemoveWord = "removeword";
     }
 
     public static class TelegramCommands
     {
         public const string StartLearn = "/learn";
-        public const string ShowTranslate = "reply";
-        public const string Rate = "rate";
         public const string Help = "/help";
         public const string Start = "/start";
     }

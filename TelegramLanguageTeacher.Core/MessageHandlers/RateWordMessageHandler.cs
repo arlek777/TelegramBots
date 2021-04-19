@@ -19,22 +19,22 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
         public async Task Handle(Update update)
         {
             var userId = update.CallbackQuery.From.Id;
+            var callbackData = update.CallbackQuery.Data;
+            string[] splittedData = update.CallbackQuery.Data.Split('_');
 
-            if (update.CallbackQuery.Data.Contains(TelegramCommands.ShowTranslate))
+            if (callbackData.Contains(TelegramCallbackCommands.ShowTranslate))
             {
-                string[] callbackData = update.CallbackQuery.Data.Split('_');
-                Guid wordId = Guid.Parse(callbackData[1]);
+                Guid wordId = Guid.Parse(splittedData[1]);
 
                 var word = await _wordService.GetWord(userId, wordId);
                 var formattedText = TelegramMessageFormatter.FormatTranslationText(word.Original, word.Translate, word.Examples);
-                await _telegramService.SendMessageWithQualityButtons(userId, formattedText, word);
-            }
-            else if (update.CallbackQuery.Data.Contains(TelegramCommands.Rate))
-            {
-                string[] callbackData = update.CallbackQuery.Data.Split('_');
 
-                int rate = int.Parse(callbackData[1]);
-                Guid wordId = Guid.Parse(callbackData[2]);
+                await _telegramService.SendRateButtonsMessage(userId, formattedText, word);
+            }
+            else if (update.CallbackQuery.Data.Contains(TelegramCallbackCommands.Rate))
+            {
+                int rate = int.Parse(splittedData[1]);
+                Guid wordId = Guid.Parse(splittedData[2]);
 
                 if (rate == 0)
                 {
@@ -48,7 +48,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
                 var nextWord = await _wordService.GetNextWord(userId);
                 if (nextWord != null)
                 {
-                    await _telegramService.SendMessageWithReplyButton(userId, TelegramMessageFormatter.FormatBold(nextWord.Original), nextWord);
+                    await _telegramService.SendMessageTranslateButton(userId, TelegramMessageFormatter.FormatBold(nextWord.Original), nextWord);
                 }
                 else
                 {

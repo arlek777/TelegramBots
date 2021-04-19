@@ -22,7 +22,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             if (nextWord != null)
             {
                 await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.StartLearningGreeting);
-                await _telegramService.SendMessageWithReplyButton(userId, TelegramMessageFormatter.FormatBold(nextWord.Original), nextWord);
+                await _telegramService.SendMessageTranslateButton(userId, TelegramMessageFormatter.FormatBold(nextWord.Original), nextWord);
             }
             else
             {

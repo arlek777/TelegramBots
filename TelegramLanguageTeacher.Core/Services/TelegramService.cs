@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -12,8 +13,9 @@ namespace TelegramLanguageTeacher.Core.Services
     {
         Task<Update> GetUpdate(int lastUpdateId);
         Task SendPlanTextMessage(int userId, string text);
-        Task SendMessageWithReplyButton(int userId, string text, Word word);
-        Task SendMessageWithQualityButtons(int userId, string text, Word word);
+        Task SendMessageTranslateButton(int userId, string text, Word word);
+        Task SendRateButtonsMessage(int userId, string text, Word word);
+        Task SendRemoveButtonMessage(int userId, string text, Word word);
         Task SetWebHook(string url);
     }
 
@@ -41,25 +43,44 @@ namespace TelegramLanguageTeacher.Core.Services
             await _bot.SendTextMessageAsync(new ChatId(userId), text, ParseMode.Html);
         }
 
-        public async Task SendMessageWithReplyButton(int userId, string text, Word word)
+        public async Task SendMessageTranslateButton(int userId, string text, Word word)
         {
             var reply = new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.ShowTranslate}_{word.Id}", Text = TelegramMessageTexts.ShowTranslation }
+                new InlineKeyboardButton()
+                {
+                    CallbackData = $"{TelegramCallbackCommands.ShowTranslate}_{word.Id}", 
+                    Text = TelegramMessageTexts.ShowTranslation
+                }
             });
 
             await _bot.SendTextMessageAsync(new ChatId(userId), text,
                 replyMarkup: reply, parseMode: ParseMode.Markdown);
         }
 
-        public async Task SendMessageWithQualityButtons(int userId, string text, Word word)
+        public async Task SendRemoveButtonMessage(int userId, string text, Word word)
         {
             var reply = new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_0_{word.Id}", Text = TelegramMessageTexts.RemoveWord },
-                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_1_{word.Id}", Text = TelegramMessageTexts.HardRate },
-                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_2_{word.Id}", Text = TelegramMessageTexts.NormalRate  },
-                new InlineKeyboardButton() { CallbackData = $"{TelegramCommands.Rate}_3_{word.Id}", Text = TelegramMessageTexts.EasyRate }
+                new InlineKeyboardButton()
+                {
+                    CallbackData = $"{TelegramCallbackCommands.RemoveWord}_{word.Id}",
+                    Text = TelegramMessageTexts.RemoveWord
+                }
+            });
+
+            await _bot.SendTextMessageAsync(new ChatId(userId), text,
+                replyMarkup: reply, parseMode: ParseMode.Markdown);
+        }
+
+        public async Task SendRateButtonsMessage(int userId, string text, Word word)
+        {
+            var reply = new InlineKeyboardMarkup(new[]
+            {
+                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(0, word.Id), Text = TelegramMessageTexts.RemoveWord },
+                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(1, word.Id), Text = TelegramMessageTexts.HardRate },
+                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(2, word.Id), Text = TelegramMessageTexts.NormalRate  },
+                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(3, word.Id), Text = TelegramMessageTexts.EasyRate }
             });
 
             await _bot.SendTextMessageAsync(new ChatId(userId), text,
@@ -69,6 +90,11 @@ namespace TelegramLanguageTeacher.Core.Services
         public async Task SetWebHook(string url)
         {
             await _bot.SetWebhookAsync(url);
+        }
+
+        private string FormatCallbackRateData(int index, Guid wordId)
+        {
+            return $"{TelegramCallbackCommands.Rate}_{index}_{wordId}";
         }
     }
 }

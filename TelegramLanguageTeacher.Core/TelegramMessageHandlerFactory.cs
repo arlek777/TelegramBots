@@ -52,29 +52,46 @@ namespace TelegramLanguageTeacher.Core
                             && !update.Message.From.IsBot
                             && update.Message.Text != null && update.Message.Text.Contains("/");
 
-            var messageText = update.Message?.Text;
-            var compareStringsMode = StringComparison.InvariantCultureIgnoreCase;
+            var messageText = isCommand ? update.Message?.Text.ToLowerInvariant() : update.Message?.Text;
+            ITelegramMessageHandler handler = null;
 
             if (isTextToTranslate)
             {
-                var handler = new TranslateAndAddWordMessageHandler(_wordService, _userService, _translatorService, _telegramService, _normalizationService, _logger);
-                await handler.Handle(update);
+                handler = new TranslateAndAddWordMessageHandler(_wordService, 
+                    _userService, 
+                    _translatorService, 
+                    _telegramService, 
+                    _normalizationService, 
+                    _logger);
             }
-            else if (isCommand && messageText.Equals(TelegramCommands.StartLearn, compareStringsMode))
+            else if (isCommand)
             {
-                var handler = new StartLearningWordsCommandMessageHandler(_wordService, _telegramService);
-                await handler.Handle(update);
-            }
-            else if (isCommand && (messageText.Equals(TelegramCommands.Help, compareStringsMode) || messageText.Equals(TelegramCommands.Start, compareStringsMode)))
-            {
-                var handler = new HelpCommandMessageHandler(_telegramService);
-                await handler.Handle(update);
+                switch (messageText)
+                {
+                    case TelegramCommands.StartLearn:
+                        handler = new StartLearningWordsCommandMessageHandler(_wordService, _telegramService);
+                        break;
+
+                    case TelegramCommands.Help:
+                    case TelegramCommands.Start:
+                        handler = new HelpCommandMessageHandler(_telegramService);
+                        break;
+                }
             }
             else if (update.CallbackQuery != null)
             {
-                var handler = new RateWordMessageHandler(_wordService, _telegramService);
-                await handler.Handle(update);
+                if (update.CallbackQuery.Data.Contains(TelegramCallbackCommands.RemoveWord))
+                {
+                    handler = new RemoveWordCommandMessageHandler(_telegramService, _wordService);
+                }
+                else
+                {
+                    handler = new RateWordMessageHandler(_wordService, _telegramService);
+                }
             }
+
+            if (handler != null)
+                await handler.Handle(update);
         }
     }
 }
