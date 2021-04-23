@@ -57,17 +57,6 @@ namespace TelegramLanguageTeacher.Web.Controllers
             return Ok(JsonConvert.SerializeObject(result));
         }
 
-        [Route("ClearUserWords")]
-        [HttpGet]
-        public async Task<IActionResult> ClearUserWords([FromQuery] string token, [FromQuery] string userId)
-        {
-            if (!_token.Equals(token))
-                return BadRequest();
-
-            await _userService.RemoveUserWords(userId);
-            return Ok();
-        }
-
         [Route("SendUpdate")]
         [HttpGet]
         public async Task<IActionResult> SendUpdate([FromQuery] string token, [FromQuery] string text)
@@ -85,6 +74,9 @@ namespace TelegramLanguageTeacher.Web.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Telegram webhook main method to receive updates.
+        /// </summary>
         [Route("OnNewUpdate")]
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
@@ -108,6 +100,9 @@ namespace TelegramLanguageTeacher.Web.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// For local testing. Won't work till Webhook is enabled
+        /// </summary>
         [Route("GetUpdate")]
         [HttpGet]
         public async Task<IActionResult> GetUpdate()
