@@ -1,21 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.Core.Services
 {
     public interface ITelegramService
     {
         Task<Update> GetUpdate(int lastUpdateId);
-        Task SendPlanTextMessage(int userId, string text);
-        Task SendMessageTranslateButton(int userId, string text, Word word);
-        Task SendRateButtonsMessage(int userId, string text, Word word);
-        Task SendRemoveButtonMessage(int userId, string text, Word word);
+        Task SendTextMessage(int userId, string text);
+        Task SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup);
         Task SetWebHook(string url);
     }
 
@@ -38,63 +34,20 @@ namespace TelegramLanguageTeacher.Core.Services
                 .FirstOrDefault();
         }
 
-        public async Task SendPlanTextMessage(int userId, string text)
+        public async Task SendTextMessage(int userId, string text)
         {
             await _bot.SendTextMessageAsync(new ChatId(userId), text, ParseMode.Html);
         }
 
-        public async Task SendMessageTranslateButton(int userId, string text, Word word)
+        public async Task SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup)
         {
-            var reply = new InlineKeyboardMarkup(new[]
-            {
-                new InlineKeyboardButton()
-                {
-                    CallbackData = $"{TelegramCallbackCommands.ShowTranslate}_{word.Id}", 
-                    Text = TelegramMessageTexts.ShowTranslation
-                }
-            });
-
             await _bot.SendTextMessageAsync(new ChatId(userId), text,
-                replyMarkup: reply, parseMode: ParseMode.Markdown);
-        }
-
-        public async Task SendRemoveButtonMessage(int userId, string text, Word word)
-        {
-            var reply = new InlineKeyboardMarkup(new[]
-            {
-                new InlineKeyboardButton()
-                {
-                    CallbackData = $"{TelegramCallbackCommands.RemoveWord}_{word.Id}",
-                    Text = TelegramMessageTexts.RemoveWord
-                }
-            });
-
-            await _bot.SendTextMessageAsync(new ChatId(userId), text,
-                replyMarkup: reply, parseMode: ParseMode.Markdown);
-        }
-
-        public async Task SendRateButtonsMessage(int userId, string text, Word word)
-        {
-            var reply = new InlineKeyboardMarkup(new[]
-            {
-                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(0, word.Id), Text = TelegramMessageTexts.RemoveWord },
-                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(1, word.Id), Text = TelegramMessageTexts.HardRate },
-                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(2, word.Id), Text = TelegramMessageTexts.NormalRate  },
-                new InlineKeyboardButton() { CallbackData = FormatCallbackRateData(3, word.Id), Text = TelegramMessageTexts.EasyRate }
-            });
-
-            await _bot.SendTextMessageAsync(new ChatId(userId), text,
-                replyMarkup: reply, parseMode: ParseMode.Markdown);
+                replyMarkup: markup, parseMode: ParseMode.Markdown);
         }
 
         public async Task SetWebHook(string url)
         {
             await _bot.SetWebhookAsync(url);
-        }
-
-        private string FormatCallbackRateData(int index, Guid wordId)
-        {
-            return $"{TelegramCallbackCommands.Rate}_{index}_{wordId}";
         }
     }
 }

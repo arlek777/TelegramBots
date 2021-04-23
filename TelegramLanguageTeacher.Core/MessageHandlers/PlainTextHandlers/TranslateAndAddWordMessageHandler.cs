@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
+using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Models.Responses;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
@@ -43,18 +46,19 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
             var lemmatizedText = messageText.Split(' ').Length == 1
                 ? _normalizationService.Normalize(messageText)
                 : messageText;
+
             WordTranslationResponse translationResponse = await _translatorService.Translate(lemmatizedText);
 
             await _logger.Log("Transalted: " + JsonConvert.SerializeObject(translationResponse));
 
             if (!translationResponse.Translations.Any())
             {
-                await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
                 return true;
             }
 
-            var translations = translationResponse.Translations.Select(t => t.Translation).Take(5);
-            var examples = translationResponse.Examples.Take(4);
+            var translations = translationResponse.Translations.Select(t => t.Translation).Take(CommonConstants.TranslationCounts);
+            var examples = translationResponse.Examples.Take(CommonConstants.ExamplesCount);
             var separatedTranslations = string.Join('\n', translations);
             var separatedExamples = string.Join('\n', examples);
 
@@ -74,12 +78,26 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
 
             await _logger.Log("Added to db Word: " + JsonConvert.SerializeObject(wordModel));
 
+            var button = GetButton(word.Id);
             var formattedTranslation = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
-            await _telegramService.SendRemoveButtonMessage(userId, formattedTranslation, word);
+            
+            await _telegramService.SendInlineButtonMessage(userId, formattedTranslation, button);
 
-            await _logger.Log("SendPlanTextMessage with translation: " + formattedTranslation);
+            await _logger.Log("SendTextMessage with translation: " + formattedTranslation);
 
             return true;
+        }
+
+        private InlineKeyboardMarkup GetButton(Guid wordId)
+        {
+            return new InlineKeyboardMarkup(new[]
+            {
+                new InlineKeyboardButton()
+                {
+                    CallbackData = $"{TelegramCallbackCommands.RemoveWord}_{wordId}",
+                    Text = TelegramMessageTexts.RemoveWord
+                }
+            });
         }
     }
 }

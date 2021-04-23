@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,13 +22,21 @@ namespace TelegramLanguageTeacher.Core.Services
         private const string Endpoint = "https://api.cognitive.microsofttranslator.com/";
         private const string Location = "global";
 
-
         public async Task<WordTranslationResponse> Translate(string text)
         {
+            string fromLang = "en";
+            string toLang = "ru";
+
+            if (Regex.IsMatch(text, @"\p{IsCyrillic}"))
+            {
+                fromLang = "ru";
+                toLang = "en";
+            }
+
             var request = new TranslationRequest()
             {
-                From = "en",
-                To = "ru",
+                From = fromLang,
+                To = toLang,
                 Text = text
             };
 
@@ -56,10 +65,10 @@ namespace TelegramLanguageTeacher.Core.Services
                     {
                         From = "en",
                         To = "ru",
-                        Text = text,
-                        Translation = result.Translations.FirstOrDefault()?.Translation
+                        Text = toLang == "en" ? result.Translations.FirstOrDefault()?.Translation : text,
+                        Translation = toLang == "en" ? text : result.Translations.FirstOrDefault()?.Translation
                     });
-                    result.Examples = examples.OrderByDescending(e => e.Length);
+                    result.Examples = examples;
                 }
 
             }

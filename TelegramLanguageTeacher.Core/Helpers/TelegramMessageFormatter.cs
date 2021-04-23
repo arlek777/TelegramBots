@@ -1,4 +1,4 @@
-﻿namespace TelegramLanguageTeacher.Core
+﻿namespace TelegramLanguageTeacher.Core.Helpers
 {
     public static class TelegramMessageFormatter
     {

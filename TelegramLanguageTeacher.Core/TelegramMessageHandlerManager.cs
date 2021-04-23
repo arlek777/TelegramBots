@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers;
-using TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers;
+using TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers;
 using TelegramLanguageTeacher.Core.Services;
 
@@ -32,9 +32,13 @@ namespace TelegramLanguageTeacher.Core
         {
             _messageHandlers = new List<ITelegramMessageHandler>()
             {
+                new RemoveAllWordsCommandMessageHandler(telegramService),
+                new RemoveAllWordsCallbackHandler(telegramService, wordService),
+                new ListAllWordsCommandMessageHandler(telegramService, wordService),
                 new StartHelpCommandMessageHandler(telegramService),
                 new RateWordMessageHandler(wordService, telegramService),
-                new RemoveWordCommandMessageHandler(telegramService, wordService),
+                new CheckMyMemoryCallbackHandler(wordService, telegramService),
+                new RemoveWordCallbackHandler(telegramService, wordService),
                 new StartLearningWordsCommandMessageHandler(wordService, telegramService),
                 new TranslateAndAddWordMessageHandler(wordService, userService, translatorService, telegramService, normalizationService, logger)
             };

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class RemoveWordCommandMessageHandler : ITelegramMessageHandler
+    public class RemoveWordCallbackHandler : ITelegramMessageHandler
     {
         private readonly ITelegramService _telegramService;
         private readonly IWordService _wordService;
 
-        public RemoveWordCommandMessageHandler(ITelegramService telegramService, IWordService wordService)
+        public RemoveWordCallbackHandler(ITelegramService telegramService, IWordService wordService)
         {
             _telegramService = telegramService;
             _wordService = wordService;
@@ -26,7 +27,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers
 
             await _wordService.RemoveWord(userId, Guid.Parse(splittedData[1]));
 
-            await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.Done);
+            await _telegramService.SendTextMessage(userId, TelegramMessageTexts.Done);
 
             return true;
         }

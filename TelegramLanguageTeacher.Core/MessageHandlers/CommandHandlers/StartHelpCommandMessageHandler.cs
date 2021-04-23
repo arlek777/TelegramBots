@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
     public class StartHelpCommandMessageHandler : ITelegramMessageHandler
     {
@@ -19,7 +20,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers
                 return false;
 
             var userId = update.Message.From.Id;
-            await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.Help);
+            await _telegramService.SendTextMessage(userId, TelegramMessageTexts.Help);
 
             return true;
         }

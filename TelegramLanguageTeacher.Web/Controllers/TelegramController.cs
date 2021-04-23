@@ -43,7 +43,7 @@ namespace TelegramLanguageTeacher.Web.Controllers
                 return BadRequest();
 
             var logs = await _logger.GetLogs();
-            return Ok(string.Join("\n\n", logs.OrderByDescending(l => l.Date).Select(l => l.Text + " - " + l.Date).ToList()));
+            return Ok(string.Join("\n\n", logs.OrderByDescending(l => l.Date).Select(l => "DATE: " + l.Date + " - " + l.Text).ToList()));
         }
 
         [Route("GetStats")]
@@ -65,6 +65,23 @@ namespace TelegramLanguageTeacher.Web.Controllers
                 return BadRequest();
 
             await _userService.RemoveUserWords(userId);
+            return Ok();
+        }
+
+        [Route("SendUpdate")]
+        [HttpGet]
+        public async Task<IActionResult> SendUpdate([FromQuery] string token, [FromQuery] string text)
+        {
+            if (!_token.Equals(token))
+                return BadRequest();
+
+            var result = await _userService.GetAllUsers();
+
+            foreach (var user in result)
+            {
+                await _telegramService.SendTextMessage(user.TelegramUserId, text);
+            }
+
             return Ok();
         }
 

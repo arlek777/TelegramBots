@@ -5,14 +5,14 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
-    public class RateWordMessageHandler: ITelegramMessageHandler
+    public class StartLearningWordsCommandMessageHandler: ITelegramMessageHandler
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
 
-        public RateWordMessageHandler(IWordService wordService, ITelegramService telegramService)
+        public StartLearningWordsCommandMessageHandler(IWordService wordService, ITelegramService telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;
@@ -20,27 +20,15 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 
         public async Task<bool> Handle(Update update)
         {
-            if (!update.IsUserCallback(TelegramCallbackCommands.Rate))
+            if (!update.IsUserCommand(TelegramCommands.StartLearn))
                 return false;
 
-            var userId = update.CallbackQuery.From.Id;
-            string[] splittedData = update.SplitCallbackData();
-
-            int rate = int.Parse(splittedData[1]);
-            Guid wordId = Guid.Parse(splittedData[2]);
-
-            if (rate == 0)
-            {
-                await _wordService.RemoveWord(userId, wordId);
-            }
-            else
-            {
-                await _wordService.RateWord(userId, wordId, rate);
-            }
-
+            var userId = update.Message.From.Id;
             var nextWord = await _wordService.GetNextWord(userId);
             if (nextWord != null)
             {
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartLearningGreeting);
+
                 var msg = TelegramMessageFormatter.FormatBold(nextWord.Original);
                 var button = GetButton(nextWord.Id);
 
@@ -48,7 +36,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             }
             else
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.CongratsWithRepeatAllTodayWords);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.EmptyVocabulary);
             }
 
             return true;

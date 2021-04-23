@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TelegramLanguageTeacher.DataAccess;
@@ -12,7 +13,9 @@ namespace TelegramLanguageTeacher.Core.Services
         Task<Word> GetNextWord(int userId);
         Task RateWord(int userId, Guid wordId, int rate);
         Task<Word> GetWord(int userId, Guid wordId);
+        Task<List<Word>> GetAllWords(int userId);
         Task RemoveWord(int userId, Guid wordId);
+        Task RemoveAllWords(int userId);
     }
 
     public class WordService : IWordService
@@ -79,10 +82,26 @@ namespace TelegramLanguageTeacher.Core.Services
             return dbWord;
         }
 
+        public async Task<List<Word>> GetAllWords(int userId)
+        {
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
+            var words = user.Dicts.FirstOrDefault()?.Words.OrderByDescending(w => w.AddedDate).ToList();
+
+            return words;
+        }
+
         public async Task RemoveWord(int userId, Guid wordId)
         {
             var word = await _repository.Find<Word>(w => w.Id == wordId);
             _repository.Remove(word);
+            await _repository.SaveChanges();
+        }
+
+        public async Task RemoveAllWords(int userId)
+        {
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
+            user.Dicts.FirstOrDefault()?.Words.Clear();
+
             await _repository.SaveChanges();
         }
 
@@ -98,15 +117,15 @@ namespace TelegramLanguageTeacher.Core.Services
             return word;
         }
 
+        private DateTime GetNextRepeatDateByRate(Word word, int rate, DateTime now)
+        {
+            return word.RepeatCount < 1 || rate == 1 ? now.AddDays(1) : now.AddDays(word.RepeatCount * rate);
+        }
+
         private bool IsTodayOrPastDate(DateTime dt)
         {
             var now = DateTime.UtcNow;
             return new DateTime(now.Year, now.Month, now.Day) >= new DateTime(dt.Year, dt.Month, dt.Day);
-        }
-
-        private DateTime GetNextRepeatDateByRate(Word word, int rate, DateTime now)
-        {
-            return word.RepeatCount < 1 || rate == 1 ? now.AddDays(1) : now.AddDays(word.RepeatCount * rate);
         }
     }
 }
