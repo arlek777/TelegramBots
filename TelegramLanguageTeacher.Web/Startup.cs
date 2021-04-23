@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +6,6 @@ using System.IO;
 using LemmaSharp;
 using Microsoft.EntityFrameworkCore;
 using TelegramLanguageTeacher.Core;
-using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 
@@ -40,7 +38,7 @@ namespace TelegramLanguageTeacher.Web
             services.AddTransient<ITranslatorService, TranslatorService>();
             services.AddTransient<IWordService, WordService>();
             services.AddTransient<IUserService, UserService>();
-            services.AddTransient<ITelegramMessageHandlerFactory, TelegramMessageHandlerFactory>();
+            services.AddTransient<ITelegramMessageHandlerManager, TelegramMessageHandlerManager>();
             services.AddTransient<IWordNormalizationService, WordNormalizationService>();
             services.AddTransient<ILogger, DefaultLogger>();
 

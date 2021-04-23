@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Services;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers
 {
     public class RemoveWordCommandMessageHandler : ITelegramMessageHandler
     {
@@ -16,14 +16,19 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             _wordService = wordService;
         }
 
-        public async Task Handle(Update update)
+        public async Task<bool> Handle(Update update)
         {
+            if (!update.IsUserCallback(TelegramCallbackCommands.RemoveWord))
+                return false;
+
             var userId = update.CallbackQuery.From.Id;
             string[] splittedData = update.CallbackQuery.Data.Split('_');
 
             await _wordService.RemoveWord(userId, Guid.Parse(splittedData[1]));
 
             await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.Done);
+
+            return true;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace TelegramLanguageTeacher.Web.Controllers
     [Route("[controller]")]
     public class TelegramController : ControllerBase
     {
-        private readonly ITelegramMessageHandlerFactory _messageHandlerFactory;
+        private readonly ITelegramMessageHandlerManager _messageHandlerManager;
         private readonly ITelegramService _telegramService;
         private readonly ILogger _logger;
         private readonly IUserService _userService;
@@ -25,11 +25,11 @@ namespace TelegramLanguageTeacher.Web.Controllers
 
         public TelegramController(
             ILogger logger, 
-            ITelegramMessageHandlerFactory messageHandlerFactory, 
+            ITelegramMessageHandlerManager messageHandlerManager, 
             ITelegramService telegramService,
             IUserService userService)
         {
-            _messageHandlerFactory = messageHandlerFactory;
+            _messageHandlerManager = messageHandlerManager;
             _telegramService = telegramService;
             _userService = userService;
             _logger = logger;
@@ -80,7 +80,7 @@ namespace TelegramLanguageTeacher.Web.Controllers
                 await _logger.Log("OnNewUpdate called with data: " + updateJson);
 
                 Update update = JsonConvert.DeserializeObject<Update>(updateJson);
-                await _messageHandlerFactory.HandleUpdate(update);
+                await _messageHandlerManager.HandleUpdate(update);
             }
             catch (Exception e)
             {
@@ -108,7 +108,7 @@ namespace TelegramLanguageTeacher.Web.Controllers
 
                     _lastUpdateId = update.Id + 1;
 
-                    await _messageHandlerFactory.HandleUpdate(update);
+                    await _messageHandlerManager.HandleUpdate(update);
                 }
                 catch (Exception e)
                 {

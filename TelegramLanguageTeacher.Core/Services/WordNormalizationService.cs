@@ -1,6 +1,6 @@
 ﻿using LemmaSharp;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers
+namespace TelegramLanguageTeacher.Core.Services
 {
     public interface IWordNormalizationService
     {

@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Services;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.CommanHandlers
 {
     public class StartLearningWordsCommandMessageHandler: ITelegramMessageHandler
     {
@@ -15,8 +15,11 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             _telegramService = telegramService;
         }
 
-        public async Task Handle(Update update)
+        public async Task<bool> Handle(Update update)
         {
+            if (!update.IsUserCommand(TelegramCommands.StartLearn))
+                return false;
+
             var userId = update.Message.From.Id;
             var nextWord = await _wordService.GetNextWord(userId);
             if (nextWord != null)
@@ -28,6 +31,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             {
                 await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.EmptyVocabulary);
             }
+
+            return true;
         }
     }
 }

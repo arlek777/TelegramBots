@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using LemmaSharp;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Models.Responses;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
 {
     public class TranslateAndAddWordMessageHandler: ITelegramMessageHandler
     {
@@ -33,8 +32,11 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             _logger = logger;
         }
 
-        public async Task Handle(Update update)
+        public async Task<bool> Handle(Update update)
         {
+            if (!update.IsUserPlainText())
+                return false;
+
             var userId = update.Message.From.Id;
             var messageText = update.Message.Text.Trim().ToLowerInvariant();
 
@@ -48,7 +50,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             if (!translationResponse.Translations.Any())
             {
                 await _telegramService.SendPlanTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
-                return;
+                return true;
             }
 
             var translations = translationResponse.Translations.Select(t => t.Translation).Take(5);
@@ -76,6 +78,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers
             await _telegramService.SendRemoveButtonMessage(userId, formattedTranslation, word);
 
             await _logger.Log("SendPlanTextMessage with translation: " + formattedTranslation);
+
+            return true;
         }
     }
 }
