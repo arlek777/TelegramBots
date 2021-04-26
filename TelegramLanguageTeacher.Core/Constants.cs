@@ -31,7 +31,7 @@
 
         public const string Help = "Welcome to Vocablurary Teacher Bot! To help you increase vocabulary we use a smart algorithm. " +
                                    "\nIt's easy to use! Send any word, it will be transalted and added to the dictionary.\n" +
-                                   "To repeat your words, type /learn command. \nGood Luck !:)";
+                                   "To repeat your words, type /repeat command. \nGood Luck !:)";
 
         public const string CheckMemory = "Check your memory";
         public const string NoTranslationFound = "Sorry, we could not found any translation :(";
