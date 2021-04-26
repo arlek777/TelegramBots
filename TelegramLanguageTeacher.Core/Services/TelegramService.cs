@@ -1,8 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramLanguageTeacher.Core.Services
@@ -10,8 +15,9 @@ namespace TelegramLanguageTeacher.Core.Services
     public interface ITelegramService
     {
         Task<Update> GetUpdate(int lastUpdateId);
-        Task SendTextMessage(int userId, string text);
-        Task SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup);
+        Task<Message> SendTextMessage(int userId, string text);
+        Task<Message> SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup);
+        Task SendAudioMessage(int userId, string audioLink, string name);
         Task SetWebHook(string url);
     }
 
@@ -34,14 +40,20 @@ namespace TelegramLanguageTeacher.Core.Services
                 .FirstOrDefault();
         }
 
-        public async Task SendTextMessage(int userId, string text)
+        public async Task<Message> SendTextMessage(int userId, string text)
         {
-            await _bot.SendTextMessageAsync(new ChatId(userId), text, ParseMode.Html);
+            return await _bot.SendTextMessageAsync(new ChatId(userId), text, ParseMode.Html);
         }
 
-        public async Task SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup)
+        public async Task SendAudioMessage(int userId, string audioLink, string name)
         {
-            await _bot.SendTextMessageAsync(new ChatId(userId), text,
+            var file = await new HttpClient().GetStreamAsync(audioLink);
+            await _bot.SendAudioAsync(new ChatId(userId), new InputOnlineFile(file, name), caption: "\U0001F3A7", disableNotification:true);
+        }
+
+        public async Task<Message> SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup)
+        {
+            return await _bot.SendTextMessageAsync(new ChatId(userId), text,
                 replyMarkup: markup, parseMode: ParseMode.Markdown);
         }
 

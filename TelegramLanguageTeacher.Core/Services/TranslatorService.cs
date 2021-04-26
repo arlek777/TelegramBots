@@ -19,8 +19,9 @@ namespace TelegramLanguageTeacher.Core.Services
 
     public class TranslatorService : ITranslatorService
     {
-        private const string Endpoint = "https://api.cognitive.microsofttranslator.com/";
-        private const string Location = "global";
+        private const string AzureTranslatorEndpoint = "https://api.cognitive.microsofttranslator.com/";
+        private const string DictionaryApiEndpoint = "https://api.dictionaryapi.dev/api/v2/entries/en_US/";
+        private const string AzureLocation = "global";
 
         public async Task<WordTranslationResponse> Translate(string text)
         {
@@ -45,6 +46,7 @@ namespace TelegramLanguageTeacher.Core.Services
             try
             {
                 result = await GetWordTranslation(request);
+                await GetAudioAndDefinition(result);
 
                 // If no translations found, try to translate a text directly
                 if (!result.Translations.Any())
@@ -58,7 +60,7 @@ namespace TelegramLanguageTeacher.Core.Services
                         result.Translations = result.Translations.Append(wordTranslation).ToList();
                     }
                 }
-                // If there are translations try to find examples for them
+                // Try to find examples for word
                 else if (result.Translations.Any())
                 {
                     var examples = await GetExamples(new WordExampleRequest()
@@ -78,6 +80,59 @@ namespace TelegramLanguageTeacher.Core.Services
             }
 
             return result;
+        }
+
+        private async Task GetAudioAndDefinition(WordTranslationResponse trResponse)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                using (var request = new HttpRequestMessage())
+                {
+                    // Build the request.
+                    request.Method = HttpMethod.Get;
+                    request.RequestUri = new Uri(DictionaryApiEndpoint + trResponse.Word);
+
+                    // Send the request and get response.
+                    HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                    // Read response as a string.
+                    string result = await response.Content.ReadAsStringAsync();
+
+                    var json = JArray.Parse(result);
+                    trResponse.AudioLink = json[0]["phonetics"]?[0]["audio"]?.ToString();
+
+                    var meanings = json[0]["meanings"];
+
+                    trResponse.Definitions = new List<WordDefinition>()
+                    {
+                        TryToGetDefinition(meanings, 0),
+                        TryToGetDefinition(meanings, 1),
+                        TryToGetDefinition(meanings, 2)
+                    };
+                }
+            }
+            catch(Exception e)
+            {
+            }
+        }
+
+        private WordDefinition TryToGetDefinition(JToken meanings, int index)
+        {
+            try
+            {
+                return new WordDefinition()
+                {
+                    PartOfSpeech = meanings?[index]["partOfSpeech"].ToString(),
+                    Definition = meanings?[index]["definitions"]?[0]?["definition"].ToString()
+                };
+                //return "\U00002714 (" + meanings?[index]["partOfSpeech"] + ") " + meanings?[0]["definitions"]?[0]?["definition"];
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return null;
         }
 
         /// <remarks>
@@ -105,10 +160,10 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 // Build the request.
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(Endpoint + route);
+                request.RequestUri = new Uri(AzureTranslatorEndpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", Location);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", AzureLocation);
 
                 // Send the request and get response.
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
@@ -149,10 +204,10 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 // Build the request.
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(Endpoint + route);
+                request.RequestUri = new Uri(AzureTranslatorEndpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", Location);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", AzureLocation);
 
                 // Send the request and get response.
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
@@ -178,10 +233,10 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 // Build the request.
                 request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(Endpoint + route);
+                request.RequestUri = new Uri(AzureTranslatorEndpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", Location);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", AzureLocation);
 
                 // Send the request and get response.
                 HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);

@@ -15,7 +15,7 @@ namespace TelegramLanguageTeacher.DataAccess
 
         public void CreateDb()
         {
-            base.Database.EnsureCreated();
+            //base.Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -26,6 +26,7 @@ namespace TelegramLanguageTeacher.DataAccess
 
         public DbSet<Dict> Dicts { get; set; }
         public DbSet<Word> Words { get; set; }
+        public DbSet<CachedWord> CachedWords { get; set; }
         public DbSet<User> Users { get; set; }
     }
 }

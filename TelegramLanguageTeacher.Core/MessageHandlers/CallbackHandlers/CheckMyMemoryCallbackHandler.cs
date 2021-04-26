@@ -29,7 +29,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             Guid wordId = Guid.Parse(splittedData[1]);
 
             var word = await _wordService.GetWord(userId, wordId);
-            var formattedText = TelegramMessageFormatter.FormatTranslationText(word.Original, word.Translate, word.Examples);
+            var formattedText = EmojiTextFormatter.FormatFinalTranslationMessage(word);
 
             var buttons = GetButtons(word);
             await _telegramService.SendInlineButtonMessage(userId, formattedText, buttons);

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers;
@@ -22,6 +22,7 @@ namespace TelegramLanguageTeacher.Core
     public class TelegramMessageHandlerManager : ITelegramMessageHandlerManager
     {
         private readonly IEnumerable<ITelegramMessageHandler> _messageHandlers;
+        private readonly ILogger _logger;
 
         public TelegramMessageHandlerManager(IWordService wordService,
             IUserService userService,
@@ -30,6 +31,8 @@ namespace TelegramLanguageTeacher.Core
             IWordNormalizationService normalizationService,
             ILogger logger)
         {
+            _logger = logger;
+
             _messageHandlers = new List<ITelegramMessageHandler>()
             {
                 new RemoveAllWordsCommandMessageHandler(telegramService),
@@ -48,8 +51,15 @@ namespace TelegramLanguageTeacher.Core
         {
             foreach (var handler in _messageHandlers)
             {
-                if (await handler.Handle(update))
-                    break;
+                try
+                {
+                    if (await handler.Handle(update))
+                        break;
+                }
+                catch (Exception e)
+                {
+                    await _logger.Log("ERROR " + e.Message + " " + e.StackTrace + " " + e.Source);
+                }
             }
         }
     }

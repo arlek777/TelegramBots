@@ -40,29 +40,95 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
             if (!update.IsUserPlainText())
                 return false;
 
+            // Get message and lemmatize it
             var userId = update.Message.From.Id;
             var messageText = update.Message.Text.Trim().ToLowerInvariant();
 
-            var lemmatizedText = messageText.Split(' ').Length == 1
+            messageText = messageText.Split(' ').Length == 1
                 ? _normalizationService.Normalize(messageText)
                 : messageText;
 
-            WordTranslationResponse translationResponse = await _translatorService.Translate(lemmatizedText);
+            // Translate or get from cache
+            Word translatedWord = await TranslateOrGetFromCache(messageText);
 
-            await _logger.Log("Transalted: " + JsonConvert.SerializeObject(translationResponse));
+            await _logger.Log("Transalted: " + JsonConvert.SerializeObject(translatedWord));
 
-            if (!translationResponse.Translations.Any())
+            if (string.IsNullOrWhiteSpace(translatedWord.Translate))
             {
                 await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
                 return true;
             }
 
-            var translations = translationResponse.Translations.Select(t => t.Translation).Take(CommonConstants.TranslationCounts);
-            var examples = translationResponse.Examples.Take(CommonConstants.ExamplesCount);
-            var separatedTranslations = string.Join('\n', translations);
-            var separatedExamples = string.Join('\n', examples);
+            // Save to DB
+            var word = await AddWordToDb(update, translatedWord);
 
-            var wordModel = new Word() { Original = lemmatizedText, Translate = separatedTranslations, Examples = separatedExamples };
+            // Send Telegram Message
+            await SendTranslationData(userId, word);
+
+            return true;
+        }
+
+        // Tries to get word from cache, if failed, translate it and add word to cache
+        private async Task<Word> TranslateOrGetFromCache(string text)
+        {
+            Word word;
+            var cached = await _wordService.GetWordFromCache(text);
+
+            if (cached != null)
+            {
+                word = new Word()
+                {
+                    Original = text,
+                    Translate = cached.Translate,
+                    Definition = cached.Definition,
+                    Examples = cached.Examples,
+                    AudioLink = cached.AudioLink
+                };
+            }
+            else
+            {
+                var translationResponse = await _translatorService.Translate(text);
+
+                var translations = translationResponse.Translations
+                    .Select(t => EmojiTextFormatter.FormatWithCheckMark(t.Translation))
+                    .Take(CommonConstants.TranslationCounts);
+
+                var examples = translationResponse.Examples.Select(EmojiTextFormatter.FormatWithStar).Take(CommonConstants.ExamplesCount);
+
+                var definitions = translationResponse.Definitions.Where(d => d != null)
+                    .Select(EmojiTextFormatter.FormatDefinition);
+
+                var joinedTranslations = string.Join('\n', translations);
+                var joinedExamples = string.Join('\n', examples);
+                var joinedDefinitions = string.Join('\n', definitions);
+
+                word = new Word()
+                {
+                    Original = translationResponse.Word,
+                    Translate = joinedTranslations,
+                    Examples = joinedExamples,
+                    Definition = joinedDefinitions,
+                    AudioLink = translationResponse.AudioLink
+                };
+
+                await _wordService.AddWordToCache(new CachedWord()
+                {
+                    AddedDate = DateTime.UtcNow,
+                    Original = translationResponse.Word,
+                    Translate = joinedTranslations,
+                    Examples = joinedExamples,
+                    Definition = joinedDefinitions,
+                    AudioLink = translationResponse.AudioLink
+                });
+            }
+
+            return word;
+        }
+
+        private async Task<Word> AddWordToDb(Update update, Word wordModel)
+        {
+            var userId = update.Message.From.Id;
+
             var word = await _wordService.AddWord(userId, wordModel);
 
             if (word == null)
@@ -78,14 +144,22 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
 
             await _logger.Log("Added to db Word: " + JsonConvert.SerializeObject(wordModel));
 
+            return word;
+        }
+
+        private async Task SendTranslationData(int userId, Word word)
+        {
             var button = GetButton(word.Id);
-            var formattedTranslation = TelegramMessageFormatter.FormatTranslationText(lemmatizedText, separatedTranslations, separatedExamples);
-            
+            var formattedTranslation = EmojiTextFormatter.FormatFinalTranslationMessage(word);
+
+            if (!string.IsNullOrWhiteSpace(word.AudioLink))
+            {
+                await _telegramService.SendAudioMessage(userId, word.AudioLink, word.Original);
+            }
+
             await _telegramService.SendInlineButtonMessage(userId, formattedTranslation, button);
 
             await _logger.Log("SendTextMessage with translation: " + formattedTranslation);
-
-            return true;
         }
 
         private InlineKeyboardMarkup GetButton(Guid wordId)

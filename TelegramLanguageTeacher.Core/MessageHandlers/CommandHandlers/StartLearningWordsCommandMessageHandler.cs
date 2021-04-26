@@ -29,7 +29,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
             {
                 await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartLearningGreeting);
 
-                var msg = TelegramMessageFormatter.FormatBold(nextWord.Original);
+                var msg = EmojiTextFormatter.FormatWithDots(nextWord.Original);
                 var button = GetButton(nextWord.Id);
 
                 await _telegramService.SendInlineButtonMessage(userId, msg, button);

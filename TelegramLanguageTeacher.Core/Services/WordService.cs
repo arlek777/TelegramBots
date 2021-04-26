@@ -11,11 +11,13 @@ namespace TelegramLanguageTeacher.Core.Services
     {
         Task<Word> AddWord(int userId, Word word);
         Task<Word> GetNextWord(int userId);
+        Task<CachedWord> GetWordFromCache(string original);
         Task RateWord(int userId, Guid wordId, int rate);
         Task<Word> GetWord(int userId, Guid wordId);
         Task<List<Word>> GetAllWords(int userId);
         Task RemoveWord(int userId, Guid wordId);
         Task RemoveAllWords(int userId);
+        Task AddWordToCache(CachedWord cachedWord);
     }
 
     public class WordService : IWordService
@@ -82,6 +84,12 @@ namespace TelegramLanguageTeacher.Core.Services
             return dbWord;
         }
 
+        public async Task<CachedWord> GetWordFromCache(string original)
+        {
+            var word = await _repository.Find<CachedWord>(cw => cw.Original.Equals(original));
+            return word;
+        }
+
         public async Task<List<Word>> GetAllWords(int userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
@@ -102,6 +110,12 @@ namespace TelegramLanguageTeacher.Core.Services
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             user.Dicts.FirstOrDefault()?.Words.Clear();
 
+            await _repository.SaveChanges();
+        }
+
+        public async Task AddWordToCache(CachedWord cachedWord)
+        {
+            _repository.Add(cachedWord);
             await _repository.SaveChanges();
         }
 
