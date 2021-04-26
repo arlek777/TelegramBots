@@ -7,12 +7,12 @@ using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class RateWordMessageHandler: ITelegramMessageHandler
+    public class CheckMemoryMessageHandler: ITelegramMessageHandler
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
 
-        public RateWordMessageHandler(IWordService wordService, ITelegramService telegramService)
+        public CheckMemoryMessageHandler(IWordService wordService, ITelegramService telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;

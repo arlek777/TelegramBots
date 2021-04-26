@@ -8,12 +8,12 @@ using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class CheckMyMemoryCallbackHandler : ITelegramMessageHandler
+    public class RateCallbackHandler : ITelegramMessageHandler
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
 
-        public CheckMyMemoryCallbackHandler(IWordService wordService, ITelegramService telegramService)
+        public RateCallbackHandler(IWordService wordService, ITelegramService telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;
@@ -30,6 +30,11 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 
             var word = await _wordService.GetWord(userId, wordId);
             var formattedText = EmojiTextFormatter.FormatFinalTranslationMessage(word);
+
+            if (!string.IsNullOrWhiteSpace(word.AudioLink))
+            {
+                await _telegramService.SendAudioMessage(userId, word.AudioLink, word.Original);
+            }
 
             var buttons = GetButtons(word);
             await _telegramService.SendInlineButtonMessage(userId, formattedText, buttons);

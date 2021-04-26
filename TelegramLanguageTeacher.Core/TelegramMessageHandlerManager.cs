@@ -39,8 +39,8 @@ namespace TelegramLanguageTeacher.Core
                 new RemoveAllWordsCallbackHandler(telegramService, wordService),
                 new ListAllWordsCommandMessageHandler(telegramService, wordService),
                 new StartHelpCommandMessageHandler(telegramService),
-                new RateWordMessageHandler(wordService, telegramService),
-                new CheckMyMemoryCallbackHandler(wordService, telegramService),
+                new CheckMemoryMessageHandler(wordService, telegramService),
+                new RateCallbackHandler(wordService, telegramService),
                 new RemoveWordCallbackHandler(telegramService, wordService),
                 new StartLearningWordsCommandMessageHandler(wordService, telegramService),
                 new TranslateAndAddWordMessageHandler(wordService, userService, translatorService, telegramService, normalizationService, logger)
