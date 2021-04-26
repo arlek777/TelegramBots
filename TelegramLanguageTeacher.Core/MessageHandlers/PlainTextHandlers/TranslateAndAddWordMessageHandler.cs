@@ -89,14 +89,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
             {
                 var translationResponse = await _translatorService.Translate(text);
 
-                var translations = translationResponse.Translations
-                    .Select(t => EmojiTextFormatter.FormatWithCheckMark(t.Translation))
-                    .Take(CommonConstants.TranslationCounts);
-
-                var examples = translationResponse.Examples.Select(EmojiTextFormatter.FormatWithStar).Take(CommonConstants.ExamplesCount);
-
-                var definitions = translationResponse.Definitions.Where(d => d != null)
-                    .Select(EmojiTextFormatter.FormatDefinition);
+                var translations = translationResponse.Translations.Select(t => t.Translation).Take(CommonConstants.TranslationCounts);
+                var examples = translationResponse.Examples.Take(CommonConstants.ExamplesCount);
+                var definitions = translationResponse.Definitions.Where(d => d != null).Select(d => $"{d.PartOfSpeech}-{d.Definition}");
 
                 var joinedTranslations = string.Join('\n', translations);
                 var joinedExamples = string.Join('\n', examples);

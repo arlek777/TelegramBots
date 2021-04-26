@@ -63,14 +63,17 @@ namespace TelegramLanguageTeacher.Core.Services
                 // Try to find examples for word
                 else if (result.Translations.Any())
                 {
-                    var examples = await GetExamples(new WordExampleRequest()
+                    var exampleRequest = new WordExampleRequest()
                     {
                         From = "en",
                         To = "ru",
                         Text = toLang == "en" ? result.Translations.FirstOrDefault()?.Translation : text,
                         Translation = toLang == "en" ? text : result.Translations.FirstOrDefault()?.Translation
-                    });
-                    result.Examples = examples;
+                    };
+                    var examples = await GetExamples(exampleRequest);
+
+                    // Concat with word definition examples
+                    result.Examples = examples.Concat(result.Definitions.Select(d => d.Example));
                 }
 
             }
@@ -123,9 +126,9 @@ namespace TelegramLanguageTeacher.Core.Services
                 return new WordDefinition()
                 {
                     PartOfSpeech = meanings?[index]["partOfSpeech"].ToString(),
-                    Definition = meanings?[index]["definitions"]?[0]?["definition"].ToString()
+                    Definition = meanings?[index]["definitions"]?[0]?["definition"].ToString(),
+                    Example = meanings?[index]["definitions"]?[0]?["example"].ToString()
                 };
-                //return "\U00002714 (" + meanings?[index]["partOfSpeech"] + ") " + meanings?[0]["definitions"]?[0]?["definition"];
             }
             catch
             {

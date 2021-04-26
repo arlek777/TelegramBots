@@ -41,7 +41,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             var nextWord = await _wordService.GetNextWord(userId);
             if (nextWord != null)
             {
-                var msg = EmojiTextFormatter.FormatWithDots(nextWord.Original);
+                var msg = EmojiTextFormatter.FormatOriginalWord(nextWord.Original);
                 var button = GetButton(nextWord.Id);
 
                 await _telegramService.SendInlineButtonMessage(userId, msg, button);
