@@ -64,7 +64,7 @@ namespace TelegramLanguageTeacher.Core.Helpers
 
         public static string FormatOriginalWord(string text)
         {
-            return $"\U00002022 {text.Trim().ToUpperInvariant()} \U00002022";
+            return $"\U00002022 {text.Trim()} \U00002022";
         }
     }
 }
