@@ -60,8 +60,9 @@ namespace TelegramLanguageTeacher.Core.Services
                         result.Translations = result.Translations.Append(wordTranslation).ToList();
                     }
                 }
+
                 // Try to find examples for word
-                else if (result.Translations.Any())
+                if (result.Translations.Any())
                 {
                     var exampleRequest = new WordExampleRequest()
                     {
@@ -72,8 +73,15 @@ namespace TelegramLanguageTeacher.Core.Services
                     };
                     var examples = await GetExamples(exampleRequest);
 
-                    // Concat with word definition examples
-                    result.Examples = examples.Concat(result.Definitions.Select(d => d.Example));
+                    if (examples != null)
+                    {
+                        // Concat with word definition examples
+                        result.Examples = result.Definitions.Select(d => d.Example).Concat(examples);
+                    }
+                    else
+                    {
+                        result.Examples = result.Definitions.Select(d => d.Example).ToList();
+                    }
                 }
 
             }
@@ -102,7 +110,7 @@ namespace TelegramLanguageTeacher.Core.Services
                     string result = await response.Content.ReadAsStringAsync();
 
                     var json = JArray.Parse(result);
-                    trResponse.AudioLink = json[0]["phonetics"]?[0]["audio"]?.ToString();
+                    trResponse.AudioLink = TryToGetAudioLink(json);
 
                     var meanings = json[0]["meanings"];
 
@@ -111,12 +119,25 @@ namespace TelegramLanguageTeacher.Core.Services
                         TryToGetDefinition(meanings, 0),
                         TryToGetDefinition(meanings, 1),
                         TryToGetDefinition(meanings, 2)
-                    };
+                    }.Where(d => d != null).ToList();
                 }
             }
             catch(Exception e)
             {
             }
+        }
+
+        private string TryToGetAudioLink(JToken json)
+        {
+            try
+            {
+                return json[0]["phonetics"]?[0]["audio"]?.ToString();
+            }
+            catch
+            {
+            }
+
+            return null;
         }
 
         private WordDefinition TryToGetDefinition(JToken meanings, int index)
@@ -196,31 +217,40 @@ namespace TelegramLanguageTeacher.Core.Services
 
         private async Task<IEnumerable<string>> GetExamples(WordExampleRequest wordExampleRequest)
         {
-            // See examples of terms in context
-            string route =
-                $"/dictionary/examples?api-version=3.0&from={wordExampleRequest.From}&to={wordExampleRequest.To}";
-            object[] body = {new {Text = wordExampleRequest.Text, Translation = wordExampleRequest.Translation}};
-            var requestBody = JsonConvert.SerializeObject(body);
-
-            using (var client = new HttpClient())
-            using (var request = new HttpRequestMessage())
+            try
             {
-                // Build the request.
-                request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(AzureTranslatorEndpoint + route);
-                request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
-                request.Headers.Add("Ocp-Apim-Subscription-Region", AzureLocation);
+                // See examples of terms in context
+                string route =
+                    $"/dictionary/examples?api-version=3.0&from={wordExampleRequest.From}&to={wordExampleRequest.To}";
+                object[] body = {new {Text = wordExampleRequest.Text, Translation = wordExampleRequest.Translation}};
+                var requestBody = JsonConvert.SerializeObject(body);
 
-                // Send the request and get response.
-                HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
-                // Read response as a string.
-                string result = await response.Content.ReadAsStringAsync();
+                using (var client = new HttpClient())
+                using (var request = new HttpRequestMessage())
+                {
+                    // Build the request.
+                    request.Method = HttpMethod.Post;
+                    request.RequestUri = new Uri(AzureTranslatorEndpoint + route);
+                    request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
+                    request.Headers.Add("Ocp-Apim-Subscription-Key", AppCredentials.AzureKey);
+                    request.Headers.Add("Ocp-Apim-Subscription-Region", AzureLocation);
 
-                var json = JArray.Parse(result);
+                    // Send the request and get response.
+                    HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                    // Read response as a string.
+                    string result = await response.Content.ReadAsStringAsync();
 
-                return json[0]["examples"].Select(e => $"{e["sourcePrefix"]}{e["sourceTerm"]}{e["sourceSuffix"]}");
+                    var json = JArray.Parse(result);
+
+                    return json[0]["examples"].Select(e => $"{e["sourcePrefix"]}{e["sourceTerm"]}{e["sourceSuffix"]}");
+
+                }
             }
+            catch
+            {
+            }
+
+            return Enumerable.Empty<string>();
         }
 
         private async Task<TextTranslationResponse> GetTextTranslation(TranslationRequest translationRequest)

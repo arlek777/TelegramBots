@@ -44,6 +44,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
             var userId = update.Message.From.Id;
             var messageText = update.Message.Text.Trim().ToLowerInvariant();
 
+            if (messageText.Length > 500)
+                return false;
+
             messageText = messageText.Split(' ').Length == 1
                 ? _normalizationService.Normalize(messageText)
                 : messageText;
