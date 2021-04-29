@@ -4,8 +4,12 @@
     {
         public const int TranslationCounts = 6;
         public const int ExamplesCount = 4;
+
         public const int TimeToRepeatUtcHour = 9; // 12 Kiev Summer Time
         public const int TimeToShowWordOfTheDayUtcHour = 11; // 14 Kiev Summer Time
+
+        public const int TimeToRepeatUtcMinute = 15; // 12 Kiev Summer Time
+        public const int TimeToShowWordOfTheDayUtcMinute = 15; // 14 Kiev Summer Time
     }
 
     public static class AppCredentials
