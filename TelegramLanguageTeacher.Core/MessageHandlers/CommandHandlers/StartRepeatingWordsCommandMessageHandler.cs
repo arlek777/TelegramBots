@@ -7,12 +7,12 @@ using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
-    public class StartLearningWordsCommandMessageHandler: ITelegramMessageHandler
+    public class StartRepeatingWordsCommandMessageHandler: ITelegramMessageHandler
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
 
-        public StartLearningWordsCommandMessageHandler(IWordService wordService, ITelegramService telegramService)
+        public StartRepeatingWordsCommandMessageHandler(IWordService wordService, ITelegramService telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;
@@ -20,7 +20,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 
         public async Task<bool> Handle(Update update)
         {
-            if (!update.IsUserCommand(TelegramCommands.StartLearn))
+            if (!update.IsUserCommand(TelegramCommands.Repeat))
                 return false;
 
             var userId = update.Message.From.Id;

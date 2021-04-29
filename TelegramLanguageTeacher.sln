@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramLanguageTeacher.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramLanguageTeacher.Web", "TelegramLanguageTeacher.Web\TelegramLanguageTeacher.Web.csproj", "{7572EB40-E4C7-416D-8043-DAE0FCE101AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramLanguageTeacher.MailingJob", "TelegramLanguageTeacher.MailingJob\TelegramLanguageTeacher.MailingJob.csproj", "{9DB1C312-4B4A-43C7-9B34-D1667530496C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{7572EB40-E4C7-416D-8043-DAE0FCE101AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7572EB40-E4C7-416D-8043-DAE0FCE101AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7572EB40-E4C7-416D-8043-DAE0FCE101AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DB1C312-4B4A-43C7-9B34-D1667530496C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DB1C312-4B4A-43C7-9B34-D1667530496C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DB1C312-4B4A-43C7-9B34-D1667530496C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DB1C312-4B4A-43C7-9B34-D1667530496C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

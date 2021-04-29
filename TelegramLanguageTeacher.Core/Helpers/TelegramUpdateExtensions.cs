@@ -16,9 +16,9 @@ namespace TelegramLanguageTeacher.Core.Helpers
 
         public static bool IsUserPlainText(this Update update)
         {
-            var isTextToTranslate = update.Message != null
-                                    && !update.Message.From.IsBot
-                                    && update.Message.Text != null && !update.Message.Text.Contains("/");
+            var isTextToTranslate = update.Message?.Text != null 
+                                    && !update.Message.Text.Contains("/") 
+                                    && !update.Message.From.IsBot;
 
             return isTextToTranslate;
         }

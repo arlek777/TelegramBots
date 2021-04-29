@@ -6,6 +6,7 @@ using System.IO;
 using LemmaSharp;
 using Microsoft.EntityFrameworkCore;
 using TelegramLanguageTeacher.Core;
+using TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 
@@ -40,7 +41,9 @@ namespace TelegramLanguageTeacher.Web
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITelegramMessageHandlerManager, TelegramMessageHandlerManager>();
             services.AddTransient<IWordNormalizationService, WordNormalizationService>();
+            services.AddTransient<ITelegramDailyMailer, TelegramDailyMailer>();
             services.AddTransient<ILogger, DefaultLogger>();
+            services.AddTransient<TranslateAndAddWordMessageHandler>();
 
             var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
 

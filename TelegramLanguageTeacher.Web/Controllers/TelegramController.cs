@@ -19,6 +19,7 @@ namespace TelegramLanguageTeacher.Web.Controllers
         private readonly ITelegramService _telegramService;
         private readonly ILogger _logger;
         private readonly IUserService _userService;
+        private readonly ITelegramDailyMailer _dailyMailer;
 
         private static int _lastUpdateId;
         private static string _token = "englishTelegramTeacher";
@@ -27,11 +28,13 @@ namespace TelegramLanguageTeacher.Web.Controllers
             ILogger logger, 
             ITelegramMessageHandlerManager messageHandlerManager, 
             ITelegramService telegramService,
-            IUserService userService)
+            IUserService userService, 
+            ITelegramDailyMailer dailyMailer)
         {
             _messageHandlerManager = messageHandlerManager;
             _telegramService = telegramService;
             _userService = userService;
+            _dailyMailer = dailyMailer;
             _logger = logger;
         }
 
@@ -70,6 +73,18 @@ namespace TelegramLanguageTeacher.Web.Controllers
             {
                 await _telegramService.SendTextMessage(user.TelegramUserId, text);
             }
+
+            return Ok();
+        }
+
+        [Route("DailyMailing")]
+        [HttpGet]
+        public async Task<IActionResult> DailyMailing([FromQuery] string token)
+        {
+            if (!_token.Equals(token))
+                return BadRequest();
+
+            await _dailyMailer.Mail();
 
             return Ok();
         }

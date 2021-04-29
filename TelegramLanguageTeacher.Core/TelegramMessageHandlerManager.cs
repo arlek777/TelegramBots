@@ -33,6 +33,8 @@ namespace TelegramLanguageTeacher.Core
         {
             _logger = logger;
 
+            var wordCommandHandler = new StartRepeatingWordsCommandMessageHandler(wordService, telegramService);
+
             _messageHandlers = new List<ITelegramMessageHandler>()
             {
                 new RemoveAllWordsCommandMessageHandler(telegramService),
@@ -42,7 +44,8 @@ namespace TelegramLanguageTeacher.Core
                 new CheckMemoryMessageHandler(wordService, telegramService),
                 new RateCallbackHandler(wordService, telegramService),
                 new RemoveWordCallbackHandler(telegramService, wordService),
-                new StartLearningWordsCommandMessageHandler(wordService, telegramService),
+                wordCommandHandler,
+                new StartRepeatingWordsCallbackHandler(wordCommandHandler),
                 new TranslateAndAddWordMessageHandler(wordService, userService, translatorService, telegramService, normalizationService, logger)
             };
         }
