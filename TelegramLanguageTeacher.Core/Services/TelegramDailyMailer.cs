@@ -51,6 +51,8 @@ namespace TelegramLanguageTeacher.Core.Services
                     if (!DailyWordsToMailing.WordsOfTheDays.ContainsKey(now.Day))
                         break;
 
+                    await _telegramService.SendTextMessage(user.TelegramUserId, TelegramMessageTexts.WordOfTheDayText);
+
                     await _translateMessageHandler.Handle(new Update()
                     {
                         Message = new Message()

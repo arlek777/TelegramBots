@@ -39,7 +39,7 @@
         public const string NoTranslationFound = "Sorry, we could not found any translation :(";
 
         public const string RepeatReminderText = "Hi, how are you?) It's time to repeat your words!";
-        public const string WordOfTheDayText = "Word of the day: ";
+        public const string WordOfTheDayText = "Let's see what we have today as the word of the day...";
 
         public const string StartRepeating = "Start Repeating";
         public const string RemoveWord = "Remove";
