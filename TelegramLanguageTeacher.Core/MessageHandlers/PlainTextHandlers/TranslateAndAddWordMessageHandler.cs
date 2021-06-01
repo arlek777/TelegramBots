@@ -51,7 +51,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
                 : messageText;
 
             // Translate or get from cache
-            Word translatedWord = await TranslateOrGetFromCache(messageText);
+            Word translatedWord = await TranslateOrGetFromCache(userId, messageText);
 
             await _logger.Log("Transalted: " + JsonConvert.SerializeObject(translatedWord));
 
@@ -71,12 +71,16 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
         }
 
         // Tries to get word from cache, if failed, translate it and add word to cache
-        private async Task<Word> TranslateOrGetFromCache(string text)
+        private async Task<Word> TranslateOrGetFromCache(int userId, string text)
         {
-            Word word;
             var cached = await _wordService.GetWordFromCache(text);
+            Word word = await _wordService.FindWordInUserDict(userId, text);
 
-            if (cached != null)
+            if (word != null)
+            {
+                return word;
+            }
+            else if (cached != null)
             {
                 word = new Word()
                 {
@@ -167,6 +171,11 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
                 {
                     CallbackData = $"{TelegramCallbackCommands.RemoveWord}_{wordId}",
                     Text = TelegramMessageTexts.RemoveWord
+                },
+                new InlineKeyboardButton()
+                {
+                    CallbackData = $"{TelegramCallbackCommands.AddYourTranslation}_{wordId}",
+                    Text = TelegramMessageTexts.AddYourTranslation
                 }
             });
         }

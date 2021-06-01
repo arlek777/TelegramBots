@@ -44,6 +44,8 @@ namespace TelegramLanguageTeacher.Core
                 new CheckMemoryMessageHandler(wordService, telegramService),
                 new RateCallbackHandler(wordService, telegramService),
                 new RemoveWordCallbackHandler(telegramService, wordService),
+                new AddCustomTranslationCallbackHandler(telegramService, wordService),
+                new AddCustomTranslationMessageHandler(wordService, userService, telegramService),
                 wordCommandHandler,
                 new StartRepeatingWordsCallbackHandler(wordCommandHandler),
                 new TranslateAndAddWordMessageHandler(wordService, userService, translatorService, telegramService, normalizationService, logger)

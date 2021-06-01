@@ -45,8 +45,11 @@
         public const string RepeatReminderText = "Hi, how are you?) It's time to repeat your words!";
         public const string WordOfTheDayText = "Let's see what we have today as the word of the day...";
 
+        public const string AddCustomTranslation = "To add your own translation, just send a message in the format\n\n wordToTranslate::yourCustomTranslation";
+
         public const string StartRepeating = "Start Repeating";
         public const string RemoveWord = "Remove";
+        public const string AddYourTranslation = "Add Your Translation";
         public const string HardRate = "Hard";
         public const string NormalRate = "Normal";
         public const string EasyRate = "Easy";
@@ -58,6 +61,7 @@
         public const string CheckMemoryReply = "reply";
         public const string Rate = "rate";
         public const string RemoveWord = "removeword";
+        public const string AddYourTranslation = "addyourtranslation";
         public const string RemoveAllWords = "removeallconfirmed";
         public const string StartRepeating = "startrepeating";
     }

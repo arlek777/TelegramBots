@@ -16,6 +16,7 @@ namespace TelegramLanguageTeacher.Core.Services
         Task<CachedWord> GetWordFromCache(string original);
         Task RateWord(int userId, Guid wordId, int rate);
         Task<Word> GetWord(int userId, Guid wordId);
+        Task<Word> FindWordInUserDict(int userId, string word);
         Task<List<Word>> GetAllWords(int userId);
         Task RemoveWord(int userId, Guid wordId);
         Task RemoveAllWords(int userId);
@@ -82,6 +83,15 @@ namespace TelegramLanguageTeacher.Core.Services
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var dbWord = user.Dicts.FirstOrDefault()?.Words
                 .FirstOrDefault(w => w.Id == wordId);
+
+            return dbWord;
+        }
+
+        public async Task<Word> FindWordInUserDict(int userId, string word)
+        {
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
+            var dbWord = user.Dicts.FirstOrDefault()?.Words
+                .FirstOrDefault(w => w.Original.Equals(word, StringComparison.InvariantCultureIgnoreCase));
 
             return dbWord;
         }
