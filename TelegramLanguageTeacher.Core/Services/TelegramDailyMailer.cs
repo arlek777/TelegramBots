@@ -30,7 +30,7 @@ namespace TelegramLanguageTeacher.Core.Services
         public async Task Mail()
         {
             var now = DateTime.UtcNow;
-            if (now.Hour == CommonConstants.TimeToRepeatUtcHour
+            if (now.Hour >= CommonConstants.TimeToRepeatUtcHour
                 && !IsRepeatAlreadySent)
             {
                 var users = await _userService.GetAllUsers();
@@ -54,7 +54,7 @@ namespace TelegramLanguageTeacher.Core.Services
 
                 IsRepeatAlreadySent = true;
             }
-            else if (now.Hour == CommonConstants.TimeToShowWordOfTheDayUtcHour
+            else if (now.Hour >= CommonConstants.TimeToShowWordOfTheDayUtcHour
                      && !IsWordOfTheDayAlreadySent)
             {
                 var users = await _userService.GetAllUsers();
