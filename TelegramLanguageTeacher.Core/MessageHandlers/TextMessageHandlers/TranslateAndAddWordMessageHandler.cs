@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -8,9 +10,18 @@ using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 {
-    public class TranslateAndAddWordMessageHandler: ITelegramMessageHandler
+    public class TranslateAndAddWordMessageRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return update.IsTextMessage();
+        }
+    }
+
+    public class TranslateAndAddWordMessageHandler : IRequestHandler<TranslateAndAddWordMessageRequest, bool>
     {
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
@@ -34,10 +45,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
             _logger = logger;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(TranslateAndAddWordMessageRequest request, CancellationToken token)
         {
-            if (!update.IsUserPlainText())
-                return false;
+            var update = request.Update;
 
             // Get message and lemmatize it
             var userId = update.Message.From.Id;

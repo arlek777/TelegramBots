@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -7,21 +9,29 @@ using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class CheckMemoryMessageHandler: ITelegramMessageHandler
+    public class RateCallbackRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return Update.IsCallback(TelegramCallbackCommands.Rate);
+        }
+    }
+
+    public class RateCallbackMessageHandler: IRequestHandler<RateCallbackRequest, bool>
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
 
-        public CheckMemoryMessageHandler(IWordService wordService, ITelegramService telegramService)
+        public RateCallbackMessageHandler(IWordService wordService, ITelegramService telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(RateCallbackRequest request, CancellationToken token)
         {
-            if (!update.IsUserCallback(TelegramCallbackCommands.Rate))
-                return false;
+            var update = request.Update;
 
             var userId = update.CallbackQuery.From.Id;
             string[] splittedData = update.SplitCallbackData();
@@ -42,7 +52,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             if (nextWord != null)
             {
                 var msg = EmojiTextFormatter.FormatOriginalWord(nextWord.Original);
-                var button = GetButton(nextWord.Id);
+                var button = GetCheckMemoryButton(nextWord.Id);
 
                 await _telegramService.SendInlineButtonMessage(userId, msg, button);
             }
@@ -54,7 +64,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             return true;
         }
 
-        private InlineKeyboardMarkup GetButton(Guid wordId)
+        private InlineKeyboardMarkup GetCheckMemoryButton(Guid wordId)
         {
             return new InlineKeyboardMarkup(new[]
             {

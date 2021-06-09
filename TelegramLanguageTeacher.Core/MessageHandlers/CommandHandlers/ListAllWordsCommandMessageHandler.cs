@@ -1,12 +1,23 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
-    public class ListAllWordsCommandMessageHandler : ITelegramMessageHandler
+    public class ListAllWordsCommandMessageRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return update.IsCommand(TelegramCommands.ListAllWords);
+        }
+    }
+
+    public class ListAllWordsCommandMessageHandler : IRequestHandler<ListAllWordsCommandMessageRequest, bool>
     {
         private readonly ITelegramService _telegramService;
         private readonly IWordService _wordService;
@@ -17,11 +28,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
             _wordService = wordService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(ListAllWordsCommandMessageRequest request, CancellationToken token)
         {
-            if (!update.IsUserCommand(TelegramCommands.ListAllWords))
-                return false;
-
+            var update = request.Update;
             var userId = update.Message.From.Id;
             var words = await _wordService.GetAllWords(userId);
 

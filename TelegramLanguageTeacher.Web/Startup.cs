@@ -4,9 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using LemmaSharp;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TelegramLanguageTeacher.Core;
-using TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers;
+using TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 
@@ -34,6 +35,9 @@ namespace TelegramLanguageTeacher.Web
                 context.CreateDb();
                 return context;
             });
+
+            services.AddMediatR(typeof(TelegramMessageHandlerManager).Assembly);
+
             services.AddTransient<IGenericRepository, EntityFrameworkRepository>();
             services.AddTransient<ITelegramService>(t => new TelegramService(AppCredentials.TelegramToken));
             services.AddTransient<ITranslatorService, TranslatorService>();
@@ -41,7 +45,6 @@ namespace TelegramLanguageTeacher.Web
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<ITelegramMessageHandlerManager, TelegramMessageHandlerManager>();
             services.AddTransient<IWordNormalizationService, WordNormalizationService>();
-            services.AddTransient<ITelegramDailyMailer, TelegramDailyMailer>();
             services.AddTransient<ILogger, DefaultLogger>();
             services.AddTransient<TranslateAndAddWordMessageHandler>();
 

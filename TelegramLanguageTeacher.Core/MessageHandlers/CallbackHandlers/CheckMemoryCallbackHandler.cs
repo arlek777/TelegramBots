@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -8,22 +10,29 @@ using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class RateCallbackHandler : ITelegramMessageHandler
+    public class CheckMemoryButtonCallbackRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return Update.IsCallback(TelegramCallbackCommands.CheckMemoryReply);
+        }
+    }
+
+    public class CheckMemoryCallbackHandler: IRequestHandler<CheckMemoryButtonCallbackRequest, bool>
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
 
-        public RateCallbackHandler(IWordService wordService, ITelegramService telegramService)
+        public CheckMemoryCallbackHandler(IWordService wordService, ITelegramService telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(CheckMemoryButtonCallbackRequest request, CancellationToken token)
         {
-            if (!update.IsUserCallback(TelegramCallbackCommands.CheckMemoryReply))
-                return false;
-
+            var update = request.Update;
             var userId = update.CallbackQuery.From.Id;
             var splittedData = update.SplitCallbackData();
             Guid wordId = Guid.Parse(splittedData[1]);
@@ -36,13 +45,13 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
                 await _telegramService.SendAudioMessage(userId, word.AudioLink, word.Original);
             }
 
-            var buttons = GetButtons(word);
+            var buttons = GetRatesButtons(word);
             await _telegramService.SendInlineButtonMessage(userId, formattedText, buttons);
 
             return true;
         }
 
-        private InlineKeyboardMarkup GetButtons(Word word)
+        private InlineKeyboardMarkup GetRatesButtons(Word word)
         {
             var now = DateTime.UtcNow;
 

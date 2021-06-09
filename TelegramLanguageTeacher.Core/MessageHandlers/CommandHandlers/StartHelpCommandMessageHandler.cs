@@ -1,11 +1,22 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
-    public class StartHelpCommandMessageHandler : ITelegramMessageHandler
+    public class StartHelpCommandMessageRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return update.IsCommand(TelegramCommands.Start) || update.IsCommand(TelegramCommands.Help);
+        }
+    }
+
+    public class StartHelpCommandMessageHandler : IRequestHandler<StartHelpCommandMessageRequest, bool>
     {
         private readonly ITelegramService _telegramService;
 
@@ -14,11 +25,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
             _telegramService = telegramService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(StartHelpCommandMessageRequest request, CancellationToken token)
         {
-            if (!update.IsUserCommand(TelegramCommands.Start) && !update.IsUserCommand(TelegramCommands.Help))
-                return false;
-
+            var update = request.Update;
             var userId = update.Message.From.Id;
             await _telegramService.SendTextMessage(userId, TelegramMessageTexts.Help);
 

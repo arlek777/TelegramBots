@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -6,7 +8,16 @@ using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
-    public class RemoveAllWordsCommandMessageHandler : ITelegramMessageHandler
+    public class RemoveAllWordsCommandMessageRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return update.IsCommand(TelegramCommands.RemoveAllWords);
+        }
+    }
+
+    public class RemoveAllWordsCommandMessageHandler : IRequestHandler<RemoveAllWordsCommandMessageRequest, bool>
     {
         private readonly ITelegramService _telegramService;
 
@@ -15,11 +26,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
             _telegramService = telegramService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(RemoveAllWordsCommandMessageRequest request, CancellationToken token)
         {
-            if (!update.IsUserCommand(TelegramCommands.RemoveAllWords))
-                return false;
-
+            var update = request.Update;
             var userId = update.Message.From.Id;
             await _telegramService.SendInlineButtonMessage(userId, TelegramMessageTexts.RemoveAllConfirm, GetButton());
 

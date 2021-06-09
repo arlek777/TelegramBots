@@ -5,7 +5,7 @@ namespace TelegramLanguageTeacher.Core.Helpers
 {
     public static class TelegramUpdateExtensions 
     {
-        public static bool IsUserCommand(this Update update, string command)
+        public static bool IsCommand(this Update update, string command)
         {
             var isCommand = update.Message != null
                             && !update.Message.From.IsBot
@@ -14,7 +14,7 @@ namespace TelegramLanguageTeacher.Core.Helpers
             return isCommand && update.Message.Text.Equals(command, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static bool IsUserPlainText(this Update update)
+        public static bool IsTextMessage(this Update update)
         {
             var isTextToTranslate = update.Message?.Text != null 
                                     && !update.Message.Text.Contains("/") 
@@ -23,7 +23,7 @@ namespace TelegramLanguageTeacher.Core.Helpers
             return isTextToTranslate;
         }
 
-        public static bool IsUserCallback(this Update update, string name)
+        public static bool IsCallback(this Update update, string name)
         {
             return update.CallbackQuery?.Data != null && update.CallbackQuery.Data.Contains(name, StringComparison.InvariantCultureIgnoreCase);
         }

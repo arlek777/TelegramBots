@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class RemoveWordCallbackHandler : ITelegramMessageHandler
+    public class RemoveWordCallbackRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return Update.IsCallback(TelegramCallbackCommands.RemoveWord);
+        }
+    }
+
+    public class RemoveWordCallbackHandler : IRequestHandler<RemoveWordCallbackRequest, bool>
     {
         private readonly ITelegramService _telegramService;
         private readonly IWordService _wordService;
@@ -17,11 +28,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             _wordService = wordService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(RemoveWordCallbackRequest request, CancellationToken token)
         {
-            if (!update.IsUserCallback(TelegramCallbackCommands.RemoveWord))
-                return false;
-
+            var update = request.Update;
             var userId = update.CallbackQuery.From.Id;
             string[] splittedData = update.CallbackQuery.Data.Split('_');
 

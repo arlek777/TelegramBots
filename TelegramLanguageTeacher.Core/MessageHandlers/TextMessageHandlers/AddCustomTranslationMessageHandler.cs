@@ -1,12 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
+namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 {
-    public class AddCustomTranslationMessageHandler : ITelegramMessageHandler
+    public class AddCustomTranslationMessageRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return update.IsTextMessage() || update.Message.Text.Contains("::");
+        }
+    }
+
+    public class AddCustomTranslationMessageHandler : IRequestHandler<AddCustomTranslationMessageRequest, bool>
     {
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
@@ -19,11 +30,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers
             _telegramService = telegramService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(AddCustomTranslationMessageRequest request, CancellationToken token)
         {
-            if (!update.IsUserPlainText() && !update.Message.Text.Contains("::"))
-                return false;
-
+            var update = request.Update;
             var splittedText = update.Message.Text.Split("::");
             var original = splittedText[0];
             var translation = splittedText[1];

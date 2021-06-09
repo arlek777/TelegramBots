@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using TelegramLanguageTeacher.DataAccess;
@@ -21,6 +19,7 @@ namespace TelegramLanguageTeacher.Core.Services
         Task RemoveWord(int userId, Guid wordId);
         Task RemoveAllWords(int userId);
         Task AddWordToCache(CachedWord cachedWord);
+        Task<int> GetTodayRepeatWordsCount(int userId);
     }
 
     public class WordService : IWordService
@@ -131,15 +130,25 @@ namespace TelegramLanguageTeacher.Core.Services
             await _repository.SaveChanges();
         }
 
+        public async Task<int> GetTodayRepeatWordsCount(int userId)
+        {
+            var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
+
+            var wordCount = user?.Dicts.FirstOrDefault()?.Words.Count(w => IsTodayOrPastDate(w.NextRepeat));
+
+            return wordCount ?? 0;
+        }
+
         public async Task<Word> GetNextWord(int userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
             var word = user?.Dicts.FirstOrDefault()?.Words
                 .Where(w => IsTodayOrPastDate(w.NextRepeat))
-                .OrderBy(w => w.NextRepeat)
+                .OrderByDescending(w => w.NextRepeat)
                 .ThenBy(w => w.Rate)
                 .FirstOrDefault();
+
             return word;
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -7,7 +9,16 @@ using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 {
-    public class StartRepeatingWordsCommandMessageHandler: ITelegramMessageHandler
+    public class StartRepeatingWordsCommandMessageRequest : BaseRequest
+    {
+        public override bool AcceptUpdate(Update update)
+        {
+            Update = update;
+            return update.IsCommand(TelegramCommands.Repeat);
+        }
+    }
+
+    public class StartRepeatingWordsCommandMessageHandler: IRequestHandler<StartRepeatingWordsCommandMessageRequest, bool>
     {
         private readonly IWordService _wordService;
         private readonly ITelegramService _telegramService;
@@ -18,16 +29,16 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
             _telegramService = telegramService;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(StartRepeatingWordsCommandMessageRequest request, CancellationToken token)
         {
-            if (!update.IsUserCommand(TelegramCommands.Repeat))
-                return false;
-
+            var update = request.Update;
             var userId = update.Message.From.Id;
             var nextWord = await _wordService.GetNextWord(userId);
+            var todayRepeatWords = await _wordService.GetTodayRepeatWordsCount(userId);
+
             if (nextWord != null)
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartLearningGreeting);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartLearningGreeting(todayRepeatWords));
 
                 var msg = EmojiTextFormatter.FormatOriginalWord(nextWord.Original);
                 var button = GetButton(nextWord.Id);

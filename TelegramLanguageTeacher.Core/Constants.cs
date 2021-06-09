@@ -27,8 +27,8 @@
 
     public static class TelegramMessageTexts
     {
-        public const string StartLearningGreeting =
-            "Let's repeat your words. Answer how easily you remember the word.";
+        public static string StartLearningGreeting (int wordsCount) => 
+            $"You have {wordsCount} word(s) for today to repeat. Answer how easily you remember the word.";
 
         public const string CongratsWithRepeatAllTodayWords = "Well done for today, you have learned all words :)";
         public const string EmptyVocabulary = "You don't have any words for today.";

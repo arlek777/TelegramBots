@@ -1,27 +1,37 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {
-    public class StartRepeatingWordsCallbackHandler : ITelegramMessageHandler
+    public class StartRepeatingWordsCallbackRequest : BaseRequest
     {
-        private readonly StartRepeatingWordsCommandMessageHandler _repeatingWordsCommand;
-
-        public StartRepeatingWordsCallbackHandler(StartRepeatingWordsCommandMessageHandler repeatingWordsCommand)
+        public override bool AcceptUpdate(Update update)
         {
-            _repeatingWordsCommand = repeatingWordsCommand;
+            Update = update;
+            return Update.IsCallback(TelegramCallbackCommands.StartRepeating);
+        }
+    }
+
+    public class StartRepeatingWordsCallbackHandler: IRequestHandler<StartRepeatingWordsCallbackRequest, bool>
+    {
+        private readonly IMediator _mediator;
+
+        public StartRepeatingWordsCallbackHandler(IMediator mediator)
+        {
+            _mediator = mediator;
         }
 
-        public async Task<bool> Handle(Update update)
+        public async Task<bool> Handle(StartRepeatingWordsCallbackRequest request, CancellationToken token)
         {
-            if (!update.IsUserCallback(TelegramCallbackCommands.StartRepeating))
-                return false;
-
+            var update = request.Update;
             var userId = update.CallbackQuery.From.Id;
 
-            await _repeatingWordsCommand.Handle(new Update()
+            var commandRequest = new StartRepeatingWordsCommandMessageRequest();
+            commandRequest.AcceptUpdate(new Update()
             {
                 Message = new Message()
                 {
@@ -33,6 +43,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
                     }
                 }
             });
+
+            await _mediator.Send(commandRequest, token);
 
             return true;
         }

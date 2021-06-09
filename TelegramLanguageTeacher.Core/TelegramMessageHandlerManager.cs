@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Telegram.Bot.Types;
+using TelegramLanguageTeacher.Core.MessageHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers;
-using TelegramLanguageTeacher.Core.MessageHandlers.PlainTextHandlers;
+using TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core
 {
-    public interface ITelegramMessageHandler
-    {
-        Task<bool> Handle(Update update);
-    }
-
     public interface ITelegramMessageHandlerManager
     {
         Task HandleUpdate(Update update);
@@ -21,50 +19,49 @@ namespace TelegramLanguageTeacher.Core
 
     public class TelegramMessageHandlerManager : ITelegramMessageHandlerManager
     {
-        private readonly IEnumerable<ITelegramMessageHandler> _messageHandlers;
+        private readonly IEnumerable<BaseRequest> _requests;
         private readonly ILogger _logger;
+        private readonly IMediator _mediator;
 
-        public TelegramMessageHandlerManager(IWordService wordService,
-            IUserService userService,
-            ITranslatorService translatorService,
-            ITelegramService telegramService,
-            IWordNormalizationService normalizationService,
-            ILogger logger)
+        public TelegramMessageHandlerManager(ILogger logger, IMediator mediator)
         {
             _logger = logger;
+            _mediator = mediator;
 
-            var wordCommandHandler = new StartRepeatingWordsCommandMessageHandler(wordService, telegramService);
-
-            _messageHandlers = new List<ITelegramMessageHandler>()
+            _requests = new List<BaseRequest>()
             {
-                new RemoveAllWordsCommandMessageHandler(telegramService),
-                new RemoveAllWordsCallbackHandler(telegramService, wordService),
-                new ListAllWordsCommandMessageHandler(telegramService, wordService),
-                new StartHelpCommandMessageHandler(telegramService),
-                new CheckMemoryMessageHandler(wordService, telegramService),
-                new RateCallbackHandler(wordService, telegramService),
-                new RemoveWordCallbackHandler(telegramService, wordService),
-                new AddCustomTranslationCallbackHandler(telegramService, wordService),
-                new AddCustomTranslationMessageHandler(wordService, userService, telegramService),
-                wordCommandHandler,
-                new StartRepeatingWordsCallbackHandler(wordCommandHandler),
-                new TranslateAndAddWordMessageHandler(wordService, userService, translatorService, telegramService, normalizationService, logger)
+                new AddCustomTranslationRequest(),
+                new RateCallbackRequest(),
+                new RateCallbackRequest(),
+                new StartRepeatingWordsCallbackRequest(),
+                new RemoveAllWordsCallbackRequest(),
+                new RemoveWordCallbackRequest(),
+
+                new ListAllWordsCommandMessageRequest(),
+                new RemoveAllWordsCommandMessageRequest(),
+                new StartRepeatingWordsCommandMessageRequest(),
+                new StartRepeatingWordsCommandMessageRequest(),
+
+                new AddCustomTranslationMessageRequest(),
+                new TranslateAndAddWordMessageRequest()
             };
         }
 
         public async Task HandleUpdate(Update update)
         {
-            foreach (var handler in _messageHandlers)
+            try
             {
-                try
+                var request = _requests.FirstOrDefault(r => r.AcceptUpdate(update));
+                if (request == null)
                 {
-                    if (await handler.Handle(update))
-                        break;
+                    throw new NullReferenceException("Request is null.");
                 }
-                catch (Exception e)
-                {
-                    await _logger.Log("ERROR " + e.Message + " " + e.StackTrace + " " + e.Source);
-                }
+
+                await _mediator.Send(request);
+            }
+            catch (Exception e)
+            {
+                await _logger.Log("ERROR " + e.Message + " " + e.StackTrace + " " + e.Source);
             }
         }
     }
