@@ -18,9 +18,9 @@ namespace TelegramLanguageTeacher.MailingJob
             var url = "https://telegramenglishteacher.azurewebsites.net/Telegram/DailyMailing?token=englishTelegramTeacher";
 #endif
 
-            var client = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
-            HttpResponseMessage response = client.GetAsync(url).Result;
-            response.EnsureSuccessStatusCode();
+            // var client = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
+            // HttpResponseMessage response = client.GetAsync(url).Result;
+            // response.EnsureSuccessStatusCode();
         }
     }
 }

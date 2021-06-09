@@ -27,7 +27,8 @@ namespace TelegramLanguageTeacher.Core.Helpers
             }
 
             // Translations
-            string formattedTranslations = string.Join("\n", word.Translate.Split('\n').Select(FormatTranslation).ToList());
+            var splitTranslations = word.Translate.Split('\n');
+            string formattedTranslations = string.Join("\n", splitTranslations.Select(FormatTranslation).ToList());
             formatted.AppendLine(formattedTranslations.Trim());
 
             // Examples
@@ -36,6 +37,13 @@ namespace TelegramLanguageTeacher.Core.Helpers
                 string formattedExamples = string.Join("\n", word.Examples.Split('\n').Select(FormatExamples).ToList());
                 formatted.AppendLine();
                 formatted.AppendLine(formattedExamples.Trim());
+            }
+
+            if (string.IsNullOrWhiteSpace(word.Examples) && string.IsNullOrWhiteSpace(word.Definition) &&
+                splitTranslations.Length == 1 && word.Original.Count(c => c == ' ') < 4)
+            {
+                formatted.AppendLine();
+                formatted.AppendLine($"Look more translations at https://idioms.thefreedictionary.com/{word.Original.Trim().Replace(" ", "+")}");
             }
 
             var result = formatted.ToString();
