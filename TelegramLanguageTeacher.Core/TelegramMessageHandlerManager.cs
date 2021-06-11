@@ -32,14 +32,14 @@ namespace TelegramLanguageTeacher.Core
             {
                 new AddCustomTranslationRequest(),
                 new RateCallbackRequest(),
-                new RateCallbackRequest(),
+                new CheckMemoryButtonCallbackRequest(),
                 new StartRepeatingWordsCallbackRequest(),
                 new RemoveAllWordsCallbackRequest(),
                 new RemoveWordCallbackRequest(),
 
                 new ListAllWordsCommandMessageRequest(),
                 new RemoveAllWordsCommandMessageRequest(),
-                new StartRepeatingWordsCommandMessageRequest(),
+                new StartHelpCommandMessageRequest(),
                 new StartRepeatingWordsCommandMessageRequest(),
 
                 new AddCustomTranslationMessageRequest(),

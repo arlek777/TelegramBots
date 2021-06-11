@@ -13,7 +13,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         public override bool AcceptUpdate(Update update)
         {
             Update = update;
-            return update.IsTextMessage() || update.Message.Text.Contains("::");
+            return update.IsTextMessage() && update.Message.Text.Contains("::");
         }
     }
 
