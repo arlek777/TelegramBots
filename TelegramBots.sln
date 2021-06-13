@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramLanguageTeacher.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramLanguageTeacher.Web", "TelegramLanguageTeacher.Web\TelegramLanguageTeacher.Web.csproj", "{7572EB40-E4C7-416D-8043-DAE0FCE101AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramLanguageTeacher.MailingJob", "TelegramLanguageTeacher.MailingJob\TelegramLanguageTeacher.MailingJob.csproj", "{9DB1C312-4B4A-43C7-9B34-D1667530496C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramLanguageTeacher.MailingJob", "TelegramLanguageTeacher.MailingJob\TelegramLanguageTeacher.MailingJob.csproj", "{9DB1C312-4B4A-43C7-9B34-D1667530496C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageTeacher", "LanguageTeacher", "{A3F5A13A-68B7-459F-AD17-285D241E9C6E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{52D954E3-8C07-4DF9-BDAF-47BF23716664} = {A3F5A13A-68B7-459F-AD17-285D241E9C6E}
+		{C6394CEC-B23A-432E-A96F-2C8D412DD784} = {A3F5A13A-68B7-459F-AD17-285D241E9C6E}
+		{ED765A23-7183-4887-9604-4A3A7777F342} = {A3F5A13A-68B7-459F-AD17-285D241E9C6E}
+		{7572EB40-E4C7-416D-8043-DAE0FCE101AA} = {A3F5A13A-68B7-459F-AD17-285D241E9C6E}
+		{9DB1C312-4B4A-43C7-9B34-D1667530496C} = {A3F5A13A-68B7-459F-AD17-285D241E9C6E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EC249BF-A210-47F5-9A1B-965E9EF3A9A8}
