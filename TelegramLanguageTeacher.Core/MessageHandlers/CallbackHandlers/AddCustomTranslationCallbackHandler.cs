@@ -6,6 +6,7 @@ using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
@@ -21,10 +22,10 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 
     public class AddCustomTranslationCallbackHandler: IRequestHandler<AddCustomTranslationRequest, bool>
     {
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
         private readonly IWordService _wordService;
 
-        public AddCustomTranslationCallbackHandler(ITelegramService telegramService, IWordService wordService)
+        public AddCustomTranslationCallbackHandler(ITelegramService<LanguageTeacherBot> telegramService, IWordService wordService)
         {
             _telegramService = telegramService;
             _wordService = wordService;

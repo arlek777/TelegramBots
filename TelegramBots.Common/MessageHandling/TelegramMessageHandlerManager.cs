@@ -3,20 +3,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.Services;
 
 namespace TelegramBots.Common.MessageHandling
 {
-    public interface ITelegramMessageHandlerManager
+    public interface ITelegramMessageHandlerManager<T> where T : TelegramBotInstance
     {
         Task HandleUpdate(Update update);
     }
 
-    public class TelegramMessageHandlerManager : ITelegramMessageHandlerManager
+    public class TelegramMessageHandlerManager<T> : ITelegramMessageHandlerManager<T> where T : TelegramBotInstance
     {
-        private readonly IMediatrRequestsRepository _requestRepository;
+        private readonly IMediatrRequestsRepository<T> _requestRepository;
         private readonly IMediator _mediator;
 
-        public TelegramMessageHandlerManager(IMediator mediator, IMediatrRequestsRepository requestsRepository)
+        public TelegramMessageHandlerManager(IMediator mediator, IMediatrRequestsRepository<T> requestsRepository)
         {
             _mediator = mediator;
             _requestRepository = requestsRepository;

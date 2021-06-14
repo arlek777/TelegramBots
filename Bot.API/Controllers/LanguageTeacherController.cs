@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace Bot.API.Controllers
@@ -15,8 +16,8 @@ namespace Bot.API.Controllers
     [Route("[controller]")]
     public class LanguageTeacherController : ControllerBase
     {
-        private readonly ITelegramMessageHandlerManager _messageHandlerManager;
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramMessageHandlerManager<LanguageTeacherBot> _messageHandlerManager;
+        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
         private readonly ILanguageTeacherLogger _logger;
         private readonly IUserService _userService;
 
@@ -25,8 +26,8 @@ namespace Bot.API.Controllers
 
         public LanguageTeacherController(
             ILanguageTeacherLogger logger, 
-            ITelegramMessageHandlerManager messageHandlerManager, 
-            ITelegramService telegramService,
+            ITelegramMessageHandlerManager<LanguageTeacherBot> messageHandlerManager, 
+            ITelegramService<LanguageTeacherBot> telegramService,
             IUserService userService)
         {
             _messageHandlerManager = messageHandlerManager;

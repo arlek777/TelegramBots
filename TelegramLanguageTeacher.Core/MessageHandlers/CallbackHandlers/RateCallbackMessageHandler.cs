@@ -7,6 +7,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
@@ -23,9 +24,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
     public class RateCallbackMessageHandler: IRequestHandler<RateCallbackRequest, bool>
     {
         private readonly IWordService _wordService;
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
 
-        public RateCallbackMessageHandler(IWordService wordService, ITelegramService telegramService)
+        public RateCallbackMessageHandler(IWordService wordService, ITelegramService<LanguageTeacherBot> telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;

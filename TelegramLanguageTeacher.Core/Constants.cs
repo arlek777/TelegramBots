@@ -1,6 +1,6 @@
 ﻿namespace TelegramLanguageTeacher.Core
 {
-    public static class CommonConstants
+    public static class LanguageTeacherConstants
     {
         public const int TranslationCounts = 6;
         public const int ExamplesCount = 4;
@@ -10,6 +10,14 @@
 
         public const int TimeToRepeatUtcMinute = 15; // 12 Kiev Summer Time
         public const int TimeToShowWordOfTheDayUtcMinute = 15; // 14 Kiev Summer Time
+
+#if DEBUG
+        public const string TelegramToken = "1716552741:AAFXAUHKsmdLP_P5JoQZ0YvvGjplRe5IScE";
+#endif
+
+#if !DEBUG
+        public const string TelegramToken = "1627596588:AAE2BopqdDI041d5CPbDsnHvPrhx8KBcKKM";
+#endif
     }
 
     public static class TelegramMessageTexts

@@ -9,13 +9,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TelegramBots.Common;
 using TelegramBots.Common.DataAccess;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramLanguageTeacher.Core;
 using TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DataAccess;
 
@@ -36,13 +37,12 @@ namespace Bot.API
             services.AddControllers();
 
             AddDbServices(services);
-            AddMediatR(services);
 
+            AddLanguageTeacherMediatR(services);
             AddLanguageTeacherServices(services);
-            AddInstagramHelperServices(services);
 
-            // Common
-            services.AddTransient<ITelegramService>(t => new TelegramService(AppCredentials.TelegramToken));
+            AddInstagramHelperMediatR(services);
+            AddInstagramHelperServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +81,9 @@ namespace Bot.API
 
         private void AddLanguageTeacherServices(IServiceCollection services)
         {
+            var lgTchBot = new LanguageTeacherBot(LanguageTeacherConstants.TelegramToken);
+            services.AddTransient<ITelegramService<LanguageTeacherBot>>(t => new TelegramService<LanguageTeacherBot>(lgTchBot));
+
             services.AddTransient<ILanguageTeacherLogger, DefaultLanguageTeacherLogger>();
             services.AddTransient<ITranslatorService, TranslatorService>();
             services.AddTransient<IWordService, WordService>();
@@ -98,16 +101,18 @@ namespace Bot.API
 
         private void AddInstagramHelperServices(IServiceCollection services)
         {
+            var lgTchBot = new InstagramHelperBot(InstagramHelperConstants.TelegramToken);
+            services.AddTransient<ITelegramService<InstagramHelperBot>>(t => new TelegramService<InstagramHelperBot>(lgTchBot));
+
             var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
             var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
 
             services.AddTransient<IInstagramPostGenerator>(s => new InstagramPostGenerator(dataFilepath));
         }
 
-        private void AddMediatR(IServiceCollection services)
+        private void AddLanguageTeacherMediatR(IServiceCollection services)
         {
             services.AddMediatR(typeof(AddCustomTranslationCallbackHandler).Assembly);
-            services.AddMediatR(typeof(GenerateInstagramPostMessageHandler).Assembly);
 
             var requests = new List<BaseRequest>()
             {
@@ -125,13 +130,24 @@ namespace Bot.API
 
                 new AddCustomTranslationMessageRequest(),
                 new TranslateAndAddWordMessageRequest(),
+            };
 
-                // Instagram helper
+            services.AddSingleton<IMediatrRequestsRepository<LanguageTeacherBot>>(s => new MediatrRequestsRepository<LanguageTeacherBot>(requests));
+            services.AddTransient<ITelegramMessageHandlerManager<LanguageTeacherBot>, TelegramMessageHandlerManager<LanguageTeacherBot>>();
+        }
+
+        private void AddInstagramHelperMediatR(IServiceCollection services)
+        {
+            services.AddMediatR(typeof(GenerateInstagramPostMessageHandler).Assembly);
+
+            // Instagram helper
+            var requests = new List<BaseRequest>()
+            {
                 new GenerateInstagramPostMessageRequest()
             };
 
-            services.AddSingleton<IMediatrRequestsRepository>(s => new MediatrRequestsRepository(requests));
-            services.AddTransient<ITelegramMessageHandlerManager, TelegramMessageHandlerManager>();
+            services.AddSingleton<IMediatrRequestsRepository<InstagramHelperBot>>(s => new MediatrRequestsRepository<InstagramHelperBot>(requests));
+            services.AddTransient<ITelegramMessageHandlerManager<InstagramHelperBot>, TelegramMessageHandlerManager<InstagramHelperBot>>();
         }
     }
 }

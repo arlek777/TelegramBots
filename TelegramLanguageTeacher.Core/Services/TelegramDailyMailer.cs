@@ -30,7 +30,7 @@
 //        public async Task Mail()
 //        {
 //            var now = DateTime.UtcNow;
-//            if (now.Hour >= CommonConstants.TimeToRepeatUtcHour
+//            if (now.Hour >= LanguageTeacherConstants.TimeToRepeatUtcHour
 //                && !IsRepeatAlreadySent)
 //            {
 //                var users = await _userService.GetAllUsers();
@@ -54,7 +54,7 @@
 
 //                IsRepeatAlreadySent = true;
 //            }
-//            else if (now.Hour >= CommonConstants.TimeToShowWordOfTheDayUtcHour
+//            else if (now.Hour >= LanguageTeacherConstants.TimeToShowWordOfTheDayUtcHour
 //                     && !IsWordOfTheDayAlreadySent)
 //            {
 //                var users = await _userService.GetAllUsers();

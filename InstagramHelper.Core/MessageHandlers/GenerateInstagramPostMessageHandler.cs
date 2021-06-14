@@ -19,10 +19,10 @@ namespace InstagramHelper.Core.MessageHandlers
 
     public class GenerateInstagramPostMessageHandler : IRequestHandler<GenerateInstagramPostMessageRequest, bool>
     {
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramService<InstagramHelperBot> _telegramService;
         private readonly IInstagramPostGenerator _hashTagGenerator;
 
-        public GenerateInstagramPostMessageHandler(ITelegramService telegramService, IInstagramPostGenerator hashTagGenerator)
+        public GenerateInstagramPostMessageHandler(ITelegramService<InstagramHelperBot> telegramService, IInstagramPostGenerator hashTagGenerator)
         {
             _telegramService = telegramService;
             _hashTagGenerator = hashTagGenerator;
@@ -33,9 +33,9 @@ namespace InstagramHelper.Core.MessageHandlers
             var update = request.Update;
 
             var userId = update.Message.From.Id;
-            var messageText = update.Message.Text.Split(' ').FirstOrDefault()?.Trim().ToLowerInvariant();
+            var messageText = update.Message.Text.Replace(" ", "").Trim().ToLowerInvariant();
 
-            if (string.IsNullOrEmpty(messageText) || messageText.Length > 50)
+            if (string.IsNullOrEmpty(messageText) || messageText.Length > 25)
             {
                 return false;
             }

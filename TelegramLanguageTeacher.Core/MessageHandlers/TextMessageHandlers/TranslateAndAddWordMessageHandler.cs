@@ -9,6 +9,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
 
@@ -28,14 +29,14 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
         private readonly ITranslatorService _translatorService;
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
         private readonly IWordNormalizationService _normalizationService;
         private readonly ILanguageTeacherLogger _logger;
 
         public TranslateAndAddWordMessageHandler(IWordService wordService, 
             IUserService userService, 
             ITranslatorService translatorService, 
-            ITelegramService telegramService,
+            ITelegramService<LanguageTeacherBot> telegramService,
             IWordNormalizationService normalizationService, 
             ILanguageTeacherLogger logger)
         {
@@ -107,8 +108,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             {
                 var translationResponse = await _translatorService.Translate(text);
 
-                var translations = translationResponse.Translations.Select(t => t.Translation).Take(CommonConstants.TranslationCounts);
-                var examples = translationResponse.Examples.Take(CommonConstants.ExamplesCount);
+                var translations = translationResponse.Translations.Select(t => t.Translation).Take(LanguageTeacherConstants.TranslationCounts);
+                var examples = translationResponse.Examples.Take(LanguageTeacherConstants.ExamplesCount);
                 var definitions = translationResponse.Definitions.Where(d => d != null).Select(d => $"{d.PartOfSpeech}-{d.Definition}");
 
                 var joinedTranslations = string.Join('\n', translations);
@@ -124,15 +125,15 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
                     AudioLink = translationResponse.AudioLink
                 };
 
-                await _wordService.AddWordToCache(new CachedWord()
-                {
-                    AddedDate = DateTime.UtcNow,
-                    Original = translationResponse.Word,
-                    Translate = joinedTranslations,
-                    Examples = joinedExamples,
-                    Definition = joinedDefinitions,
-                    AudioLink = translationResponse.AudioLink
-                });
+                //await _wordService.AddWordToCache(new CachedWord()
+                //{
+                //    AddedDate = DateTime.UtcNow,
+                //    Original = translationResponse.Word,
+                //    Translate = joinedTranslations,
+                //    Examples = joinedExamples,
+                //    Definition = joinedDefinitions,
+                //    AudioLink = translationResponse.AudioLink
+                //});
             }
 
             return word;

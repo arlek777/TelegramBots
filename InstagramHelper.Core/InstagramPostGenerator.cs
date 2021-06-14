@@ -23,24 +23,34 @@ namespace InstagramHelper.Core
 
         public async Task<string> GenerateHashTags(string keyword)
         {
-            string hashTags = string.Empty;
+            string hashTags = "No hash tags found by keyword " + keyword;
 
-            using var client = new HttpClient();
-
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://best-hashtags.com/hashtag/" + keyword);
-            request.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
-            request.Headers.Add("Accept-Language", "en-US,en;q=0.9,ru;q=0.8,uk;q=0.7,de;q=0.6,es;q=0.5,it;q=0.4");
-            request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36");
-
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var html = await response.Content.ReadAsStringAsync();
-                var document = new HtmlDocument();
-                document.LoadHtml(html);
+                using var client = new HttpClient();
 
-                var hashTagHtml = document.DocumentNode.SelectSingleNode("/html/body/div[1]/div[3]/div/div/div[1]/div/div/div[1]/div[2]/p1");
-                hashTags = hashTagHtml.InnerText;
+                var request = new HttpRequestMessage(HttpMethod.Get, "http://best-hashtags.com/hashtag/" + keyword);
+                request.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml");
+                request.Headers.Add("Accept-Language", "en-US,en;q=0.9,ru;q=0.8,uk;q=0.7,de;q=0.6,es;q=0.5,it;q=0.4");
+                request.Headers.Add("User-Agent",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36");
+
+                var response = await client.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    var html = await response.Content.ReadAsStringAsync();
+                    var document = new HtmlDocument();
+                    document.LoadHtml(html);
+
+                    var hashTagHtml =
+                        document.DocumentNode.SelectSingleNode(
+                            "/html/body/div[1]/div[3]/div/div/div[1]/div/div/div[1]/div[2]/p1");
+                    hashTags = hashTagHtml.InnerText;
+                }
+
+            }
+            catch (Exception e)
+            {
             }
 
             return hashTags;

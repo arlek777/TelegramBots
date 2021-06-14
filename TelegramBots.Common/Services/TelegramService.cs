@@ -9,7 +9,12 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBots.Common.Services
 {
-    public interface ITelegramService
+    public abstract class TelegramBotInstance
+    {
+        public abstract string Token { get; }
+    }
+
+    public interface ITelegramService<T> where T: TelegramBotInstance
     {
         Task<Update> GetUpdate(int lastUpdateId);
         Task<Message> SendTextMessage(int userId, string text);
@@ -18,13 +23,13 @@ namespace TelegramBots.Common.Services
         Task SetWebHook(string url);
     }
 
-    public class TelegramService : ITelegramService
+    public class TelegramService<T>: ITelegramService<T> where T : TelegramBotInstance
     {
         private readonly TelegramBotClient _bot;
 
-        public TelegramService(string token)
+        public TelegramService(T bot)
         {
-            _bot = new TelegramBotClient(token);
+            _bot = new TelegramBotClient(bot.Token);
         }
 
         public async Task<Update> GetUpdate(int lastUpdateId)

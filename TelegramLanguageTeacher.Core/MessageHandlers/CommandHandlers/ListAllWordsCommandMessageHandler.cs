@@ -6,6 +6,7 @@ using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
@@ -21,10 +22,10 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 
     public class ListAllWordsCommandMessageHandler : IRequestHandler<ListAllWordsCommandMessageRequest, bool>
     {
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
         private readonly IWordService _wordService;
 
-        public ListAllWordsCommandMessageHandler(ITelegramService telegramService, IWordService wordService)
+        public ListAllWordsCommandMessageHandler(ITelegramService<LanguageTeacherBot> telegramService, IWordService wordService)
         {
             _telegramService = telegramService;
             _wordService = wordService;

@@ -7,6 +7,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
+using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
 
@@ -24,9 +25,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
     public class CheckMemoryCallbackHandler: IRequestHandler<CheckMemoryButtonCallbackRequest, bool>
     {
         private readonly IWordService _wordService;
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
 
-        public CheckMemoryCallbackHandler(IWordService wordService, ITelegramService telegramService)
+        public CheckMemoryCallbackHandler(IWordService wordService, ITelegramService<LanguageTeacherBot> telegramService)
         {
             _wordService = wordService;
             _telegramService = telegramService;
