@@ -9,7 +9,7 @@ namespace InstagramHelper.Core
 #endif
 
 #if !DEBUG
-        public const string TelegramToken = "1627596588:AAE2BopqdDI041d5CPbDsnHvPrhx8KBcKKM";
+        public const string TelegramToken = "1850053706:AAF1iFl4B7ueOX2RZrkCf4Q6EkwVsdbxzZc";
 #endif
     }
 
