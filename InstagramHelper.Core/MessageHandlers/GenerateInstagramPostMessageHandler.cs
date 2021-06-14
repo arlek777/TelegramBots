@@ -43,6 +43,12 @@ namespace InstagramHelper.Core.MessageHandlers
             var caption = await _hashTagGenerator.GenerateCaption(messageText);
             var hashTags = await _hashTagGenerator.GenerateHashTags(messageText);
 
+            hashTags = hashTags
+                .Replace("#instagram", "")
+                .Replace("#ig", "")
+                .Replace("#bhfyp", "")
+                .Trim();
+
             await _telegramService.SendTextMessage(userId, caption);
             await _telegramService.SendTextMessage(userId, hashTags);
 
