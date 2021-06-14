@@ -6,6 +6,8 @@ using MediatR;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBots.Common.MessageHandling;
+using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 using TelegramLanguageTeacher.DomainModels;
@@ -28,14 +30,14 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         private readonly ITranslatorService _translatorService;
         private readonly ITelegramService _telegramService;
         private readonly IWordNormalizationService _normalizationService;
-        private readonly ILogger _logger;
+        private readonly ILanguageTeacherLogger _logger;
 
         public TranslateAndAddWordMessageHandler(IWordService wordService, 
             IUserService userService, 
             ITranslatorService translatorService, 
             ITelegramService telegramService,
             IWordNormalizationService normalizationService, 
-            ILogger logger)
+            ILanguageTeacherLogger logger)
         {
             _wordService = wordService;
             _userService = userService;

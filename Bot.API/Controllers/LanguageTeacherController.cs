@@ -1,30 +1,30 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
-using TelegramLanguageTeacher.Core;
+using TelegramBots.Common.MessageHandling;
+using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Services;
-using ILogger = TelegramLanguageTeacher.Core.Services.ILogger;
 
-namespace TelegramLanguageTeacher.Web.Controllers
+namespace Bot.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TelegramController : ControllerBase
+    public class LanguageTeacherController : ControllerBase
     {
         private readonly ITelegramMessageHandlerManager _messageHandlerManager;
         private readonly ITelegramService _telegramService;
-        private readonly ILogger _logger;
+        private readonly ILanguageTeacherLogger _logger;
         private readonly IUserService _userService;
 
         private static int _lastUpdateId;
         private static string _token = "englishTelegramTeacher";
 
-        public TelegramController(
-            ILogger logger, 
+        public LanguageTeacherController(
+            ILanguageTeacherLogger logger, 
             ITelegramMessageHandlerManager messageHandlerManager, 
             ITelegramService telegramService,
             IUserService userService)

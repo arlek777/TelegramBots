@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TelegramLanguageTeacher.DataAccess;
+using TelegramBots.Common.DataAccess;
 using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.Core.Services
 {
-    public interface ILogger
+    public interface ILanguageTeacherLogger
     {
         Task Log(string info);
         Task<IEnumerable<Log>> GetLogs();
     }
 
-    public class DefaultLogger: ILogger
+    public class DefaultLanguageTeacherLogger: ILanguageTeacherLogger
     {
         private readonly IGenericRepository _repository;
 
-        public DefaultLogger(IGenericRepository repository)
+        public DefaultLanguageTeacherLogger(IGenericRepository repository)
         {
             _repository = repository;
         }

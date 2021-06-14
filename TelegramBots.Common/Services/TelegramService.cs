@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -8,7 +7,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TelegramLanguageTeacher.Core.Services
+namespace TelegramBots.Common.Services
 {
     public interface ITelegramService
     {

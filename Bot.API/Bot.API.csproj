@@ -13,10 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Data\full7z-mlteast-en.lem">
+    <Content Include="Resources\EnglishNormalizationData\full7z-mlteast-en.lem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\full7z-multext-en.lem">
+    <Content Include="Resources\EnglishNormalizationData\full7z-multext-en.lem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TelegramBots.Common\TelegramBots.Common.csproj" />
     <ProjectReference Include="..\TelegramLanguageTeacher.Core\TelegramLanguageTeacher.Core.csproj" />
   </ItemGroup>
 

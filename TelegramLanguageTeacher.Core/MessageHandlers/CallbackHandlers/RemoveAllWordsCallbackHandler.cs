@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.MessageHandling;
+using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Services;
 

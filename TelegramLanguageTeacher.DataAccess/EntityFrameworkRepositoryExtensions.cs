@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TelegramBots.Common.DataAccess;
 using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.DataAccess

@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿
+using MediatR;
 using Telegram.Bot.Types;
 
-namespace TelegramLanguageTeacher.Core.MessageHandlers
+namespace TelegramBots.Common.MessageHandling
 {
     public abstract class BaseRequest : IRequest<bool>
     {
