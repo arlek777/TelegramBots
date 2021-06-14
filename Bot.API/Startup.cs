@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using InstagramHelper.Core;
+using InstagramHelper.Core.MessageHandlers;
 using LemmaSharp;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -34,8 +36,10 @@ namespace Bot.API
             services.AddControllers();
 
             AddDbServices(services);
-            AddLanguageTeacherServices(services);
             AddMediatR(services);
+
+            AddLanguageTeacherServices(services);
+            AddInstagramHelperServices(services);
 
             // Common
             services.AddTransient<ITelegramService>(t => new TelegramService(AppCredentials.TelegramToken));
@@ -92,9 +96,18 @@ namespace Bot.API
             services.AddSingleton(i => new Lemmatizer(stream));
         }
 
+        private void AddInstagramHelperServices(IServiceCollection services)
+        {
+            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
+            var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
+
+            services.AddTransient<IInstagramPostGenerator>(s => new InstagramPostGenerator(dataFilepath));
+        }
+
         private void AddMediatR(IServiceCollection services)
         {
             services.AddMediatR(typeof(AddCustomTranslationCallbackHandler).Assembly);
+            services.AddMediatR(typeof(GenerateInstagramPostMessageHandler).Assembly);
 
             var requests = new List<BaseRequest>()
             {
@@ -111,7 +124,10 @@ namespace Bot.API
                 new StartRepeatingWordsCommandMessageRequest(),
 
                 new AddCustomTranslationMessageRequest(),
-                new TranslateAndAddWordMessageRequest()
+                new TranslateAndAddWordMessageRequest(),
+
+                // Instagram helper
+                new GenerateInstagramPostMessageRequest()
             };
 
             services.AddSingleton<IMediatrRequestsRepository>(s => new MediatrRequestsRepository(requests));

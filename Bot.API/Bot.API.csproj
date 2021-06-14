@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\InstagramHelper.Core\InstagramHelper.Core.csproj" />
     <ProjectReference Include="..\TelegramBots.Common\TelegramBots.Common.csproj" />
     <ProjectReference Include="..\TelegramLanguageTeacher.Core\TelegramLanguageTeacher.Core.csproj" />
   </ItemGroup>
