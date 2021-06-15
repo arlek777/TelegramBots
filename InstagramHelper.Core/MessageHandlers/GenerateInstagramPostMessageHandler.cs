@@ -38,11 +38,18 @@ namespace InstagramHelper.Core.MessageHandlers
 
             if (string.IsNullOrEmpty(messageText) || messageText.Length > 25)
             {
-                return false;
+                await _telegramService.SendTextMessage(userId, "Please, send us text no longer 25 symbols.");
+                return true;
             }
 
-            var caption = await _hashTagGenerator.GenerateCaption(messageText);
-            var hashTags = await _hashTagGenerator.GenerateHashTags(messageText);
+            var caption = await _hashTagGenerator.GetRandomCaption(messageText);
+            var hashTags = await _hashTagGenerator.GetHashTags(messageText);
+
+            if (string.IsNullOrWhiteSpace(hashTags))
+            {
+                await _telegramService.SendTextMessage(userId, "No hash tags found by keyword " + messageText + ". It works only for English words.");
+                return true;
+            }
 
             hashTags = hashTags
                 .Replace("#instagram", "")
