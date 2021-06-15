@@ -14,6 +14,7 @@ namespace TelegramLanguageTeacher.Core.Services
 
     public class DefaultLanguageTeacherLogger: ILanguageTeacherLogger
     {
+        private bool _isEnabled = false;
         private readonly IGenericRepository _repository;
 
         public DefaultLanguageTeacherLogger(IGenericRepository repository)
@@ -23,6 +24,9 @@ namespace TelegramLanguageTeacher.Core.Services
 
         public async Task Log(string info)
         {
+            if (!_isEnabled)
+                return;
+
             _repository.Add(new Log() { Text = info, Date = DateTime.UtcNow });
             await _repository.SaveChanges();
         }

@@ -13,10 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\InstaCaptions\captions.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Resources\EnglishNormalizationData\full7z-mlteast-en.lem">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\EnglishNormalizationData\full7z-multext-en.lem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\InstaCaptions\captions.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

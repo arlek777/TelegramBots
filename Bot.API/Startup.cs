@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using InstagramHelper.Core;
 using InstagramHelper.Core.MessageHandlers;
+using InstagramHelper.Core.Services;
 using LemmaSharp;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -107,7 +108,7 @@ namespace Bot.API
             var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
             var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
 
-            services.AddTransient<IInstagramPostGenerator>(s => new InstagramPostGenerator(dataFilepath));
+            services.AddTransient<IHashTagsCaptionsService>(s => new HashTagsCaptionsService(dataFilepath));
         }
 
         private void AddLanguageTeacherMediatR(IServiceCollection services)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using InstagramHelper.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramLanguageTeacher.Core.Services;
 
 namespace Bot.API.Controllers
 {
@@ -17,13 +19,16 @@ namespace Bot.API.Controllers
 
         private readonly ITelegramMessageHandlerManager<InstagramHelperBot> _messageHandlerManager;
         private readonly ITelegramService<InstagramHelperBot> _telegramService;
+        private readonly ILanguageTeacherLogger _teacherLogger;
 
         public InstagramHelperController(
             ITelegramMessageHandlerManager<InstagramHelperBot> messageHandlerManager, 
-            ITelegramService<InstagramHelperBot> telegramService)
+            ITelegramService<InstagramHelperBot> telegramService, 
+            ILanguageTeacherLogger teacherLogger)
         {
             _messageHandlerManager = messageHandlerManager;
             _telegramService = telegramService;
+            _teacherLogger = teacherLogger;
         }
 
 
@@ -34,11 +39,20 @@ namespace Bot.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            var req = Request.Body;
-            var updateJson = await new StreamReader(req).ReadToEndAsync();
+            try
+            {
+                var req = Request.Body;
+                var updateJson = await new StreamReader(req).ReadToEndAsync();
 
-            Update update = JsonConvert.DeserializeObject<Update>(updateJson);
-            await _messageHandlerManager.HandleUpdate(update);
+                await _teacherLogger.Log("InstagramHelper OnNewUpdate body: " + updateJson);
+
+                Update update = JsonConvert.DeserializeObject<Update>(updateJson);
+                await _messageHandlerManager.HandleUpdate(update);
+            }
+            catch (Exception e)
+            {
+                await _teacherLogger.Log("InstagramHelper OnNewUpdate exception: " + e.Message);
+            }
 
             return Ok();
         }

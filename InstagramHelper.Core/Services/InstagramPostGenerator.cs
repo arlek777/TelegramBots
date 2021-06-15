@@ -4,19 +4,19 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace InstagramHelper.Core
+namespace InstagramHelper.Core.Services
 {
-    public interface IInstagramPostGenerator
+    public interface IHashTagsCaptionsService
     {
         Task<string> GenerateHashTags(string keyword);
         Task<string> GenerateCaption(string keyword);
     }
 
-    public class InstagramPostGenerator: IInstagramPostGenerator
+    public class HashTagsCaptionsService: IHashTagsCaptionsService
     {
         private string _captionsPath;
 
-        public InstagramPostGenerator(string captionsPath)
+        public HashTagsCaptionsService(string captionsPath)
         {
             _captionsPath = captionsPath;
         }

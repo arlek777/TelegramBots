@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using InstagramHelper.Core.Services;
 using MediatR;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
@@ -20,9 +21,9 @@ namespace InstagramHelper.Core.MessageHandlers
     public class GenerateInstagramPostMessageHandler : IRequestHandler<GenerateInstagramPostMessageRequest, bool>
     {
         private readonly ITelegramService<InstagramHelperBot> _telegramService;
-        private readonly IInstagramPostGenerator _hashTagGenerator;
+        private readonly IHashTagsCaptionsService _hashTagGenerator;
 
-        public GenerateInstagramPostMessageHandler(ITelegramService<InstagramHelperBot> telegramService, IInstagramPostGenerator hashTagGenerator)
+        public GenerateInstagramPostMessageHandler(ITelegramService<InstagramHelperBot> telegramService, IHashTagsCaptionsService hashTagGenerator)
         {
             _telegramService = telegramService;
             _hashTagGenerator = hashTagGenerator;
@@ -49,8 +50,11 @@ namespace InstagramHelper.Core.MessageHandlers
                 .Replace("#bhfyp", "")
                 .Trim();
 
+            string tagsWithCaption = $"{caption} \n.\n.\n.\n.\n {hashTags}";
+
             await _telegramService.SendTextMessage(userId, caption);
             await _telegramService.SendTextMessage(userId, hashTags);
+            await _telegramService.SendTextMessage(userId, tagsWithCaption);
 
             return true;
         }

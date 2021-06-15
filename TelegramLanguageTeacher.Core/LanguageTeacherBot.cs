@@ -1,6 +1,6 @@
 ﻿using TelegramBots.Common.Services;
 
-namespace TelegramLanguageTeacher.Core.Models
+namespace TelegramLanguageTeacher.Core
 {
     public class LanguageTeacherBot: TelegramBotInstance
     {
