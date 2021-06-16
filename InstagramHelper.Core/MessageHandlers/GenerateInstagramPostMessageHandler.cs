@@ -34,9 +34,9 @@ namespace InstagramHelper.Core.MessageHandlers
             var update = request.Update;
 
             var userId = update.Message.From.Id;
-            var messageText = update.Message.Text.Replace(" ", "").Trim().ToLowerInvariant();
+            var messageText = update.Message.Text.Trim().ToLowerInvariant();
 
-            if (string.IsNullOrEmpty(messageText) || messageText.Length > 25)
+            if (string.IsNullOrWhiteSpace(messageText) || messageText.Length > 35)
             {
                 await _telegramService.SendTextMessage(userId, "Please, send us text no longer 25 symbols.");
                 return true;
@@ -51,17 +51,15 @@ namespace InstagramHelper.Core.MessageHandlers
                 return true;
             }
 
-            hashTags = hashTags
-                .Replace("#instagram", "")
-                .Replace("#ig", "")
-                .Replace("#bhfyp", "")
-                .Trim();
-
-            string tagsWithCaption = $"{caption} \n.\n.\n.\n.\n {hashTags}";
-
-            await _telegramService.SendTextMessage(userId, caption);
             await _telegramService.SendTextMessage(userId, hashTags);
-            await _telegramService.SendTextMessage(userId, tagsWithCaption);
+
+            if (!string.IsNullOrWhiteSpace(caption))
+            {
+                string tagsWithCaption = $"{caption} \n.\n.\n.\n.\n {hashTags}";
+
+                await _telegramService.SendTextMessage(userId, caption);
+                await _telegramService.SendTextMessage(userId, tagsWithCaption);
+            }
 
             return true;
         }
