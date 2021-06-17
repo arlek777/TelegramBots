@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
-using TelegramLanguageTeacher.Core.Services;
 
 namespace Bot.API.Controllers
 {
@@ -19,12 +18,12 @@ namespace Bot.API.Controllers
 
         private readonly ITelegramMessageHandlerManager<InstagramHelperBot> _messageHandlerManager;
         private readonly ITelegramService<InstagramHelperBot> _telegramService;
-        private readonly ILanguageTeacherLogger _teacherLogger;
+        private readonly IDefaultLogger _teacherLogger;
 
         public InstagramHelperController(
             ITelegramMessageHandlerManager<InstagramHelperBot> messageHandlerManager, 
             ITelegramService<InstagramHelperBot> telegramService, 
-            ILanguageTeacherLogger teacherLogger)
+            IDefaultLogger teacherLogger)
         {
             _messageHandlerManager = messageHandlerManager;
             _telegramService = telegramService;
@@ -33,7 +32,7 @@ namespace Bot.API.Controllers
 
 
         /// <summary>
-        /// Telegram webhook main method to receive updates.
+        /// Telegram web hook main method to receive updates.
         /// </summary>
         [Route("OnNewUpdate")]
         [HttpPost]
@@ -58,7 +57,7 @@ namespace Bot.API.Controllers
         }
 
         /// <summary>
-        /// For local testing. Won't work till Webhook is enabled
+        /// For local testing. Won't work till Web hook is enabled.
         /// </summary>
         [Route("GetUpdate")]
         [HttpGet]

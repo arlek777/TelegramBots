@@ -1,13 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TelegramLanguageTeacher.DomainModels;
+using TelegramBots.DomainModels;
+using TelegramBots.DomainModels.LanguageTeacher;
 
-namespace TelegramLanguageTeacher.DataAccess
+namespace TelegramBots.DataAccess
 {
-    public class ApplicationDbContext: DbContext
+    public class TelegramBotsDbContext: DbContext
     {
         private readonly string _connStr;
 
-        public ApplicationDbContext(string connectionStr)
+        public TelegramBotsDbContext(string connectionStr)
         {
            
             _connStr = connectionStr;
@@ -22,7 +23,9 @@ namespace TelegramLanguageTeacher.DataAccess
         {
             optionsBuilder.UseSqlServer(_connStr);
         }
+
         public DbSet<Log> Logs { get; set; }
+        public DbSet<BotsStatistic> BotsStatistics { get; set; }
 
         public DbSet<Dict> Dicts { get; set; }
         public DbSet<Word> Words { get; set; }

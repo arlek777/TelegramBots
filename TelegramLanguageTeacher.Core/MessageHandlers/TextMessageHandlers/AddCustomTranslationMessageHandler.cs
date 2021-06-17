@@ -4,10 +4,11 @@ using MediatR;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramBots.DomainModels.LanguageTeacher;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
-using TelegramLanguageTeacher.DomainModels;
+using User = TelegramBots.DomainModels.LanguageTeacher.User;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 {
@@ -55,7 +56,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 
             if (word == null)
             {
-                await _userService.CreateNewUser(new DomainModels.User()
+                await _userService.CreateNewUser(new User()
                 {
                     UserName = update.Message.From.FirstName,
                     TelegramUserId = update.Message.From.Id

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TelegramLanguageTeacher.DomainModels
+namespace TelegramBots.DomainModels.LanguageTeacher
 {
     public class Dict
     {

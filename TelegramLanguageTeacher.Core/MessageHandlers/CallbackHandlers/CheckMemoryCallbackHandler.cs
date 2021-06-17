@@ -6,10 +6,10 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramBots.DomainModels.LanguageTeacher;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
-using TelegramLanguageTeacher.DomainModels;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 {

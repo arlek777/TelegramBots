@@ -15,12 +15,16 @@ namespace TelegramBots.Common.MessageHandling
     public class TelegramMessageHandlerManager<T> : ITelegramMessageHandlerManager<T> where T : TelegramBotInstance
     {
         private readonly IMediatrRequestsRepository<T> _requestRepository;
+        private readonly ITelegramBotsStatisticService _botsStatisticService;
         private readonly IMediator _mediator;
 
-        public TelegramMessageHandlerManager(IMediator mediator, IMediatrRequestsRepository<T> requestsRepository)
+        public TelegramMessageHandlerManager(IMediator mediator, 
+            IMediatrRequestsRepository<T> requestsRepository, 
+            ITelegramBotsStatisticService botsStatisticService)
         {
             _mediator = mediator;
             _requestRepository = requestsRepository;
+            _botsStatisticService = botsStatisticService;
         }
 
         public async Task HandleUpdate(Update update)
@@ -31,6 +35,7 @@ namespace TelegramBots.Common.MessageHandling
                 throw new NullReferenceException("Request is null.");
             }
 
+            await _botsStatisticService.CheckAndTrackIfNewUserJoined(update);
             await _mediator.Send(request);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
-using TelegramLanguageTeacher.DomainModels;
+using TelegramBots.DomainModels.LanguageTeacher;
 
 namespace TelegramLanguageTeacher.Core.Helpers
 {

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TelegramBots.Common.DataAccess;
-using TelegramLanguageTeacher.DataAccess;
-using TelegramLanguageTeacher.DomainModels;
+using TelegramBots.DataAccess;
+using TelegramBots.DataAccess.LanguageTeacher;
+using TelegramBots.DomainModels;
+using TelegramBots.DomainModels.LanguageTeacher;
 
 namespace TelegramLanguageTeacher.Core.Services
 {

@@ -8,10 +8,11 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramBots.DomainModels.LanguageTeacher;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
-using TelegramLanguageTeacher.DomainModels;
+using User = TelegramBots.DomainModels.LanguageTeacher.User;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 {
@@ -31,14 +32,14 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         private readonly ITranslatorService _translatorService;
         private readonly ITelegramService<LanguageTeacherBot> _telegramService;
         private readonly IWordNormalizationService _normalizationService;
-        private readonly ILanguageTeacherLogger _logger;
+        private readonly IDefaultLogger _logger;
 
         public TranslateAndAddWordMessageHandler(IWordService wordService, 
             IUserService userService, 
             ITranslatorService translatorService, 
             ITelegramService<LanguageTeacherBot> telegramService,
             IWordNormalizationService normalizationService, 
-            ILanguageTeacherLogger logger)
+            IDefaultLogger logger)
         {
             _wordService = wordService;
             _userService = userService;
@@ -147,7 +148,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 
             if (word == null)
             {
-                await _userService.CreateNewUser(new DomainModels.User()
+                await _userService.CreateNewUser(new User()
                 {
                     UserName = update.Message.From.FirstName,
                     TelegramUserId = update.Message.From.Id

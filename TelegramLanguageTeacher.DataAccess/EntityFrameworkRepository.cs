@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace TelegramBots.Common.DataAccess
+namespace TelegramBots.DataAccess
 {
     public class EntityFrameworkRepository : IGenericRepository
     {

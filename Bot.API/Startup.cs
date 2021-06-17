@@ -10,16 +10,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TelegramBots.Common.DataAccess;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramBots.DataAccess;
 using TelegramLanguageTeacher.Core;
 using TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers;
 using TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers;
-using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
-using TelegramLanguageTeacher.DataAccess;
 
 namespace Bot.API
 {
@@ -72,11 +70,13 @@ namespace Bot.API
 
             services.AddTransient<DbContext>(d =>
             {
-                var context = new ApplicationDbContext(connString);
+                var context = new TelegramBotsDbContext(connString);
                 context.CreateDb();
                 return context;
             });
 
+            services.AddTransient<IDefaultLogger, TelegramBotsDbLogger>();
+            services.AddTransient<ITelegramBotsStatisticService, TelegramBotsStatisticService>();
             services.AddTransient<IGenericRepository, EntityFrameworkRepository>();
         }
 
@@ -85,7 +85,6 @@ namespace Bot.API
             var lgTchBot = new LanguageTeacherBot(LanguageTeacherConstants.TelegramToken);
             services.AddTransient<ITelegramService<LanguageTeacherBot>>(t => new TelegramService<LanguageTeacherBot>(lgTchBot));
 
-            services.AddTransient<ILanguageTeacherLogger, DefaultLanguageTeacherLogger>();
             services.AddTransient<ITranslatorService, TranslatorService>();
             services.AddTransient<IWordService, WordService>();
             services.AddTransient<IUserService, UserService>();

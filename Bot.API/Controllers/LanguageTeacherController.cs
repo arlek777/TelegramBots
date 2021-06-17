@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
+using TelegramBots.Common;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core;
@@ -18,14 +18,13 @@ namespace Bot.API.Controllers
     {
         private readonly ITelegramMessageHandlerManager<LanguageTeacherBot> _messageHandlerManager;
         private readonly ITelegramService<LanguageTeacherBot> _telegramService;
-        private readonly ILanguageTeacherLogger _logger;
+        private readonly IDefaultLogger _logger;
         private readonly IUserService _userService;
 
         private static int _lastUpdateId;
-        private static string _token = "englishTelegramTeacher";
 
         public LanguageTeacherController(
-            ILanguageTeacherLogger logger, 
+            IDefaultLogger logger, 
             ITelegramMessageHandlerManager<LanguageTeacherBot> messageHandlerManager, 
             ITelegramService<LanguageTeacherBot> telegramService,
             IUserService userService)
@@ -36,33 +35,22 @@ namespace Bot.API.Controllers
             _logger = logger;
         }
 
-        [Route("GetLogs")]
-        [HttpGet]
-        public async Task<IActionResult> GetLogs([FromQuery] string token)
-        {
-            if (!_token.Equals(token))
-                return BadRequest();
-
-            var logs = await _logger.GetLogs();
-            return Ok(string.Join("\n\n", logs.OrderByDescending(l => l.Date).Select(l => "DATE: " + l.Date + " - " + l.Text).ToList()));
-        }
-
         [Route("GetStats")]
         [HttpGet]
-        public async Task<IActionResult> GetStats([FromQuery] string token)
+        public async Task<IActionResult> GetAllUsers([FromQuery] string token)
         {
-            if (!_token.Equals(token))
+            if (!InternalAccessKeys.Key.Equals(token))
                 return BadRequest();
 
             var result = await _userService.GetAllUsers();
             return Ok(JsonConvert.SerializeObject(result));
         }
 
-        [Route("SendUpdate")]
+        [Route("SendBotUpdateMessage")]
         [HttpGet]
-        public async Task<IActionResult> SendUpdate([FromQuery] string token, [FromQuery] string text)
+        public async Task<IActionResult> SendBotUpdateMessage([FromQuery] string token, [FromQuery] string text)
         {
-            if (!_token.Equals(token))
+            if (!InternalAccessKeys.Key.Equals(token))
                 return BadRequest();
 
             var result = await _userService.GetAllUsers();
@@ -75,20 +63,8 @@ namespace Bot.API.Controllers
             return Ok();
         }
 
-        //[Route("DailyMailing")]
-        //[HttpGet]
-        //public async Task<IActionResult> DailyMailing([FromQuery] string token)
-        //{
-        //    if (!_token.Equals(token))
-        //        return BadRequest();
-
-        //    await _dailyMailer.Mail();
-
-        //    return Ok();
-        //}
-
         /// <summary>
-        /// Telegram webhook main method to receive updates.
+        /// Telegram web hook main method to receive updates.
         /// </summary>
         [Route("OnNewUpdate")]
         [HttpPost]
@@ -114,7 +90,7 @@ namespace Bot.API.Controllers
         }
 
         /// <summary>
-        /// For local testing. Won't work till Webhook is enabled
+        /// For local testing. Won't work till Web hook is enabled.
         /// </summary>
         [Route("GetUpdate")]
         [HttpGet]
