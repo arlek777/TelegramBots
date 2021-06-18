@@ -10,42 +10,37 @@ namespace InstagramHelper.Core.Services
 {
     public interface IHashTagsCaptionsService
     {
-        Task<string> GetHashTags(string keyword);
+        Task<string[]> GetHashTags(string[] keywords, int totalHashTagsCount);
         Task<string> GetRandomCaption(string keyword);
     }
 
     public class HashTagsCaptionsService: IHashTagsCaptionsService
     {
         private readonly string _captionsPath;
-        private const int MaxHashTagAmount = 30;
-        private const int MaxWordsToSplit = 3;
 
         public HashTagsCaptionsService(string captionsPath)
         {
             _captionsPath = captionsPath;
         }
 
-        public async Task<string> GetHashTags(string keyword)
+        public async Task<string[]> GetHashTags(string[] keywords, int totalHashTagsCount)
         {
-            var keywords = keyword.Split(' ').Take(MaxWordsToSplit).ToArray();
-
-            StringBuilder sb = new StringBuilder();
-            int tagsChunkSize = MaxHashTagAmount / keywords.Length;
+            var hashTags = new List<string>();
+            int tagsChunkSize = totalHashTagsCount / keywords.Length;
 
             foreach (var word in keywords)
             {
-                var hashTags = await GetHashTagsFromWeb(word);
-                sb.Append(CleanAndChunkHashTags(hashTags, tagsChunkSize) + " ");
+                var hashTagsResult = await GetHashTagsFromWeb(word);
+                hashTags.AddRange(CleanAndChunkHashTags(hashTagsResult, tagsChunkSize));
             }
 
-            return sb.ToString();
+            return hashTags.ToArray();
         }
 
         public async Task<string> GetRandomCaption(string keyword)
         {
             try
             {
-                keyword = keyword.Split(' ')[0];
                 var caption = await SearchCaptionInWeb(keyword);
 
                 if (string.IsNullOrWhiteSpace(caption))
@@ -63,11 +58,11 @@ namespace InstagramHelper.Core.Services
         }
 
 
-        private string CleanAndChunkHashTags(string hashTags, int tagsChunkSize)
+        private string[] CleanAndChunkHashTags(string hashTags, int tagsChunkSize)
         {
             if (string.IsNullOrWhiteSpace(hashTags))
             {
-                return string.Empty;
+                return null;
             }
 
             var result = hashTags
@@ -77,9 +72,10 @@ namespace InstagramHelper.Core.Services
                 .Select(h => h.Replace("#instagram", "")
                     .Replace("#ig", "")
                     .Replace("#bhfyp", "")
-                    .Trim());
+                    .Trim())
+                .ToArray();
 
-            return string.Join(' ', result);
+            return result;
         }
 
         private async Task<string> GetHashTagsFromWeb(string keyword)
