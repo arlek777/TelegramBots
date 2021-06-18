@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,9 +41,9 @@ namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
 
             int userId = update.Message.From.Id;
             string messageText = update.Message.Text.Trim().ToLowerInvariant();
-            bool sendByChunks = messageText.StartsWith('/');
+            bool sendByChunks = messageText.StartsWith('\\');
 
-            messageText = messageText.Replace("/", "");
+            messageText = messageText.Replace("\\", "");
 
             if (string.IsNullOrWhiteSpace(messageText) || messageText.Length > 35)
             {

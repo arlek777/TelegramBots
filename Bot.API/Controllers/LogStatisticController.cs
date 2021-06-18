@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TelegramBots.Common;
 using TelegramBots.Common.Services;
 
@@ -50,7 +51,8 @@ namespace Bot.API.Controllers
                 return BadRequest();
 
             var stats = await _botsStatisticService.GetStats();
-            return Ok(string.Join("\n\n", stats.ToList()));
+
+            return Ok(JsonConvert.SerializeObject(stats));
         }
     }
 }

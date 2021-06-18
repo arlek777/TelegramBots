@@ -39,12 +39,12 @@ namespace TelegramLanguageTeacher.Core.Helpers
                 formatted.AppendLine(formattedExamples.Trim());
             }
 
-            if (string.IsNullOrWhiteSpace(word.Examples) && string.IsNullOrWhiteSpace(word.Definition) &&
-                splitTranslations.Length == 1 && word.Original.Count(c => c == ' ') < 4)
-            {
-                formatted.AppendLine();
-                formatted.AppendLine($"Look more translations at https://idioms.thefreedictionary.com/{word.Original.Trim().Replace(" ", "+")}");
-            }
+            //if (string.IsNullOrWhiteSpace(word.Examples) && string.IsNullOrWhiteSpace(word.Definition) &&
+            //    splitTranslations.Length == 1 && word.Original.Count(c => c == ' ') < 4)
+            //{
+            //    formatted.AppendLine();
+            //    formatted.AppendLine($"Look more translations at https://idioms.thefreedictionary.com/{word.Original.Trim().Replace(" ", "+")}");
+            //}
 
             var result = formatted.ToString();
 

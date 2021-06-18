@@ -28,7 +28,7 @@ namespace TelegramBots.Common.Services
             if (!update.IsTextMessage())
                 return;
 
-            var existingStat = await _genericRepository.Find<BotsStatistic>(s => s.UserId == update.Message.From.Id);
+            var existingStat = await _genericRepository.Find<BotsStatistic>(s => s.UserId == update.Message.From.Id && s.BotType == botType.Name);
             if (existingStat == null)
             {
                 _genericRepository.Add(new BotsStatistic()
