@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using InstagramHelper.Core;
 using InstagramHelper.Core.MessageHandlers;
+using InstagramHelper.Core.MessageHandlers.CallbackHandlers;
+using InstagramHelper.Core.MessageHandlers.TextMessageHandlers;
 using InstagramHelper.Core.Services;
 using LemmaSharp;
 using MediatR;
@@ -138,12 +140,13 @@ namespace Bot.API
 
         private void AddInstagramHelperMediatR(IServiceCollection services)
         {
-            services.AddMediatR(typeof(GenerateInstagramPostMessageHandler).Assembly);
+            services.AddMediatR(typeof(GenerateHashTagsAndCaptionMessageHandler).Assembly);
 
             // Instagram helper
             var requests = new List<BaseRequest>()
             {
-                new GenerateInstagramPostMessageRequest()
+                new GenerateHashTagsAndCaptionMessageRequest(),
+                new RegenerateCaptionCallbackRequest()
             };
 
             services.AddSingleton<IMediatrRequestsRepository<InstagramHelperBot>>(s => new MediatrRequestsRepository<InstagramHelperBot>(requests));

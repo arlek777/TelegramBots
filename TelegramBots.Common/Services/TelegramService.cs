@@ -17,7 +17,7 @@ namespace TelegramBots.Common.Services
     public interface ITelegramService<T> where T: TelegramBotInstance
     {
         Task<Update> GetUpdate(int lastUpdateId);
-        Task<Message> SendTextMessage(int userId, string text);
+        Task<Message> SendTextMessage(int userId, string text, ParseMode parseMode = ParseMode.Html);
         Task<Message> SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup);
         Task SendAudioMessage(int userId, string audioLink, string name);
         Task SetWebHook(string url);
@@ -42,9 +42,9 @@ namespace TelegramBots.Common.Services
                 .FirstOrDefault();
         }
 
-        public async Task<Message> SendTextMessage(int userId, string text)
+        public async Task<Message> SendTextMessage(int userId, string text, ParseMode parseMode = ParseMode.Html)
         {
-            return await _bot.SendTextMessageAsync(new ChatId(userId), text, ParseMode.Html);
+            return await _bot.SendTextMessageAsync(new ChatId(userId), text, parseMode);
         }
 
         public async Task SendAudioMessage(int userId, string audioLink, string name)
@@ -56,7 +56,7 @@ namespace TelegramBots.Common.Services
         public async Task<Message> SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup)
         {
             return await _bot.SendTextMessageAsync(new ChatId(userId), text,
-                replyMarkup: markup, parseMode: ParseMode.Markdown);
+                replyMarkup: markup, parseMode: ParseMode.Html);
         }
 
         public async Task SetWebHook(string url)

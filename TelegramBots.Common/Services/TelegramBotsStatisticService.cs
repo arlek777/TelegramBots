@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using TelegramBots.Common.MessageHandling;
 using TelegramBots.DataAccess;
 using TelegramBots.DomainModels;
 
@@ -9,7 +10,7 @@ namespace TelegramBots.Common.Services
 {
     public interface ITelegramBotsStatisticService
     {
-        Task CheckAndTrackIfNewUserJoined(Update update);
+        Task CheckAndTrackIfNewUserJoined(Update update, Type botType);
         Task<IEnumerable<BotsStatistic>> GetStats();
     }
 
@@ -22,17 +23,20 @@ namespace TelegramBots.Common.Services
             _genericRepository = genericRepository;
         }
 
-        public async Task CheckAndTrackIfNewUserJoined(Update update)
+        public async Task CheckAndTrackIfNewUserJoined(Update update, Type botType)
         {
+            if (!update.IsTextMessage())
+                return;
+
             var existingStat = await _genericRepository.Find<BotsStatistic>(s => s.UserId == update.Message.From.Id);
             if (existingStat == null)
             {
                 _genericRepository.Add(new BotsStatistic()
                 {
-                    BotType = update.Message.ViaBot.Username,
+                    BotType = botType.Name,
                     JoinedDate = DateTime.UtcNow,
                     UserId = update.Message.From.Id,
-                    UserName = update.Message.From.Username
+                    UserName = $"{update.Message.From.Username} {update.Message.From.FirstName} {update.Message.From.LastName}"
                 });
 
                 await _genericRepository.SaveChanges();

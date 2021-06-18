@@ -1,24 +1,26 @@
 ﻿using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using InstagramHelper.Core.Services;
 using MediatR;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 
-namespace InstagramHelper.Core.MessageHandlers
+namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
 {
-    public class GenerateInstagramPostMessageRequest : BaseRequest
+    public class GenerateHashTagsAndCaptionMessageRequest : BaseRequest
     {
         public override bool AcceptUpdate(Update update)
         {
             Update = update;
-            return true;
+            return update.IsTextMessage();
         }
     }
 
-    public class GenerateInstagramPostMessageHandler : IRequestHandler<GenerateInstagramPostMessageRequest, bool>
+    public class GenerateHashTagsAndCaptionMessageHandler : IRequestHandler<GenerateHashTagsAndCaptionMessageRequest, bool>
     {
         private readonly ITelegramService<InstagramHelperBot> _telegramService;
         private readonly IHashTagsCaptionsService _hashTagGenerator;
@@ -26,13 +28,13 @@ namespace InstagramHelper.Core.MessageHandlers
         private const int MaxHashTagAmount = 30;
         private const int MaxWordsToSplit = 3;
 
-        public GenerateInstagramPostMessageHandler(ITelegramService<InstagramHelperBot> telegramService, IHashTagsCaptionsService hashTagGenerator)
+        public GenerateHashTagsAndCaptionMessageHandler(ITelegramService<InstagramHelperBot> telegramService, IHashTagsCaptionsService hashTagGenerator)
         {
             _telegramService = telegramService;
             _hashTagGenerator = hashTagGenerator;
         }
 
-        public async Task<bool> Handle(GenerateInstagramPostMessageRequest request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(GenerateHashTagsAndCaptionMessageRequest request, CancellationToken cancellationToken)
         {
             Update update = request.Update;
 
@@ -51,7 +53,7 @@ namespace InstagramHelper.Core.MessageHandlers
             var keywords = messageText.Split(' ').Take(MaxWordsToSplit).ToArray();
             var mainKeyword = keywords[0];
 
-            var caption = await _hashTagGenerator.GetRandomCaption(mainKeyword);
+            var caption = await _hashTagGenerator.GetCaption(mainKeyword);
             var hashTags = await _hashTagGenerator.GetHashTags(keywords, MaxHashTagAmount);
 
             if (hashTags == null || !hashTags.Any())
@@ -62,12 +64,11 @@ namespace InstagramHelper.Core.MessageHandlers
 
             if (!string.IsNullOrWhiteSpace(caption))
             {
-                await _telegramService.SendTextMessage(userId, caption);
-                //await _telegramService.SendInlineButtonMessage(userId, string.Empty, new InlineKeyboardMarkup(new InlineKeyboardButton()
-                //{
-                //    CallbackData = "regenerateCaption_" + update.Message.MessageId,
-                //    Text = "Regenerate Caption"
-                //}));
+                await _telegramService.SendInlineButtonMessage(userId, caption, new InlineKeyboardMarkup(new InlineKeyboardButton()
+                {
+                    CallbackData = $"{InstagramHelperCommands.RegenerateCaption}_{mainKeyword}",
+                    Text = InstagramTexts.RegenerateCaption
+                }));
             }
 
             return sendByChunks ? await SendHashTagsByChunks(userId, hashTags) : await SendAllHashTags(userId, hashTags, caption);

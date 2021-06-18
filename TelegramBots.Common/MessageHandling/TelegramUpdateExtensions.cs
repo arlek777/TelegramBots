@@ -1,7 +1,7 @@
 ﻿using System;
 using Telegram.Bot.Types;
 
-namespace TelegramLanguageTeacher.Core.Helpers
+namespace TelegramBots.Common.MessageHandling
 {
     public static class TelegramUpdateExtensions 
     {

@@ -11,7 +11,7 @@ namespace InstagramHelper.Core.Services
     public interface IHashTagsCaptionsService
     {
         Task<string[]> GetHashTags(string[] keywords, int totalHashTagsCount);
-        Task<string> GetRandomCaption(string keyword);
+        Task<string> GetCaption(string keyword);
     }
 
     public class HashTagsCaptionsService: IHashTagsCaptionsService
@@ -37,7 +37,7 @@ namespace InstagramHelper.Core.Services
             return hashTags.ToArray();
         }
 
-        public async Task<string> GetRandomCaption(string keyword)
+        public async Task<string> GetCaption(string keyword)
         {
             try
             {
