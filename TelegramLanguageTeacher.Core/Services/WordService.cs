@@ -136,7 +136,7 @@ namespace TelegramLanguageTeacher.Core.Services
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
-            var wordCount = user?.Dicts.FirstOrDefault()?.Words.Count(w => IsTodayOrPastDate(w.NextRepeat));
+            var wordCount = user?.Dicts.FirstOrDefault()?.Words.Count(IsWordToRepeatToday);
 
             return wordCount ?? 0;
         }
@@ -146,7 +146,7 @@ namespace TelegramLanguageTeacher.Core.Services
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
             var word = user?.Dicts.FirstOrDefault()?.Words
-                .Where(w => IsTodayOrPastDate(w.NextRepeat))
+                .Where(IsWordToRepeatToday)
                 .OrderByDescending(w => w.NextRepeat)
                 .ThenBy(w => w.Rate)
                 .FirstOrDefault();
@@ -156,13 +156,26 @@ namespace TelegramLanguageTeacher.Core.Services
 
         private DateTime GetNextRepeatDateByRate(Word word, int rate, DateTime now)
         {
+            if (word.RepeatCount >= 4 && rate == 3 && word.Rate >= 2)
+            {
+                return now.AddDays(60);
+            }
+
             return word.RepeatCount < 1 || rate == 1 ? now.AddDays(1) : now.AddDays(word.RepeatCount * rate);
         }
 
-        private bool IsTodayOrPastDate(DateTime dt)
+        private bool IsWordToRepeatToday(Word word)
         {
+            if (word.RepeatCount >= 6 && word.Rate == 3)
+            {
+                return false;
+            }
+
             var now = DateTime.UtcNow;
-            return new DateTime(now.Year, now.Month, now.Day) >= new DateTime(dt.Year, dt.Month, dt.Day);
+            var dt = word.NextRepeat;
+            var pastOrToday = new DateTime(now.Year, now.Month, now.Day) >= new DateTime(dt.Year, dt.Month, dt.Day);
+
+            return pastOrToday;
         }
     }
 }
