@@ -35,12 +35,12 @@
                                    "To repeat your words, type /repeat command. \nGood Luck !:)";
 
         public const string CheckMemory = "Check your memory";
-        public const string NoTranslationFound = "Sorry, we could not found any translation :(";
+        public const string NoTranslationFound = "Sorry, we could not found translations :(";
 
         public const string RepeatReminderText = "Hi, how are you?) It's time to repeat your words!";
         public const string WordOfTheDayText = "Let's see what we have today as the word of the day...";
 
-        public const string AddCustomTranslation = "To add your own translation, just send a message in the format\n\n wordToTranslate::yourCustomTranslation";
+        public const string AddCustomTranslation = "Try re-phrase it or add your translation in format\n\n word::your translation";
 
         public const string StartRepeating = "Start Repeating";
         public const string RemoveWord = "Remove";

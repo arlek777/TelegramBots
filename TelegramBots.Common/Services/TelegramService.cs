@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -49,8 +50,16 @@ namespace TelegramBots.Common.Services
 
         public async Task SendAudioMessage(int userId, string audioLink, string name)
         {
-            var file = await new HttpClient().GetStreamAsync(audioLink);
-            await _bot.SendAudioAsync(new ChatId(userId), new InputOnlineFile(file, name), caption: "\U0001F3A7", disableNotification:true);
+            try
+            {
+                var file = await new HttpClient().GetStreamAsync(audioLink.Replace("//", "https://"));
+                await _bot.SendAudioAsync(new ChatId(userId), new InputOnlineFile(file, name), caption: "\U0001F3A7",
+                    disableNotification: true);
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
 
         public async Task<Message> SendInlineButtonMessage(int userId, string text, InlineKeyboardMarkup markup)

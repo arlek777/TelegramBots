@@ -5,9 +5,12 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TelegramBots.Common;
+using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Models.Requests;
 using TelegramLanguageTeacher.Core.Models.Responses;
 
@@ -16,13 +19,44 @@ namespace TelegramLanguageTeacher.Core.Services
     public interface ITranslatorService
     {
         Task<WordTranslationResponse> Translate(string text);
+        Task<WordTranslationResponse> TranslateFromRussian(string text);
     }
 
     public class TranslatorService : ITranslatorService
     {
         private const string AzureTranslatorEndpoint = "https://api.cognitive.microsofttranslator.com/";
-        private const string DictionaryApiEndpoint = "https://api.dictionaryapi.dev/api/v2/entries/en_US/";
+        private const string FreeDictionaryApiEndpoint = "https://api.dictionaryapi.dev/api/v2/entries/en_US/";
+        private const string IdiomsDictionaryApiEndpoint = "https://idioms.thefreedictionary.com/";
         private const string AzureLocation = "global";
+
+        public async Task<WordTranslationResponse> TranslateFromRussian(string text)
+        {
+            string fromLang = "ru";
+            string toLang = "en";
+
+            var request = new TranslationRequest()
+            {
+                From = fromLang,
+                To = toLang,
+                Text = text
+            };
+
+            WordTranslationResponse response = new WordTranslationResponse()
+            {
+                Word = text
+            };
+
+            var textTranslation = await GetTextTranslation(request);
+            var translationFound = !textTranslation.Translation.Equals(text, StringComparison.InvariantCultureIgnoreCase);
+
+            if (translationFound)
+            {
+                var wordTranslation = new WordTranslation() { Translation = textTranslation.Translation };
+                response.Translations = response.Translations.Append(wordTranslation).ToList();
+            }
+
+            return response;
+        }
 
         public async Task<WordTranslationResponse> Translate(string text)
         {
@@ -42,59 +76,49 @@ namespace TelegramLanguageTeacher.Core.Services
                 Text = text
             };
 
-            WordTranslationResponse result;
+            WordTranslationResponse response;
 
             try
             {
-                result = await GetWordTranslation(request);
-                await GetAudioAndDefinition(result);
+                response = await GetAzureWordTranslation(request);
+                await AddAudioAndDefinition(response);
 
-                // If no translations found, try to translate a text directly
-                if (!result.Translations.Any())
+                // If no translations found, try to get it from idioms dictionary and then try to translate a text directly
+                if (!response.Translations.Any() && response.Definitions.Count() <= 1)
                 {
-                    var textTranslation = await GetTextTranslation(request);
-                    bool translationFound = !textTranslation.Translation.Equals(text, StringComparison.InvariantCultureIgnoreCase);
-
-                    if (translationFound)
-                    {
-                        var wordTranslation = new WordTranslation() {Translation = textTranslation.Translation};
-                        result.Translations = result.Translations.Append(wordTranslation).ToList();
-                    }
+                    await TryAddIdiomsDefinitions(response);
                 }
 
-                // Try to find examples for word
-                if (result.Translations.Any())
+                // Try to find examples for word in Azure
+                if (response.Translations.Any())
                 {
                     var exampleRequest = new WordExampleRequest()
                     {
                         From = "en",
                         To = "ru",
-                        Text = toLang == "en" ? result.Translations.FirstOrDefault()?.Translation : text,
-                        Translation = toLang == "en" ? text : result.Translations.FirstOrDefault()?.Translation
+                        Text = toLang == "en" ? response.Translations.FirstOrDefault()?.Translation : text,
+                        Translation = toLang == "en" ? text : response.Translations.FirstOrDefault()?.Translation
                     };
-                    var examples = await GetExamples(exampleRequest);
+                    var examples = await GetExamplesFromAzure(exampleRequest);
 
-                    if (examples != null)
-                    {
-                        // Concat with word definition examples
-                        result.Examples = result.Definitions.Select(d => d.Example).Concat(examples);
-                    }
-                    else
-                    {
-                        result.Examples = result.Definitions.Select(d => d.Example).ToList();
-                    }
+                    response.Examples = examples != null 
+                        ? response.Definitions.Select(d => d.Example).Concat(examples) 
+                        : response.Definitions.Select(d => d.Example).ToList();
                 }
-
+                else
+                {
+                    response.Examples = response.Definitions.Select(d => d.Example);
+                }
             }
             catch (Exception)
             {
                 return new WordTranslationResponse();
             }
 
-            return result;
+            return response;
         }
 
-        private async Task GetAudioAndDefinition(WordTranslationResponse trResponse)
+        private async Task AddAudioAndDefinition(WordTranslationResponse trResponse)
         {
             try
             {
@@ -103,7 +127,7 @@ namespace TelegramLanguageTeacher.Core.Services
                 {
                     // Build the request.
                     request.Method = HttpMethod.Get;
-                    request.RequestUri = new Uri(DictionaryApiEndpoint + trResponse.Word);
+                    request.RequestUri = new Uri(FreeDictionaryApiEndpoint + trResponse.Word);
 
                     // Send the request and get response.
                     HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
@@ -128,6 +152,28 @@ namespace TelegramLanguageTeacher.Core.Services
             }
         }
 
+        private async Task TryAddIdiomsDefinitions(WordTranslationResponse trResponse)
+        {
+            try
+            {
+                string html = await HtmlPageDownloader.DownloadPage(IdiomsDictionaryApiEndpoint + HttpUtility.UrlEncode(trResponse.Word));
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var definitions = doc.DocumentNode.SelectNodes("//div[@class=\"ds-single\"]");
+
+                var result = definitions.Any(d => d != null) ? definitions.Select(d => new WordDefinition()
+                {
+                    Definition = d.InnerText,
+                }) : null;
+
+                trResponse.Definitions = trResponse.Definitions.Concat(new List<WordDefinition>() { result?.FirstOrDefault() });
+            }
+            catch (Exception e)
+            {
+            }
+        }
+
         private string TryToGetAudioLink(JToken json)
         {
             try
@@ -145,11 +191,14 @@ namespace TelegramLanguageTeacher.Core.Services
         {
             try
             {
+                if (meanings == null)
+                    return null;
+
                 return new WordDefinition()
                 {
-                    PartOfSpeech = meanings?[index]["partOfSpeech"].ToString(),
-                    Definition = meanings?[index]["definitions"]?[0]?["definition"].ToString(),
-                    Example = meanings?[index]["definitions"]?[0]?["example"].ToString()
+                    PartOfSpeech = TryGetValue(meanings[0], "partOfSpeech"),
+                    Definition = meanings[0]["definitions"]?[index]?["definition"].ToString(),
+                    Example = TryGetValue(meanings[0]["definitions"]?[index], "example")
                 };
             }
             catch
@@ -158,6 +207,18 @@ namespace TelegramLanguageTeacher.Core.Services
             }
 
             return null;
+        }
+
+        private string TryGetValue(JToken token, string key)
+        {
+            try
+            {
+                return token[key].ToString();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <remarks>
@@ -171,7 +232,7 @@ namespace TelegramLanguageTeacher.Core.Services
         ///     }
         ///
         /// </remarks>
-        private async Task<WordTranslationResponse> GetWordTranslation(TranslationRequest translationRequest)
+        private async Task<WordTranslationResponse> GetAzureWordTranslation(TranslationRequest translationRequest)
         {
             // See many translation options
             string route =
@@ -216,7 +277,7 @@ namespace TelegramLanguageTeacher.Core.Services
             }
         }
 
-        private async Task<IEnumerable<string>> GetExamples(WordExampleRequest wordExampleRequest)
+        private async Task<IEnumerable<string>> GetExamplesFromAzure(WordExampleRequest wordExampleRequest)
         {
             try
             {

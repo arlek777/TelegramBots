@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.36" />
     <PackageReference Include="LemmaSharp-std" Version="1.0.1" />
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.7.2" />

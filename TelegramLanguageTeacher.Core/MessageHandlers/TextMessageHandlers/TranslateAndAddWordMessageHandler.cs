@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -11,6 +12,7 @@ using TelegramBots.Common.Services;
 using TelegramBots.DomainModels.LanguageTeacher;
 using TelegramLanguageTeacher.Core.Helpers;
 using TelegramLanguageTeacher.Core.Models;
+using TelegramLanguageTeacher.Core.Models.Responses;
 using TelegramLanguageTeacher.Core.Services;
 using User = TelegramBots.DomainModels.LanguageTeacher.User;
 
@@ -60,18 +62,18 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             if (messageText.Length > 500)
                 return false;
 
-            messageText = messageText.Split(' ').Length == 1
-                ? _normalizationService.Normalize(messageText)
-                : messageText;
+            bool toNormalize = messageText.Split(' ').Length == 1;
+            messageText = toNormalize ? _normalizationService.Normalize(messageText) : CustomNormalize(messageText);
 
             // Translate or get from cache
-            Word translatedWord = await TranslateOrGetFromCache(userId, messageText);
+            Word translatedWord = await Translate(userId, messageText);
 
             await _logger.Log("Transalted: " + JsonConvert.SerializeObject(translatedWord));
 
-            if (string.IsNullOrWhiteSpace(translatedWord.Translate))
+            if (string.IsNullOrWhiteSpace(translatedWord.Translate) && string.IsNullOrWhiteSpace(translatedWord.Definition))
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTranslationFound);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTranslationFound + "\n\n" 
+                                                                                                       + TelegramMessageTexts.AddCustomTranslation);
                 return true;
             }
 
@@ -84,30 +86,48 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             return true;
         }
 
-        // Tries to get word from cache, if failed, translate it and add word to cache
-        private async Task<Word> TranslateOrGetFromCache(int userId, string text)
+        private string CustomNormalize(string word)
         {
-            var cached = await _wordService.GetWordFromCache(text);
+            if (word.StartsWith("to ", StringComparison.InvariantCultureIgnoreCase))
+            {
+                word = word.Remove(0, 3);
+            }
+
+            if (word.StartsWith("a ", StringComparison.InvariantCultureIgnoreCase))
+            {
+                word = word.Remove(0, 2);
+            }
+
+            if (word.StartsWith("an ", StringComparison.InvariantCultureIgnoreCase))
+            {
+                word = word.Remove(0, 3);
+            }
+
+            return word;
+        }
+
+        // Tries to get word from cache, if failed, translate it and add word to cache
+        private async Task<Word> Translate(int userId, string text)
+        {
             Word word = await _wordService.FindWordInUserDict(userId, text);
 
             if (word != null)
             {
                 return word;
             }
-            else if (cached != null)
-            {
-                word = new Word()
-                {
-                    Original = text,
-                    Translate = cached.Translate,
-                    Definition = cached.Definition,
-                    Examples = cached.Examples,
-                    AudioLink = cached.AudioLink
-                };
-            }
             else
             {
-                var translationResponse = await _translatorService.Translate(text);
+                WordTranslationResponse translationResponse;
+
+                if (Regex.IsMatch(text, @"\p{IsCyrillic}"))
+                {
+                    translationResponse = await _translatorService.TranslateFromRussian(text);
+                }
+
+                else
+                {
+                    translationResponse = await _translatorService.Translate(text);
+                }
 
                 var translations = translationResponse.Translations.Select(t => t.Translation).Take(LanguageTeacherConstants.TranslationCounts);
                 var examples = translationResponse.Examples.Take(LanguageTeacherConstants.ExamplesCount);
@@ -125,16 +145,6 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
                     Definition = joinedDefinitions,
                     AudioLink = translationResponse.AudioLink
                 };
-
-                //await _wordService.AddWordToCache(new CachedWord()
-                //{
-                //    AddedDate = DateTime.UtcNow,
-                //    Original = translationResponse.Word,
-                //    Translate = joinedTranslations,
-                //    Examples = joinedExamples,
-                //    Definition = joinedDefinitions,
-                //    AudioLink = translationResponse.AudioLink
-                //});
             }
 
             return word;

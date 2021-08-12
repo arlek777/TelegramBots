@@ -40,10 +40,10 @@ namespace TelegramLanguageTeacher.Core.Services
                 return null;
 
             var defaultDict = await _repository.Find<Dict>(d => d.UserId == user.Id);
-            if (defaultDict == null)
-                throw new ArgumentException("Dictionary is not found");
+            if (defaultDict == null || word.Original == null)
+                throw new ArgumentException("Dictionary is not found or translation is null");
 
-            var duplicatedWord = defaultDict.Words.FirstOrDefault(
+            var duplicatedWord = defaultDict.Words.Where(w => w?.Original != null).FirstOrDefault(
                 w => w.Original.Equals(word.Original, StringComparison.InvariantCultureIgnoreCase));
 
             if (duplicatedWord != null)
@@ -65,7 +65,7 @@ namespace TelegramLanguageTeacher.Core.Services
         public async Task RateWord(int userId, Guid wordId, int rate)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
-            var dbWord = user.Dicts.FirstOrDefault()?.Words
+            var dbWord = user.Dicts.FirstOrDefault()?.Words.Where(w => w?.Original != null)
                 .FirstOrDefault(w => w.Id == wordId);
 
             var now = DateTime.UtcNow;
@@ -82,7 +82,7 @@ namespace TelegramLanguageTeacher.Core.Services
         public async Task<Word> GetWord(int userId, Guid wordId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
-            var dbWord = user.Dicts.FirstOrDefault()?.Words
+            var dbWord = user.Dicts.FirstOrDefault()?.Words.Where(w => w.Original != null)
                 .FirstOrDefault(w => w.Id == wordId);
 
             return dbWord;
@@ -92,6 +92,7 @@ namespace TelegramLanguageTeacher.Core.Services
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var dbWord = user.Dicts.FirstOrDefault()?.Words
+                .Where(w => w?.Original != null)
                 .FirstOrDefault(w => w.Original.Equals(word, StringComparison.InvariantCultureIgnoreCase));
 
             return dbWord;
@@ -106,7 +107,7 @@ namespace TelegramLanguageTeacher.Core.Services
         public async Task<List<Word>> GetAllWords(int userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
-            var words = user.Dicts.FirstOrDefault()?.Words.OrderByDescending(w => w.AddedDate).ToList();
+            var words = user.Dicts.FirstOrDefault()?.Words.Where(w => w.Original != null).OrderByDescending(w => w.AddedDate).ToList();
 
             return words;
         }
@@ -136,7 +137,7 @@ namespace TelegramLanguageTeacher.Core.Services
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
-            var wordCount = user?.Dicts.FirstOrDefault()?.Words.Count(IsWordToRepeatToday);
+            var wordCount = user?.Dicts.FirstOrDefault()?.Words.Where(w => w.Original != null).Count(IsWordToRepeatToday);
 
             return wordCount ?? 0;
         }

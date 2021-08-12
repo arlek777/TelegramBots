@@ -27,24 +27,21 @@ namespace TelegramLanguageTeacher.Core.Helpers
             }
 
             // Translations
-            var splitTranslations = word.Translate.Split('\n');
-            string formattedTranslations = string.Join("\n", splitTranslations.Select(FormatTranslation).ToList());
-            formatted.AppendLine(formattedTranslations.Trim());
+            if (!string.IsNullOrWhiteSpace(word.Translate))
+            {
+                var splitTranslations = word.Translate.Split('\n');
+                string formattedTranslations = string.Join("\n", splitTranslations.Select(FormatTranslation).ToList());
+                formatted.AppendLine(formattedTranslations.Trim());
+                formatted.AppendLine();
+            }
 
             // Examples
             if (!string.IsNullOrWhiteSpace(word.Examples))
             {
-                string formattedExamples = string.Join("\n", word.Examples.Split('\n').Select(FormatExamples).ToList());
-                formatted.AppendLine();
+                string formattedExamples = string.Join("\n", word.Examples.Split('\n')
+                    .Where(e => !string.IsNullOrWhiteSpace(e)).Select(FormatExamples).ToList());
                 formatted.AppendLine(formattedExamples.Trim());
             }
-
-            //if (string.IsNullOrWhiteSpace(word.Examples) && string.IsNullOrWhiteSpace(word.Definition) &&
-            //    splitTranslations.Length == 1 && word.Original.Count(c => c == ' ') < 4)
-            //{
-            //    formatted.AppendLine();
-            //    formatted.AppendLine($"Look more translations at https://idioms.thefreedictionary.com/{word.Original.Trim().Replace(" ", "+")}");
-            //}
 
             var result = formatted.ToString();
 
@@ -53,9 +50,15 @@ namespace TelegramLanguageTeacher.Core.Helpers
 
         private static string FormatDefinition(string definition)
         {
-            var split = definition.Split('-');
+            var split = definition.Trim('-').Split('-');
             if (split.Length == 1)
-                return null;
+            {
+                if (split[0].EndsWith('.') && split[0].Split('.').Length > 2)
+                {
+                    split[0] = split[0].Replace(".", ".\n\n");
+                }
+                return "\U00002714 " + split[0];
+            }
 
             return "\U00002714 (" + split[0].Replace("transitive ", "") + ") " + split[1];
         }
@@ -67,7 +70,7 @@ namespace TelegramLanguageTeacher.Core.Helpers
 
         private static string FormatExamples(string text)
         {
-            return "\U000027A1 " + text;
+            return string.IsNullOrWhiteSpace(text) ? string.Empty : "\U000027A1 " + text;
         }
 
         public static string FormatOriginalWord(string text)
