@@ -117,17 +117,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             }
             else
             {
-                WordTranslationResponse translationResponse;
-
-                if (Regex.IsMatch(text, @"\p{IsCyrillic}"))
-                {
-                    translationResponse = await _translatorService.TranslateFromRussian(text);
-                }
-
-                else
-                {
-                    translationResponse = await _translatorService.Translate(text);
-                }
+                WordTranslationResponse translationResponse = await _translatorService.Translate(text);
 
                 var translations = translationResponse.Translations.Select(t => t.Translation).Take(LanguageTeacherConstants.TranslationCounts);
                 var examples = translationResponse.Examples.Take(LanguageTeacherConstants.ExamplesCount);

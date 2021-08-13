@@ -83,7 +83,7 @@ namespace Bot.API.Controllers
             catch (Exception e)
             {
                 await _logger.Log("ERROR: " + e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
-                return StatusCode(500);
+                return Ok();
             }
 
             return Ok();

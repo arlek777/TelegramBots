@@ -38,7 +38,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
             var words = await _wordService.GetAllWords(userId);
 
             await _telegramService.SendTextMessage(userId,
-                string.Join("\n", words.Select(w => $"{w.Original} - {w.Translate.Split('\n').FirstOrDefault()}")));
+                string.Join("\n", words.Select(w => $"{w.Original} - {w.Translate.Split('\n').FirstOrDefault()}")).Substring(0, 500));
 
             return true;
         }

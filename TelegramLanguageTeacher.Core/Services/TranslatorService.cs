@@ -19,7 +19,6 @@ namespace TelegramLanguageTeacher.Core.Services
     public interface ITranslatorService
     {
         Task<WordTranslationResponse> Translate(string text);
-        Task<WordTranslationResponse> TranslateFromRussian(string text);
     }
 
     public class TranslatorService : ITranslatorService
@@ -28,35 +27,6 @@ namespace TelegramLanguageTeacher.Core.Services
         private const string FreeDictionaryApiEndpoint = "https://api.dictionaryapi.dev/api/v2/entries/en_US/";
         private const string IdiomsDictionaryApiEndpoint = "https://idioms.thefreedictionary.com/";
         private const string AzureLocation = "global";
-
-        public async Task<WordTranslationResponse> TranslateFromRussian(string text)
-        {
-            string fromLang = "ru";
-            string toLang = "en";
-
-            var request = new TranslationRequest()
-            {
-                From = fromLang,
-                To = toLang,
-                Text = text
-            };
-
-            WordTranslationResponse response = new WordTranslationResponse()
-            {
-                Word = text
-            };
-
-            var textTranslation = await GetTextTranslation(request);
-            var translationFound = !textTranslation.Translation.Equals(text, StringComparison.InvariantCultureIgnoreCase);
-
-            if (translationFound)
-            {
-                var wordTranslation = new WordTranslation() { Translation = textTranslation.Translation };
-                response.Translations = response.Translations.Append(wordTranslation).ToList();
-            }
-
-            return response;
-        }
 
         public async Task<WordTranslationResponse> Translate(string text)
         {
@@ -87,6 +57,18 @@ namespace TelegramLanguageTeacher.Core.Services
                 if (!response.Translations.Any() && response.Definitions.Count() <= 1)
                 {
                     await TryAddIdiomsDefinitions(response);
+                }
+
+                if (!response.Translations.Any() && !response.Definitions.Any())
+                {
+                    var textTranslation = await GetTextTranslation(request);
+                    var translationFound = !textTranslation.Translation.Equals(text, StringComparison.InvariantCultureIgnoreCase);
+
+                    if (translationFound)
+                    {
+                        var wordTranslation = new WordTranslation() { Translation = textTranslation.Translation };
+                        response.Translations = response.Translations.Append(wordTranslation).ToList();
+                    }
                 }
 
                 // Try to find examples for word in Azure

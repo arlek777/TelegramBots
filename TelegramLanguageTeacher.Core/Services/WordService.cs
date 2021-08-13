@@ -167,6 +167,9 @@ namespace TelegramLanguageTeacher.Core.Services
 
         private bool IsWordToRepeatToday(Word word)
         {
+            if (word.Original == null)
+                return false;
+
             if (word.RepeatCount >= 6 && word.Rate == 3)
             {
                 return false;
