@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebJobs", "WebJobs", "{3AA3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bots", "Bots", "{22B4BBFD-73A3-4A91-B3A6-7A8D640A4D20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndoTaxHelper.Core", "IndoTaxHelper.Core\IndoTaxHelper.Core.csproj", "{DAEE51A2-87E3-467E-8003-6E9C83BECED1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{9632CD82-0376-4159-97CA-81FABF43A171}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9632CD82-0376-4159-97CA-81FABF43A171}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9632CD82-0376-4159-97CA-81FABF43A171}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAEE51A2-87E3-467E-8003-6E9C83BECED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAEE51A2-87E3-467E-8003-6E9C83BECED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAEE51A2-87E3-467E-8003-6E9C83BECED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAEE51A2-87E3-467E-8003-6E9C83BECED1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{ED765A23-7183-4887-9604-4A3A7777F342} = {346BFF7C-4437-4679-BCFA-F65A74D4B78D}
 		{9DB1C312-4B4A-43C7-9B34-D1667530496C} = {3AA36C59-640D-49CE-BE52-66612B6045D4}
 		{9632CD82-0376-4159-97CA-81FABF43A171} = {22B4BBFD-73A3-4A91-B3A6-7A8D640A4D20}
+		{DAEE51A2-87E3-467E-8003-6E9C83BECED1} = {22B4BBFD-73A3-4A91-B3A6-7A8D640A4D20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4EC249BF-A210-47F5-9A1B-965E9EF3A9A8}

@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IndoTaxHelper.Core\IndoTaxHelper.Core.csproj" />
     <ProjectReference Include="..\InstagramHelper.Core\InstagramHelper.Core.csproj" />
     <ProjectReference Include="..\TelegramBots.Common\TelegramBots.Common.csproj" />
     <ProjectReference Include="..\TelegramLanguageTeacher.Core\TelegramLanguageTeacher.Core.csproj" />

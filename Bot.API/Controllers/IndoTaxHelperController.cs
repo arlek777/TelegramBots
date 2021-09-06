@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using IndoTaxHelper.Core;
+using InstagramHelper.Core;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
@@ -12,17 +12,17 @@ namespace Bot.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class IndoTaxHelperController : ControllerBase
+    public class InstagramHelperController : ControllerBase
     {
         private static int _lastUpdateId;
 
-        private readonly ITelegramMessageHandlerManager<IndoTaxHelperBot> _messageHandlerManager;
-        private readonly ITelegramService<IndoTaxHelperBot> _telegramService;
+        private readonly ITelegramMessageHandlerManager<InstagramHelperBot> _messageHandlerManager;
+        private readonly ITelegramService<InstagramHelperBot> _telegramService;
         private readonly IDefaultLogger _teacherLogger;
 
-        public IndoTaxHelperController(
-            ITelegramMessageHandlerManager<IndoTaxHelperBot> messageHandlerManager, 
-            ITelegramService<IndoTaxHelperBot> telegramService, 
+        public InstagramHelperController(
+            ITelegramMessageHandlerManager<InstagramHelperBot> messageHandlerManager, 
+            ITelegramService<InstagramHelperBot> telegramService, 
             IDefaultLogger teacherLogger)
         {
             _messageHandlerManager = messageHandlerManager;

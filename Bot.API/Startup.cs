@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using IndoTaxHelper.Core;
+using IndoTaxHelper.Core.MessageHandlers.Text;
 using InstagramHelper.Core;
 using InstagramHelper.Core.MessageHandlers;
 using InstagramHelper.Core.MessageHandlers.CallbackHandlers;
@@ -44,6 +46,9 @@ namespace Bot.API
 
             AddInstagramHelperMediatR(services);
             AddInstagramHelperServices(services);
+
+            AddIndoTaxHelperMediatR(services);
+            AddIndoTaxhelperServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,17 +106,6 @@ namespace Bot.API
             services.AddSingleton(i => new Lemmatizer(stream));
         }
 
-        private void AddInstagramHelperServices(IServiceCollection services)
-        {
-            var lgTchBot = new InstagramHelperBot(InstagramHelperConstants.TelegramToken);
-            services.AddTransient<ITelegramService<InstagramHelperBot>>(t => new TelegramService<InstagramHelperBot>(lgTchBot));
-
-            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
-            var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
-
-            services.AddTransient<IHashTagsCaptionsService>(s => new HashTagsCaptionsService(dataFilepath));
-        }
-
         private void AddLanguageTeacherMediatR(IServiceCollection services)
         {
             services.AddMediatR(typeof(AddCustomTranslationCallbackHandler).Assembly);
@@ -138,6 +132,17 @@ namespace Bot.API
             services.AddTransient<ITelegramMessageHandlerManager<LanguageTeacherBot>, TelegramMessageHandlerManager<LanguageTeacherBot>>();
         }
 
+        private void AddInstagramHelperServices(IServiceCollection services)
+        {
+            var lgTchBot = new InstagramHelperBot(InstagramHelperConstants.TelegramToken);
+            services.AddTransient<ITelegramService<InstagramHelperBot>>(t => new TelegramService<InstagramHelperBot>(lgTchBot));
+
+            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
+            var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
+
+            services.AddTransient<IHashTagsCaptionsService>(s => new HashTagsCaptionsService(dataFilepath));
+        }
+
         private void AddInstagramHelperMediatR(IServiceCollection services)
         {
             services.AddMediatR(typeof(GenerateHashTagsAndCaptionMessageHandler).Assembly);
@@ -151,6 +156,25 @@ namespace Bot.API
 
             services.AddSingleton<IMediatrRequestsRepository<InstagramHelperBot>>(s => new MediatrRequestsRepository<InstagramHelperBot>(requests));
             services.AddTransient<ITelegramMessageHandlerManager<InstagramHelperBot>, TelegramMessageHandlerManager<InstagramHelperBot>>();
+        }
+
+        private void AddIndoTaxhelperServices(IServiceCollection services)
+        {
+            var lgTchBot = new IndoTaxHelperBot(IndoTaxHelperConstants.TelegramToken);
+            services.AddTransient<ITelegramService<IndoTaxHelperBot>>(t => new TelegramService<IndoTaxHelperBot>(lgTchBot));
+        }
+
+        private void AddIndoTaxHelperMediatR(IServiceCollection services)
+        {
+            services.AddMediatR(typeof(CalcTaxMessageHandler).Assembly);
+
+            var requests = new List<BaseRequest>()
+            {
+                new CalcTaxMessageRequest()
+            };
+
+            services.AddSingleton<IMediatrRequestsRepository<IndoTaxHelperBot>>(s => new MediatrRequestsRepository<IndoTaxHelperBot>(requests));
+            services.AddTransient<ITelegramMessageHandlerManager<IndoTaxHelperBot>, TelegramMessageHandlerManager<IndoTaxHelperBot>>();
         }
     }
 }
