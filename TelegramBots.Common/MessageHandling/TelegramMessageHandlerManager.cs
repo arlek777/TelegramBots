@@ -35,7 +35,9 @@ namespace TelegramBots.Common.MessageHandling
                 throw new NullReferenceException("Request is null.");
             }
 
-            // await _botsStatisticService.CheckAndTrackIfNewUserJoined(update, typeof(T));
+#if !DEBUG
+            await _botsStatisticService.CheckAndTrackIfNewUserJoined(update, typeof(T));
+#endif
             await _mediator.Send(request);
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Caching.Memory;
 using TelegramBots.Common.Services;
 
 namespace InstagramHelper.Core.Services
@@ -18,9 +19,12 @@ namespace InstagramHelper.Core.Services
     {
         private readonly string _captionsPath;
 
-        public HashTagsCaptionsService(string captionsPath)
+        private readonly IMemoryCache _memoryCache;
+
+        public HashTagsCaptionsService(IMemoryCache memoryCache)
         {
-            _captionsPath = captionsPath;
+            // _captionsPath = captionsPath
+            _memoryCache = memoryCache;
         }
 
         public async Task<string[]> GetHashTags(string[] keywords, int totalHashTagsCount)
@@ -43,11 +47,11 @@ namespace InstagramHelper.Core.Services
             {
                 var caption = await SearchCaptionInWeb(keyword);
 
-                if (string.IsNullOrWhiteSpace(caption))
-                {
-                    var captions = await System.IO.File.ReadAllLinesAsync(_captionsPath, Encoding.UTF8);
-                    caption = captions[new Random().Next(0, captions.Length - 1)];
-                }
+                //if (string.IsNullOrWhiteSpace(caption))
+                //{
+                //    var captions = await System.IO.File.ReadAllLinesAsync(_captionsPath, Encoding.UTF8);
+                //    caption = captions[new Random().Next(0, captions.Length - 1)];
+                //}
 
                 return caption;
             }
@@ -106,20 +110,54 @@ namespace InstagramHelper.Core.Services
 
         private async Task<string> SearchCaptionInWeb(string keyword)
         {
-            var url = "https://www.brainyquote.com/search_results?x=0&y=0&q=" + keyword;
+            var cacheKey = keyword.Replace(" ", "_");
 
-            var html = await HtmlPageDownloader.DownloadPage(url);
-            var document = new HtmlDocument();
-            document.LoadHtml(html);
+            if (_memoryCache.TryGetValue(cacheKey, out List<string> captionsResult))
+            {
+                var newCaption = captionsResult[new Random().Next(0, captionsResult.Count - 1)];
+                captionsResult.Remove(keyword);
 
-            var captionElements = document.DocumentNode.SelectNodes("//a[@title=\"view quote\"]");
+                _memoryCache.Remove(cacheKey);
+                _memoryCache.Set(cacheKey, captionsResult, TimeSpan.FromHours(1));
 
-            var captions = captionElements
-                .Where(l => l.InnerText != null && l.InnerText.Contains(" ") && l.InnerText.Length <= 100)
-                .Select(l => l.InnerText)
-                .ToList();
+                return newCaption;
+            }
 
-            var caption = captions.Any() ? captions[new Random().Next(0, captions.Count - 1)] : null;
+            captionsResult = new List<string>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                var url = "https://www.brainyquote.com/search_results?x=0&y=0&q=" + keyword;
+
+                if (i > 0)
+                {
+                    url += $"&pg={i+1}";
+                }
+
+                var html = await HtmlPageDownloader.DownloadPage(url);
+                var document = new HtmlDocument();
+                document.LoadHtml(html);
+
+                var captionElements = document.DocumentNode.SelectNodes("//a[@title=\"view quote\"]");
+
+                var captions = captionElements
+                    .Where(l => l.InnerText != null && l.InnerText.Contains(" ") && l.InnerText.Length <= 100)
+                    .Select(l => l.InnerText)
+                    .ToList();
+
+                if (!captions.Any())
+                    break;
+
+                captionsResult.AddRange(captions);
+            }
+
+            var caption = captionsResult.Any() ? captionsResult[new Random().Next(0, captionsResult.Count - 1)] : null;
+
+            if (captionsResult.Any())
+            {
+                captionsResult.Remove(keyword);
+                _memoryCache.Set(cacheKey, captionsResult, TimeSpan.FromHours(1));
+            }
 
             return caption;
         }

@@ -140,7 +140,8 @@ namespace Bot.API
             var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
             var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
 
-            services.AddTransient<IHashTagsCaptionsService>(s => new HashTagsCaptionsService(dataFilepath));
+            services.AddMemoryCache();
+            services.AddTransient<IHashTagsCaptionsService, HashTagsCaptionsService>();
         }
 
         private void AddInstagramHelperMediatR(IServiceCollection services)
