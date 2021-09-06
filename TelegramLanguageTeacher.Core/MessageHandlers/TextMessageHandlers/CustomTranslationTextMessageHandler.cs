@@ -5,8 +5,6 @@ using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramBots.DomainModels.LanguageTeacher;
-using TelegramLanguageTeacher.Core.Helpers;
-using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Services;
 using User = TelegramBots.DomainModels.LanguageTeacher.User;
 
@@ -21,13 +19,13 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         }
     }
 
-    public class AddCustomTranslationMessageHandler : IRequestHandler<AddCustomTranslationMessageRequest, bool>
+    public class CustomTranslationTextMessageHandler : IRequestHandler<AddCustomTranslationMessageRequest, bool>
     {
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
         private readonly ITelegramService<LanguageTeacherBot> _telegramService;
 
-        public AddCustomTranslationMessageHandler(IWordService wordService, IUserService userService, ITelegramService<LanguageTeacherBot> telegramService)
+        public CustomTranslationTextMessageHandler(IWordService wordService, IUserService userService, ITelegramService<LanguageTeacherBot> telegramService)
         {
             _wordService = wordService;
             _userService = userService;
