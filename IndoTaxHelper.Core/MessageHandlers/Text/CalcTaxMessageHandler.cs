@@ -33,22 +33,22 @@ namespace IndoTaxHelper.Core.MessageHandlers.Text
             string messageText = update.Message.Text.Trim().ToLowerInvariant();
 
             const double tax = 0.1;
-            int serviceFee = 1;
+            double serviceFee = 1;
 
             try
             {
-                int initialSum;
+                double initialSum;
                 if (messageText.Contains(" "))
                 {
-                    initialSum = int.Parse(messageText.Split(' ')[0]);
-                    serviceFee = int.Parse(messageText.Split(' ')[1]) / 100;
+                    initialSum = double.Parse(messageText.Split(' ')[0]);
+                    serviceFee = double.Parse(messageText.Split(' ')[1]) / 100;
                 }
                 else
                 {
-                    initialSum = int.Parse(messageText.Split(' ')[0]);
+                    initialSum = double.Parse(messageText.Split(' ')[0]);
                 }
 
-                int serviceFeeSum = initialSum + (initialSum * serviceFee);
+                double serviceFeeSum = initialSum + (initialSum * serviceFee);
                 double finalSum = initialSum + (serviceFeeSum * tax);
 
                 await _telegramService.SendTextMessage(userId, finalSum.ToString());
