@@ -7,7 +7,7 @@
 #endif
 
 #if !DEBUG
-        public const string TelegramToken = "1627596588:AAE2BopqdDI041d5CPbDsnHvPrhx8KBcKKM";
+        public const string TelegramToken = "1981191937:AAGxGAJJTJQXKeNASyijSUQhvq_RCF4QhsQ";
 #endif
     }
 

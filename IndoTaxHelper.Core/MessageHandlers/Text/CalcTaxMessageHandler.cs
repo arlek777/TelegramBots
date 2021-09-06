@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
@@ -33,25 +34,25 @@ namespace IndoTaxHelper.Core.MessageHandlers.Text
             string messageText = update.Message.Text.Trim().ToLowerInvariant();
 
             const double tax = 0.1;
-            double serviceFee = 1;
 
             try
             {
-                double initialSum;
+                double finalSum = 0;
                 if (messageText.Contains(" "))
                 {
-                    initialSum = double.Parse(messageText.Split(' ')[0]);
-                    serviceFee = double.Parse(messageText.Split(' ')[1]) / 100;
+                    double initialSum = double.Parse(messageText.Split(' ')[0]);
+                    double serviceFee = double.Parse(messageText.Split(' ')[1]) / 100;
+
+                    finalSum += initialSum + (initialSum * serviceFee);
                 }
                 else
                 {
-                    initialSum = double.Parse(messageText.Split(' ')[0]);
+                    finalSum = double.Parse(messageText.Split(' ')[0]);
                 }
 
-                double serviceFeeSum = initialSum + (initialSum * serviceFee);
-                double finalSum = initialSum + (serviceFeeSum * tax);
+                finalSum += finalSum * tax;
 
-                await _telegramService.SendTextMessage(userId, finalSum.ToString());
+                await _telegramService.SendTextMessage(userId, finalSum.ToString("N"));
             }
             catch
             {
