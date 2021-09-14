@@ -57,7 +57,14 @@ namespace Bot.API.Controllers
 
             foreach (var user in result)
             {
-                await _telegramService.SendTextMessage(user.TelegramUserId, text);
+                try
+                {
+                    await _telegramService.SendTextMessage(user.TelegramUserId, text);
+                }
+                catch (Exception e)
+                {
+                    await _logger.Log("ERROR: " + e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
+                }
             }
 
             return Ok();

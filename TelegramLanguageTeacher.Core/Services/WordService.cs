@@ -90,6 +90,12 @@ namespace TelegramLanguageTeacher.Core.Services
 
         public async Task<Word> FindWordInUserDict(int userId, string word)
         {
+            var existingUser = await _repository.Find<User>(u => u.TelegramUserId == userId);
+            if (existingUser == null)
+            {
+                return null;
+            }
+
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var dbWord = user.Dicts.FirstOrDefault()?.Words
                 .Where(w => w?.Original != null)

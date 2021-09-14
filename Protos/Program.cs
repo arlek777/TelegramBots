@@ -1,61 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Data.Sql;
+using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Protos
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            foreach (var filePath in Directory.GetFiles("TestSet"))
-            {
-                var file = File.OpenRead(filePath);
-                var bitmap = new Bitmap(file);
-                var image = bitmap.GetThumbnailImage(bitmap.Size.Width / 10, bitmap.Size.Height / 10, () => true, IntPtr.Zero);
-                var resizedImage = new Bitmap(image);
-                file.Close();
-
-                PictureAnalysis.GetMostUsedColor(resizedImage);
-                var res = PictureAnalysis.MostUsedColor;
-                continue;
-
-                var hasset = new Dictionary<string, long>();
-
-                for (int i = 0; i < resizedImage.Size.Width; i++)
-                {
-                    for (int j = 0; j < resizedImage.Size.Height; j++)
-                    {
-                        var color = resizedImage.GetPixel(i, j);
-                        if (hasset.ContainsKey(color.Name))
-                        {
-                            hasset[color.Name] += 1;
-                        }
-                        else
-                        {
-                            hasset.Add(color.Name, 1);
-                        }
-                    }
-                }
-
-                var result = hasset.OrderByDescending(h => h.Value).FirstOrDefault();
-
-                if (Directory.Exists("Result/" + result.Key))
-                {
-                    var fileInfo = new FileInfo(filePath);
-                    File.Copy(filePath, "Result/" + result.Key + "/" + fileInfo.Name);
-                }
-                else
-                {
-                    Directory.CreateDirectory("Result/" + result.Key);
-                    var fileInfo = new FileInfo(filePath);
-                    File.Copy(filePath, "Result/" + result.Key + "/" + fileInfo.Name);
-                }
-            }
+         
         }
     }
 
