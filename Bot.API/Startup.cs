@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewYearMovies.Core;
+using NewYearMovies.Core.MessageHandlers.Commands;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramBots.DataAccess;
@@ -192,7 +193,8 @@ namespace Bot.API
 
             var requests = new List<BaseRequest>()
             {
-
+                new GetTodayMoviesMessageRequest(),
+                new GetMoviesMessageRequest()
             };
 
             services.AddSingleton<IMediatrRequestsRepository<NewYearMoviesBot>>(s => new MediatrRequestsRepository<NewYearMoviesBot>(requests));

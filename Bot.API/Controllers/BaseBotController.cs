@@ -62,13 +62,19 @@ namespace Bot.API.Controllers
         {
             while (true)
             {
-                var update = await TelegramService.GetUpdate(_lastUpdateId);
-                if (update == null)
-                    continue;
+                try
+                {
+                    var update = await TelegramService.GetUpdate(_lastUpdateId);
+                    if (update == null)
+                        continue;
 
-                _lastUpdateId = update.Id + 1;
+                    _lastUpdateId = update.Id + 1;
 
-                await MessageHandlerManager.HandleUpdate(update);
+                    await MessageHandlerManager.HandleUpdate(update);
+                }
+                catch (Exception e)
+                {
+                }
             }
         }
     }

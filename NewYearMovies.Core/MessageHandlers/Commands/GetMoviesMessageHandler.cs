@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -29,6 +28,8 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
         private readonly ITelegramService<NewYearMoviesBot> _telegramService;
         private readonly IGenericRepository _repository;
 
+        private const int PerPage = 5;
+
         public GetMoviesMessageHandler(ITelegramService<NewYearMoviesBot> telegramService, IGenericRepository repository)
         {
             _telegramService = telegramService;
@@ -44,18 +45,18 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 ? update.Message.From.Id
                 : update.CallbackQuery.From.Id;
 
-            int page = isCommand ? 0 : int.Parse(update.CallbackQuery.Data.Split('_')[0]);
+            int page = isCommand ? 0 : int.Parse(update.CallbackQuery.Data.Split('_')[1]);
 
-            var random = new Random();
-            var movies = await _repository.GetAll<Movie>();
-            movies = movies.OrderBy(m => random.Next()).Skip(page * 10).Take(10);
-            var nextPage = movies.Skip(page * 10).Take(10);
+            var allMovies = (await _repository.GetAll<Movie>()).ToList();
+            var sortedMovies = allMovies.OrderByDescending(m => m.Day).ToList().Skip(page * PerPage).Take(PerPage).ToList();
+            var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 
-            string message = string.Join("<br/>", movies);
+            string message = string.Join("\n\n", sortedMovies.Select(m => m.Name).ToList());
 
             if (!nextPage.Any())
             {
                 await _telegramService.SendTextMessage(userId, message);
+                return true;
             }
            
             await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton()

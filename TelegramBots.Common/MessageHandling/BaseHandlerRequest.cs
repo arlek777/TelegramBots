@@ -8,6 +8,6 @@ namespace TelegramBots.Common.MessageHandling
     {
         public abstract bool AcceptUpdate(Update update);
 
-        public Update Update { get; protected set; }
+        public Update Update { get; set; }
     }
 }

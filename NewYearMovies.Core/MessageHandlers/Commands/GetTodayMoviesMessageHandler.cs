@@ -46,10 +46,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }
             else
             {
-                string message = $"{TelegramMessageTexts.TodayMovie}<br/><br/>";
+                string message = $"{TelegramMessageTexts.TodayMovie}\n\n";
                 foreach (var movie in movies)
                 {
-                    message += $"{movie.Name} (рейтинг {movie.Rating})<br/>";
+                    message += $"{movie.Name}\n\n";
                 }
 
                 await _telegramService.SendTextMessage(userId, message);
