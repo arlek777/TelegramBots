@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>8ff20d9e-70c9-4eed-9dad-c32d8742c135</UserSecretsId>
   </PropertyGroup>
 
@@ -36,6 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IndoTaxHelper.Core\IndoTaxHelper.Core.csproj" />
     <ProjectReference Include="..\InstagramHelper.Core\InstagramHelper.Core.csproj" />
+    <ProjectReference Include="..\NewYearMovies.Core\NewYearMovies.Core.csproj" />
     <ProjectReference Include="..\TelegramBots.Common\TelegramBots.Common.csproj" />
     <ProjectReference Include="..\TelegramLanguageTeacher.Core\TelegramLanguageTeacher.Core.csproj" />
   </ItemGroup>

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NewYearMovies.Core;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramBots.DataAccess;
@@ -49,6 +50,9 @@ namespace Bot.API
 
             AddIndoTaxHelperMediatR(services);
             AddIndoTaxhelperServices(services);
+
+            AddNewYearMoviesMediatR(services);
+            AddNewYearMoviesServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -134,11 +138,8 @@ namespace Bot.API
 
         private void AddInstagramHelperServices(IServiceCollection services)
         {
-            var lgTchBot = new InstagramHelperBot(InstagramHelperConstants.TelegramToken);
-            services.AddTransient<ITelegramService<InstagramHelperBot>>(t => new TelegramService<InstagramHelperBot>(lgTchBot));
-
-            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
-            var dataFilepath = contentRoot + "\\Resources\\InstaCaptions\\captions.txt";
+            var bot = new InstagramHelperBot(InstagramHelperConstants.TelegramToken);
+            services.AddTransient<ITelegramService<InstagramHelperBot>>(t => new TelegramService<InstagramHelperBot>(bot));
 
             services.AddMemoryCache();
             services.AddTransient<IHashTagsCaptionsService, HashTagsCaptionsService>();
@@ -161,8 +162,8 @@ namespace Bot.API
 
         private void AddIndoTaxhelperServices(IServiceCollection services)
         {
-            var lgTchBot = new IndoTaxHelperBot(IndoTaxHelperConstants.TelegramToken);
-            services.AddTransient<ITelegramService<IndoTaxHelperBot>>(t => new TelegramService<IndoTaxHelperBot>(lgTchBot));
+            var bot = new IndoTaxHelperBot(IndoTaxHelperConstants.TelegramToken);
+            services.AddTransient<ITelegramService<IndoTaxHelperBot>>(t => new TelegramService<IndoTaxHelperBot>(bot));
         }
 
         private void AddIndoTaxHelperMediatR(IServiceCollection services)
@@ -176,6 +177,25 @@ namespace Bot.API
 
             services.AddSingleton<IMediatrRequestsRepository<IndoTaxHelperBot>>(s => new MediatrRequestsRepository<IndoTaxHelperBot>(requests));
             services.AddTransient<ITelegramMessageHandlerManager<IndoTaxHelperBot>, TelegramMessageHandlerManager<IndoTaxHelperBot>>();
+        }
+
+        private void AddNewYearMoviesServices(IServiceCollection services)
+        {
+            var bot = new NewYearMoviesBot(NewYearMoviesBotConstants.TelegramToken);
+            services.AddTransient<ITelegramService<NewYearMoviesBot>>(t => new TelegramService<NewYearMoviesBot>(bot));
+        }
+
+        private void AddNewYearMoviesMediatR(IServiceCollection services)
+        {
+            services.AddMediatR(typeof(NewYearMoviesBot).Assembly);
+
+            var requests = new List<BaseRequest>()
+            {
+
+            };
+
+            services.AddSingleton<IMediatrRequestsRepository<NewYearMoviesBot>>(s => new MediatrRequestsRepository<NewYearMoviesBot>(requests));
+            services.AddTransient<ITelegramMessageHandlerManager<NewYearMoviesBot>, TelegramMessageHandlerManager<NewYearMoviesBot>>();
         }
     }
 }
