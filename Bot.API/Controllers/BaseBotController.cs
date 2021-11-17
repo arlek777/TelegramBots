@@ -57,8 +57,8 @@ namespace Bot.API.Controllers
         /// <summary>
         /// For local testing. Won't work till Web hook is enabled.
         /// </summary>
-        [Route("GetUpdate")]
         [HttpGet]
+        [Route("GetUpdate")]
         public async Task GetUpdate()
         {
             while (true)

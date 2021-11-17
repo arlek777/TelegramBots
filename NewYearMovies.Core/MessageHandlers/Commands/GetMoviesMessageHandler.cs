@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -52,7 +53,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             var sortedMovies = allMovies.OrderByDescending(m => m.Day).ToList().Skip(page * PerPage).Take(PerPage).ToList();
             var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 
-            string message = string.Join("\n\n", sortedMovies.Select(m => m.Name).ToList());
+            string message = string.Join("\n\n", sortedMovies.Select(m => $"<a href='https://www.google.com/search?q={HttpUtility.UrlEncode(m.Name + " смотреть онлайн")}'>{m.Name}</a>").ToList());
 
             if (!nextPage.Any())
             {

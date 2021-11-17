@@ -36,10 +36,11 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
         {
             Update update = request.Update;
             var userId = update.Message.From.Id;
+            var startMessage = update.IsCommand(TelegramCommands.Start) ? TelegramMessageTexts.StartText : string.Empty;
 
             var todayDay = DateTime.Now.Day;
 
-            var movies = await _repository.GetList<Movie>(m => m.Day == todayDay);
+            var movies = (await _repository.GetList<Movie>(m => m.Day == todayDay))?.ToList();
 
             if (movies == null || !movies.Any())
             {
@@ -47,11 +48,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }
             else
             {
-                string message = $"{TelegramMessageTexts.TodayMovie}\n\n";
-                foreach (var movie in movies)
-                {
-                    message += $"{movie.Name}\n\n";
-                }
+                string moviesMessage = string
+                    .Join("\n\n", movies.Select(m => $"<a href='https://www.kinopoisk.ru/film/48162/'>{m.Name}</a>").ToList());
+
+                string message = $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n{moviesMessage}";
 
                 await _telegramService.SendTextMessage(userId, message);
             }
