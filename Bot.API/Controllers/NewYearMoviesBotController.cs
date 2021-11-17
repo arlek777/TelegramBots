@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NewYearMovies.Core;
 using NewYearMovies.Core.MessageHandlers.Commands;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
+using TelegramBots.DataAccess;
+using TelegramBots.DomainModels.NewYearMovies;
 
 namespace Bot.API.Controllers
 {
@@ -25,11 +29,28 @@ namespace Bot.API.Controllers
             IDefaultLogger logger, 
             IWebHostEnvironment environment, 
             IMediator mediator,
-            ITelegramBotsStatisticService botsStatisticService) : base(messageHandlerManager, telegramService, logger)
+            ITelegramBotsStatisticService botsStatisticService, 
+            IGenericRepository repository) : base(messageHandlerManager, telegramService, logger)
         {
             _environment = environment;
             _mediator = mediator;
             _botsStatisticService = botsStatisticService;
+
+            var dataFilepath = _environment.ContentRootPath + "\\Resources\\Movies\\movies.json";
+
+            if (!System.IO.File.Exists(dataFilepath))
+            {
+                var movies = repository.GetAllNotAsync<Movie>();
+                System.IO.File.WriteAllText(dataFilepath, JsonConvert.SerializeObject(NewYearMoviesStore.Movies));
+            }
+
+            if (System.IO.File.Exists(dataFilepath))
+            {
+                var random = new Random();
+                NewYearMoviesStore.Movies = JsonConvert.DeserializeObject<List<Movie>>(System.IO.File.ReadAllText(dataFilepath))
+                    .OrderBy(m => random.Next())
+                    .ToList();
+            }
         }
 
         [Route("SendTodayMovies")]

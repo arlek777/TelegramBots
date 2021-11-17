@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <Folder Include="MovieDays\" />
+    <Folder Include="Resources\Movies\" />
   </ItemGroup>
 
 

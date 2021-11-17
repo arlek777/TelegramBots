@@ -8,8 +8,6 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
-using TelegramBots.DataAccess;
-using TelegramBots.DomainModels.NewYearMovies;
 
 namespace NewYearMovies.Core.MessageHandlers.Commands
 {
@@ -28,14 +26,12 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     public class GetMoviesMessageHandler : IRequestHandler<GetMoviesMessageRequest, bool>
     {
         private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
-        private readonly IGenericRepository _repository;
 
         private const int PerPage = 5;
 
-        public GetMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService, IGenericRepository repository)
+        public GetMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService)
         {
             _telegramService = telegramService;
-            _repository = repository;
         }
 
         public async Task<bool> Handle(GetMoviesMessageRequest request, CancellationToken cancellationToken)
@@ -49,7 +45,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
 
             int page = isCommand ? 0 : int.Parse(update.CallbackQuery.Data.Split('_')[1]);
 
-            var allMovies = (await _repository.GetAll<Movie>()).ToList();
+            var allMovies = NewYearMoviesStore.Movies;
             var sortedMovies = allMovies.OrderByDescending(m => m.Day).ToList().Skip(page * PerPage).Take(PerPage).ToList();
             var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 

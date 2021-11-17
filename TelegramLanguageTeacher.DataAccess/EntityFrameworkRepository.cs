@@ -37,6 +37,11 @@ namespace TelegramBots.DataAccess
             return await _context.Set<T>().ToListAsync();
         }
 
+        public IEnumerable<T> GetAllNotAsync<T>() where T : class
+        {
+            return _context.Set<T>().ToList();
+        }
+
         public void Remove<T>(T entity) where T : class
         {
             _context.Set<T>().Remove(entity);

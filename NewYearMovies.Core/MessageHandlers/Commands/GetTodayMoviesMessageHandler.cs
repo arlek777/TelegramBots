@@ -7,8 +7,6 @@ using Telegram.Bot.Types;
 using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
-using TelegramBots.DataAccess;
-using TelegramBots.DomainModels.NewYearMovies;
 
 namespace NewYearMovies.Core.MessageHandlers.Commands
 {
@@ -24,12 +22,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     public class GetTodayMoviesMessageHandler : IRequestHandler<GetTodayMoviesMessageRequest, bool>
     {
         private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
-        private readonly IGenericRepository _repository;
 
-        public GetTodayMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService, IGenericRepository repository)
+        public GetTodayMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService)
         {
             _telegramService = telegramService;
-            _repository = repository;
         }
 
         public async Task<bool> Handle(GetTodayMoviesMessageRequest request, CancellationToken cancellationToken)
@@ -40,9 +36,9 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
 
             var todayDay = DateTime.Now.Day;
 
-            var movies = (await _repository.GetList<Movie>(m => m.Day == todayDay))?.ToList();
+            var movies = NewYearMoviesStore.Movies.Where(m => m.Day == todayDay).ToList();
 
-            if (movies != null && movies.Any())
+            if (movies.Any())
             {
                 if (DaysMessages.Messages.ContainsKey(todayDay))
                 {
