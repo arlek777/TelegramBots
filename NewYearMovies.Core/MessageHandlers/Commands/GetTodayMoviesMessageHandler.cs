@@ -42,18 +42,23 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
 
             var movies = (await _repository.GetList<Movie>(m => m.Day == todayDay))?.ToList();
 
-            if (movies == null || !movies.Any())
+            if (movies != null && movies.Any())
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTodayMovies);
+                if (DaysMessages.Messages.ContainsKey(todayDay))
+                {
+                    await _telegramService.SendTextMessage(userId, DaysMessages.Messages[todayDay]);
+                }
+
+                await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
+
+                foreach (var m in movies)
+                {
+                    await _telegramService.SendTextMessage(userId, $"<a href='{m.Url}'>{m.Name}</a>");
+                }
             }
             else
             {
-                string moviesMessage = string
-                    .Join("\n\n", movies.Select(m => $"<a href='https://www.kinopoisk.ru/film/48162/'>{m.Name}</a>").ToList());
-
-                string message = $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n{moviesMessage}";
-
-                await _telegramService.SendTextMessage(userId, message);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTodayMovies);
             }
 
             return true;
