@@ -16,11 +16,16 @@ namespace TelegramBots.Common.MessageHandling
 
         public static bool IsTextMessage(this Update update)
         {
-            var isTextToTranslate = update.Message?.Text != null 
+            var isText = update.Message?.Text != null 
                                     && !update.Message.Text.Contains("/") 
                                     && !update.Message.From.IsBot;
 
-            return isTextToTranslate;
+            return isText;
+        }
+
+        public static bool IsTextMessage(this Update update, string message)
+        {
+            return update.IsTextMessage() && update.Message.Text.Equals(message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public static bool IsCallback(this Update update, string name)

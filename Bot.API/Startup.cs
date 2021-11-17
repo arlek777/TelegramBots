@@ -86,6 +86,7 @@ namespace Bot.API
                 return context;
             });
 
+            // TODO logger
             services.AddTransient<IDefaultLogger, TelegramBotsDbLogger>();
             services.AddTransient<ITelegramBotsStatisticService, TelegramBotsStatisticService>();
             services.AddTransient<IGenericRepository, EntityFrameworkRepository>();

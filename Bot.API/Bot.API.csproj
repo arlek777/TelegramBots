@@ -41,5 +41,9 @@
     <ProjectReference Include="..\TelegramLanguageTeacher.Core\TelegramLanguageTeacher.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MovieDays\" />
+  </ItemGroup>
+
 
 </Project>

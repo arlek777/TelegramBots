@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TelegramBots.DomainModels;
 using TelegramBots.DomainModels.LanguageTeacher;
+using TelegramBots.DomainModels.NewYearMovies;
 
 namespace TelegramBots.DataAccess
 {
@@ -31,5 +32,8 @@ namespace TelegramBots.DataAccess
         public DbSet<Word> Words { get; set; }
         public DbSet<CachedWord> CachedWords { get; set; }
         public DbSet<User> Users { get; set; }
+
+        // New year movies bot
+        public DbSet<Movie> Movies { get; set; }
     }
 }
