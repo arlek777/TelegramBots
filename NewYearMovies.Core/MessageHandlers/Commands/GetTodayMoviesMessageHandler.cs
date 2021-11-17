@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramBots.DataAccess;
@@ -22,10 +23,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
 
     public class GetTodayMoviesMessageHandler : IRequestHandler<GetTodayMoviesMessageRequest, bool>
     {
-        private readonly ITelegramService<NewYearMoviesBot> _telegramService;
+        private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
         private readonly IGenericRepository _repository;
 
-        public GetTodayMoviesMessageHandler(ITelegramService<NewYearMoviesBot> telegramService, IGenericRepository repository)
+        public GetTodayMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService, IGenericRepository repository)
         {
             _telegramService = telegramService;
             _repository = repository;

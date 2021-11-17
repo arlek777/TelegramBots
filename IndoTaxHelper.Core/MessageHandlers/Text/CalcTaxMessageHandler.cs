@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 
@@ -19,9 +20,9 @@ namespace IndoTaxHelper.Core.MessageHandlers.Text
 
     public class CalcTaxMessageHandler : IRequestHandler<CalcTaxMessageRequest, bool>
     {
-        private readonly ITelegramService<IndoTaxHelperBot> _telegramService;
+        private readonly ITelegramBotService<IndoTaxHelperBot> _telegramService;
 
-        public CalcTaxMessageHandler(ITelegramService<IndoTaxHelperBot> telegramService)
+        public CalcTaxMessageHandler(ITelegramBotService<IndoTaxHelperBot> telegramService)
         {
             _telegramService = telegramService;
         }

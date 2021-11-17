@@ -9,8 +9,8 @@ namespace Bot.API.Controllers
     [Route("[controller]")]
     public class IndoTaxHelperController : BaseBotController<IndoTaxHelperBot>
     {
-        public IndoTaxHelperController(ITelegramMessageHandlerManager<IndoTaxHelperBot> messageHandlerManager, 
-            ITelegramService<IndoTaxHelperBot> telegramService, 
+        public IndoTaxHelperController(IMessageHandlerManager<IndoTaxHelperBot> messageHandlerManager, 
+            ITelegramBotService<IndoTaxHelperBot> telegramService, 
             IDefaultLogger logger) : base(messageHandlerManager, telegramService, logger)
         {
         }

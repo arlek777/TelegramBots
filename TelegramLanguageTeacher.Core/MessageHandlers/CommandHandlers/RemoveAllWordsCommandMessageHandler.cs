@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -22,9 +23,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 
     public class RemoveAllWordsCommandMessageHandler : IRequestHandler<RemoveAllWordsCommandMessageRequest, bool>
     {
-        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
+        private readonly ITelegramBotService<LanguageTeacherBot> _telegramService;
 
-        public RemoveAllWordsCommandMessageHandler(ITelegramService<LanguageTeacherBot> telegramService)
+        public RemoveAllWordsCommandMessageHandler(ITelegramBotService<LanguageTeacherBot> telegramService)
         {
             _telegramService = telegramService;
         }

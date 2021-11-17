@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramBots.DataAccess;
@@ -25,12 +26,12 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     /// </summary>
     public class GetMoviesMessageHandler : IRequestHandler<GetMoviesMessageRequest, bool>
     {
-        private readonly ITelegramService<NewYearMoviesBot> _telegramService;
+        private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
         private readonly IGenericRepository _repository;
 
         private const int PerPage = 5;
 
-        public GetMoviesMessageHandler(ITelegramService<NewYearMoviesBot> telegramService, IGenericRepository repository)
+        public GetMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService, IGenericRepository repository)
         {
             _telegramService = telegramService;
             _repository = repository;

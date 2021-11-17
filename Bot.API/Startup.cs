@@ -96,7 +96,7 @@ namespace Bot.API
         private void AddLanguageTeacherServices(IServiceCollection services)
         {
             var lgTchBot = new LanguageTeacherBot(LanguageTeacherConstants.TelegramToken);
-            services.AddTransient<ITelegramService<LanguageTeacherBot>>(t => new TelegramService<LanguageTeacherBot>(lgTchBot));
+            services.AddTransient<ITelegramBotService<LanguageTeacherBot>>(t => new TelegramBotService<LanguageTeacherBot>(lgTchBot));
 
             services.AddTransient<ITranslatorService, TranslatorService>();
             services.AddTransient<IWordService, WordService>();
@@ -135,13 +135,13 @@ namespace Bot.API
             };
 
             services.AddSingleton<IMediatrRequestsRepository<LanguageTeacherBot>>(s => new MediatrRequestsRepository<LanguageTeacherBot>(requests));
-            services.AddTransient<ITelegramMessageHandlerManager<LanguageTeacherBot>, TelegramMessageHandlerManager<LanguageTeacherBot>>();
+            services.AddTransient<IMessageHandlerManager<LanguageTeacherBot>, MessageHandlerManager<LanguageTeacherBot>>();
         }
 
         private void AddInstagramHelperServices(IServiceCollection services)
         {
             var bot = new InstagramHelperBot(InstagramHelperConstants.TelegramToken);
-            services.AddTransient<ITelegramService<InstagramHelperBot>>(t => new TelegramService<InstagramHelperBot>(bot));
+            services.AddTransient<ITelegramBotService<InstagramHelperBot>>(t => new TelegramBotService<InstagramHelperBot>(bot));
 
             services.AddMemoryCache();
             services.AddTransient<IHashTagsCaptionsService, HashTagsCaptionsService>();
@@ -159,13 +159,13 @@ namespace Bot.API
             };
 
             services.AddSingleton<IMediatrRequestsRepository<InstagramHelperBot>>(s => new MediatrRequestsRepository<InstagramHelperBot>(requests));
-            services.AddTransient<ITelegramMessageHandlerManager<InstagramHelperBot>, TelegramMessageHandlerManager<InstagramHelperBot>>();
+            services.AddTransient<IMessageHandlerManager<InstagramHelperBot>, MessageHandlerManager<InstagramHelperBot>>();
         }
 
         private void AddIndoTaxhelperServices(IServiceCollection services)
         {
             var bot = new IndoTaxHelperBot(IndoTaxHelperConstants.TelegramToken);
-            services.AddTransient<ITelegramService<IndoTaxHelperBot>>(t => new TelegramService<IndoTaxHelperBot>(bot));
+            services.AddTransient<ITelegramBotService<IndoTaxHelperBot>>(t => new TelegramBotService<IndoTaxHelperBot>(bot));
         }
 
         private void AddIndoTaxHelperMediatR(IServiceCollection services)
@@ -178,13 +178,13 @@ namespace Bot.API
             };
 
             services.AddSingleton<IMediatrRequestsRepository<IndoTaxHelperBot>>(s => new MediatrRequestsRepository<IndoTaxHelperBot>(requests));
-            services.AddTransient<ITelegramMessageHandlerManager<IndoTaxHelperBot>, TelegramMessageHandlerManager<IndoTaxHelperBot>>();
+            services.AddTransient<IMessageHandlerManager<IndoTaxHelperBot>, MessageHandlerManager<IndoTaxHelperBot>>();
         }
 
         private void AddNewYearMoviesServices(IServiceCollection services)
         {
             var bot = new NewYearMoviesBot(NewYearMoviesBotConstants.TelegramToken);
-            services.AddTransient<ITelegramService<NewYearMoviesBot>>(t => new TelegramService<NewYearMoviesBot>(bot));
+            services.AddTransient<ITelegramBotService<NewYearMoviesBot>>(t => new TelegramBotService<NewYearMoviesBot>(bot));
         }
 
         private void AddNewYearMoviesMediatR(IServiceCollection services)
@@ -198,7 +198,7 @@ namespace Bot.API
             };
 
             services.AddSingleton<IMediatrRequestsRepository<NewYearMoviesBot>>(s => new MediatrRequestsRepository<NewYearMoviesBot>(requests));
-            services.AddTransient<ITelegramMessageHandlerManager<NewYearMoviesBot>, TelegramMessageHandlerManager<NewYearMoviesBot>>();
+            services.AddTransient<IMessageHandlerManager<NewYearMoviesBot>, MessageHandlerManager<NewYearMoviesBot>>();
         }
     }
 }

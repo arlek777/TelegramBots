@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -21,9 +22,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 
     public class StartHelpCommandMessageHandler : IRequestHandler<StartHelpCommandMessageRequest, bool>
     {
-        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
+        private readonly ITelegramBotService<LanguageTeacherBot> _telegramService;
 
-        public StartHelpCommandMessageHandler(ITelegramService<LanguageTeacherBot> telegramService)
+        public StartHelpCommandMessageHandler(ITelegramBotService<LanguageTeacherBot> telegramService)
         {
             _telegramService = telegramService;
         }

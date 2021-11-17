@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramLanguageTeacher.Core.Helpers;
@@ -22,10 +23,10 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 
     public class RemoveWordCallbackHandler : IRequestHandler<RemoveWordCallbackRequest, bool>
     {
-        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
+        private readonly ITelegramBotService<LanguageTeacherBot> _telegramService;
         private readonly IWordService _wordService;
 
-        public RemoveWordCallbackHandler(ITelegramService<LanguageTeacherBot> telegramService, IWordService wordService)
+        public RemoveWordCallbackHandler(ITelegramBotService<LanguageTeacherBot> telegramService, IWordService wordService)
         {
             _telegramService = telegramService;
             _wordService = wordService;

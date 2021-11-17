@@ -4,6 +4,7 @@ using InstagramHelper.Core.Services;
 using MediatR;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 
@@ -20,10 +21,10 @@ namespace InstagramHelper.Core.MessageHandlers.CallbackHandlers
 
     public class RegenerateCaptionCallbackHandler : IRequestHandler<RegenerateCaptionCallbackRequest, bool>
     {
-        private readonly ITelegramService<InstagramHelperBot> _telegramService;
+        private readonly ITelegramBotService<InstagramHelperBot> _telegramService;
         private readonly IHashTagsCaptionsService _hashTagsCaptionsService;
 
-        public RegenerateCaptionCallbackHandler(ITelegramService<InstagramHelperBot> telegramService, IHashTagsCaptionsService hashTagsCaptionsService)
+        public RegenerateCaptionCallbackHandler(ITelegramBotService<InstagramHelperBot> telegramService, IHashTagsCaptionsService hashTagsCaptionsService)
         {
             _telegramService = telegramService;
             _hashTagsCaptionsService = hashTagsCaptionsService;

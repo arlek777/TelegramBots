@@ -16,8 +16,8 @@ namespace Bot.API.Controllers
     {
         private readonly IUserService _userService;
 
-        public LanguageTeacherController(ITelegramMessageHandlerManager<LanguageTeacherBot> messageHandlerManager, 
-            ITelegramService<LanguageTeacherBot> telegramService, 
+        public LanguageTeacherController(IMessageHandlerManager<LanguageTeacherBot> messageHandlerManager, 
+            ITelegramBotService<LanguageTeacherBot> telegramService, 
             IDefaultLogger logger, IUserService userService) 
             : base(messageHandlerManager, telegramService, logger)
         {
@@ -48,7 +48,7 @@ namespace Bot.API.Controllers
             {
                 try
                 {
-                    await TelegramService.SendTextMessage(user.TelegramUserId, text);
+                    await TelegramBotService.SendTextMessage(user.TelegramUserId, text);
                 }
                 catch (Exception e)
                 {

@@ -9,8 +9,8 @@ namespace Bot.API.Controllers
     [Route("[controller]")]
     public class InstagramHelperController : BaseBotController<InstagramHelperBot>
     {
-        public InstagramHelperController(ITelegramMessageHandlerManager<InstagramHelperBot> messageHandlerManager, 
-            ITelegramService<InstagramHelperBot> telegramService, 
+        public InstagramHelperController(IMessageHandlerManager<InstagramHelperBot> messageHandlerManager, 
+            ITelegramBotService<InstagramHelperBot> telegramService, 
             IDefaultLogger logger) 
             : base(messageHandlerManager, telegramService, logger)
         {

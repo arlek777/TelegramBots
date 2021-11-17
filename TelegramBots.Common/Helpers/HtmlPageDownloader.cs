@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace TelegramBots.Common.Services
+namespace TelegramBots.Common.Helpers
 {
     public static class HtmlPageDownloader
     {

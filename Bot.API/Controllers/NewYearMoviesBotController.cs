@@ -20,9 +20,11 @@ namespace Bot.API.Controllers
         private readonly IMediator _mediator;
         private readonly ITelegramBotsStatisticService _botsStatisticService;
 
-        public NewYearMoviesBotController(ITelegramMessageHandlerManager<NewYearMoviesBot> messageHandlerManager,
-            ITelegramService<NewYearMoviesBot> telegramService,
-            IDefaultLogger logger, IWebHostEnvironment environment, IMediator mediator,
+        public NewYearMoviesBotController(IMessageHandlerManager<NewYearMoviesBot> messageHandlerManager,
+            ITelegramBotService<NewYearMoviesBot> telegramService,
+            IDefaultLogger logger, 
+            IWebHostEnvironment environment, 
+            IMediator mediator,
             ITelegramBotsStatisticService botsStatisticService) : base(messageHandlerManager, telegramService, logger)
         {
             _environment = environment;

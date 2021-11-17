@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Caching.Memory;
+using TelegramBots.Common.Helpers;
 using TelegramBots.Common.Services;
 
 namespace InstagramHelper.Core.Services

@@ -7,18 +7,18 @@ using TelegramBots.Common.Services;
 
 namespace TelegramBots.Common.MessageHandling
 {
-    public interface ITelegramMessageHandlerManager<T> where T : TelegramBotInstance
+    public interface IMessageHandlerManager<T> where T : TelegramBotInstance
     {
         Task HandleUpdate(Update update);
     }
 
-    public class TelegramMessageHandlerManager<T> : ITelegramMessageHandlerManager<T> where T : TelegramBotInstance
+    public class MessageHandlerManager<T> : IMessageHandlerManager<T> where T : TelegramBotInstance
     {
         private readonly IMediatrRequestsRepository<T> _requestRepository;
         private readonly ITelegramBotsStatisticService _botsStatisticService;
         private readonly IMediator _mediator;
 
-        public TelegramMessageHandlerManager(IMediator mediator, 
+        public MessageHandlerManager(IMediator mediator, 
             IMediatrRequestsRepository<T> requestsRepository, 
             ITelegramBotsStatisticService botsStatisticService)
         {

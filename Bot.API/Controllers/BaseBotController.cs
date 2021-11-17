@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
+using TelegramBots.Common;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 
@@ -13,17 +14,17 @@ namespace Bot.API.Controllers
     {
         private static int _lastUpdateId;
 
-        protected readonly ITelegramMessageHandlerManager<T> MessageHandlerManager;
-        protected readonly ITelegramService<T> TelegramService;
+        protected readonly IMessageHandlerManager<T> MessageHandlerManager;
+        protected readonly ITelegramBotService<T> TelegramBotService;
         protected readonly IDefaultLogger Logger;
 
         protected BaseBotController(
-            ITelegramMessageHandlerManager<T> messageHandlerManager,
-            ITelegramService<T> telegramService,
+            IMessageHandlerManager<T> messageHandlerManager,
+            ITelegramBotService<T> telegramService,
             IDefaultLogger logger)
         {
             MessageHandlerManager = messageHandlerManager;
-            TelegramService = telegramService;
+            TelegramBotService = telegramService;
             Logger = logger;
         }
 
@@ -64,7 +65,7 @@ namespace Bot.API.Controllers
             {
                 try
                 {
-                    var update = await TelegramService.GetUpdate(_lastUpdateId);
+                    var update = await TelegramBotService.GetUpdate(_lastUpdateId);
                     if (update == null)
                         continue;
 

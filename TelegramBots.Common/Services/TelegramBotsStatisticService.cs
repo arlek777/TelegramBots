@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
-using TelegramBots.Common.MessageHandling;
+using TelegramBots.Common.Extensions;
 using TelegramBots.DataAccess;
 using TelegramBots.DomainModels;
 

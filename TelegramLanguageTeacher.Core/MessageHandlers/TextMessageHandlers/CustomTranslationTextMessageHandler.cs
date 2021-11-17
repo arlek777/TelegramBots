@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
+using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 using TelegramBots.DomainModels.LanguageTeacher;
@@ -23,9 +24,9 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
     {
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
-        private readonly ITelegramService<LanguageTeacherBot> _telegramService;
+        private readonly ITelegramBotService<LanguageTeacherBot> _telegramService;
 
-        public CustomTranslationTextMessageHandler(IWordService wordService, IUserService userService, ITelegramService<LanguageTeacherBot> telegramService)
+        public CustomTranslationTextMessageHandler(IWordService wordService, IUserService userService, ITelegramBotService<LanguageTeacherBot> telegramService)
         {
             _wordService = wordService;
             _userService = userService;
