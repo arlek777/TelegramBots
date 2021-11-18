@@ -38,23 +38,22 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
 
             var movies = NewYearMoviesStore.Movies.Where(m => m.Day == todayDay).ToList();
 
-            if (movies.Any())
-            {
-                if (DaysMessages.Messages.ContainsKey(todayDay))
-                {
-                    await _telegramService.SendTextMessage(userId, DaysMessages.Messages[todayDay]);
-                }
-
-                await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
-
-                foreach (var m in movies)
-                {
-                    await _telegramService.SendTextMessage(userId, $"<a href='{m.Url}'>{m.Name}</a>");
-                }
-            }
-            else
+            if (!movies.Any())
             {
                 await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTodayMovies);
+                return true;
+            }
+
+            await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
+
+            foreach (var m in movies)
+            {
+                await _telegramService.SendTextMessage(userId, $"<a href='{m.Url}'>{m.Name}</a>");
+            }
+
+            if (DaysMessages.Messages.ContainsKey(todayDay))
+            {
+                await _telegramService.SendTextMessage(userId, DaysMessages.Messages[todayDay]);
             }
 
             return true;
