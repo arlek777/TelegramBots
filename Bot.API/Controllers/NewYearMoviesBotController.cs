@@ -41,7 +41,7 @@ namespace Bot.API.Controllers
             if (!System.IO.File.Exists(dataFilepath))
             {
                 var movies = repository.GetAllNotAsync<Movie>();
-                System.IO.File.WriteAllText(dataFilepath, JsonConvert.SerializeObject(NewYearMoviesStore.Movies));
+                System.IO.File.WriteAllText(dataFilepath, JsonConvert.SerializeObject(movies));
             }
 
             if (System.IO.File.Exists(dataFilepath))
