@@ -129,7 +129,7 @@ namespace Bot.API.Controllers
                 System.IO.File.Create(daysFiles);
 
                 var stats = await _botsStatisticService.GetStats();
-                var botUsers = stats.Where(s => s.BotType == typeof(NewYearMoviesBot).ToString());
+                var botUsers = stats.Where(s => s.BotType == typeof(NewYearMoviesBot).Name);
 
                 foreach (var botUser in botUsers)
                 {
