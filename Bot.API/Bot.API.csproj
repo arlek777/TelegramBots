@@ -42,8 +42,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MovieDays\" />
     <Folder Include="Resources\Movies\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="MovieDays\empty.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

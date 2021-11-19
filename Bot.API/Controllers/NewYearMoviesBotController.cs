@@ -114,6 +114,8 @@ namespace Bot.API.Controllers
         [HttpGet]
         public async Task<IActionResult> SendTodayMovies()
         {
+            int sentCount;
+
             try
             {
                 var time = DateTime.UtcNow.AddHours(2);
@@ -133,13 +135,16 @@ namespace Bot.API.Controllers
                 {
                     await SendToUser(botUser.UserId);
                 }
+
+                sentCount = botUsers.Count();
             }
             catch (Exception e)
             {
                 await _logger.Log("EXCEPTION SendTodayMovies " + e.Message);
+                throw;
             }
 
-            return Ok();
+            return Ok(sentCount);
         }
 
         private async Task SendToUser(int userId)

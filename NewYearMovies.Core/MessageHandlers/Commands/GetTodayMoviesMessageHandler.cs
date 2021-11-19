@@ -54,8 +54,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             {
                 await _telegramService.SendTextMessage(userId, TelegramMessageTexts.DailyMessages[todayDay]);
             }
-
-            await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
+            else
+            {
+                await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
+            }
 
             return true;
         }

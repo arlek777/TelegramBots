@@ -25,7 +25,7 @@ namespace TelegramBots.Common.Services
 
         public async Task CheckAndTrackIfNewUserJoined(Update update, Type botType)
         {
-            if (!update.IsTextMessage())
+            if (update?.Message?.From?.Id == null)
                 return;
 
             var existingStat = await _genericRepository.Find<BotsStatistic>(s => s.UserId == update.Message.From.Id && s.BotType == botType.Name);
