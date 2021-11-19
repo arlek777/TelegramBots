@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Bot.API.Services;
 using IndoTaxHelper.Core;
 using IndoTaxHelper.Core.MessageHandlers.Text;
 using InstagramHelper.Core;
@@ -185,7 +186,7 @@ namespace Bot.API
 
         private void AddNewYearMoviesServices(IServiceCollection services)
         {
-            var bot = new NewYearMoviesBot(NewYearMoviesBotConstants.TelegramToken);
+            var bot = new NewYearMoviesBot(TokenConfig.TelegramToken);
             services.AddTransient<ITelegramBotService<NewYearMoviesBot>>(t => new TelegramBotService<NewYearMoviesBot>(bot));
         }
 

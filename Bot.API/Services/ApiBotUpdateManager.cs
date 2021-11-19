@@ -1,24 +1,29 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using Bot.API.Models;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramBots.Common;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
 
-namespace Bot.API.Controllers
+namespace Bot.API.Services
 {
-    public abstract class BaseBotController<T>: ControllerBase where T : TelegramBotInstance
+    public interface IApiBotUpdateManager<T> where T : TelegramBotInstance
     {
-        private static int _lastUpdateId;
+        Task HandleNewUpdateWebhook(HttpRequest request);
+        Task HandleGetUpdate(LastUpdate lastUpdate);
+    }
 
+    public class ApiBotUpdateManager<T>: IApiBotUpdateManager<T> where T : TelegramBotInstance
+    {
         protected readonly IMessageHandlerManager<T> MessageHandlerManager;
         protected readonly ITelegramBotService<T> TelegramBotService;
         protected readonly IDefaultLogger Logger;
 
-        protected BaseBotController(
+        public ApiBotUpdateManager(
             IMessageHandlerManager<T> messageHandlerManager,
             ITelegramBotService<T> telegramService,
             IDefaultLogger logger)
@@ -29,17 +34,11 @@ namespace Bot.API.Controllers
         }
 
 
-        /// <summary>
-        /// Telegram web hook main method to receive updates.
-        /// </summary>
-        [Route("OnNewUpdate")]
-        [HttpPost]
-        public async Task<IActionResult> OnNewUpdate()
+        public async Task HandleNewUpdateWebhook(HttpRequest request)
         {
             try
             {
-                var req = Request.Body;
-                var updateJson = await new StreamReader(req).ReadToEndAsync();
+                var updateJson = await new StreamReader(request.Body).ReadToEndAsync();
 
                 await Logger.Log($"{typeof(T)} OnNewUpdate body: " + updateJson);
 
@@ -50,26 +49,19 @@ namespace Bot.API.Controllers
             {
                 await Logger.Log($"{typeof(T)} OnNewUpdate exception: " + e.Message);
             }
-
-            return Ok();
         }
 
-        /// <summary>
-        /// For local testing. Won't work till Web hook is enabled.
-        /// </summary>
-        [HttpGet]
-        [Route("GetUpdate")]
-        public async Task GetUpdate()
+        public async Task HandleGetUpdate(LastUpdate lastUpdate)
         {
             while (true)
             {
                 try
                 {
-                    var update = await TelegramBotService.GetUpdate(_lastUpdateId);
+                    var update = await TelegramBotService.GetUpdate(lastUpdate.Id);
                     if (update == null)
                         continue;
 
-                    _lastUpdateId = update.Id + 1;
+                    lastUpdate.Id = update.Id + 1;
 
                     await MessageHandlerManager.HandleUpdate(update);
                 }

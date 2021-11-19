@@ -34,7 +34,8 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             var userId = update.Message.From.Id;
             var startMessage = update.IsCommand(TelegramCommands.Start) ? TelegramMessageTexts.StartText : string.Empty;
 
-            var todayDay = DateTime.Now.Day;
+            var today = DateTime.UtcNow.AddHours(2);
+            var todayDay = today.Day;
 
             var movies = NewYearMoviesStore.Movies.Where(m => m.Day == todayDay).ToList();
 
@@ -44,17 +45,17 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 return true;
             }
 
-            await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
-
             foreach (var m in movies)
             {
                 await _telegramService.SendTextMessage(userId, $"<a href='{m.Url}'>{m.Name}</a>");
             }
 
-            if (DaysMessages.Messages.ContainsKey(todayDay))
+            if (TelegramMessageTexts.DailyMessages.ContainsKey(todayDay))
             {
-                await _telegramService.SendTextMessage(userId, DaysMessages.Messages[todayDay]);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.DailyMessages[todayDay]);
             }
+
+            await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
 
             return true;
         }

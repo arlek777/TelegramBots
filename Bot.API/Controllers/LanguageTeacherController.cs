@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Telegram.Bot.Types;
 using TelegramBots.Common;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.Services;
@@ -12,16 +14,73 @@ namespace Bot.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class LanguageTeacherController : BaseBotController<LanguageTeacherBot>
+    public class LanguageTeacherController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private static int _lastUpdateId;
 
-        public LanguageTeacherController(IMessageHandlerManager<LanguageTeacherBot> messageHandlerManager, 
-            ITelegramBotService<LanguageTeacherBot> telegramService, 
-            IDefaultLogger logger, IUserService userService) 
-            : base(messageHandlerManager, telegramService, logger)
+        private readonly IUserService _userService;
+        private readonly ITelegramBotService<LanguageTeacherBot> _telegramBotService;
+        private readonly IDefaultLogger _logger;
+        private readonly IMessageHandlerManager<LanguageTeacherBot> _messageHandlerManager;
+
+        public LanguageTeacherController(
+            IUserService userService, 
+            ITelegramBotService<LanguageTeacherBot> telegramBotService, 
+            IDefaultLogger logger, 
+            IMessageHandlerManager<LanguageTeacherBot> messageHandlerManager)
         {
             _userService = userService;
+            _telegramBotService = telegramBotService;
+            _logger = logger;
+            _messageHandlerManager = messageHandlerManager;
+        }
+
+        /// <summary>
+        /// Telegram web hook main method to receive updates.
+        /// </summary>
+        [Route("OnNewUpdate")]
+        [HttpPost]
+        public async Task<IActionResult> OnNewUpdate()
+        {
+            try
+            {
+                var updateJson = await new StreamReader(Request.Body).ReadToEndAsync();
+
+                await _logger.Log($"{typeof(LanguageTeacherController)} OnNewUpdate body: " + updateJson);
+
+                Update update = JsonConvert.DeserializeObject<Update>(updateJson);
+                await _messageHandlerManager.HandleUpdate(update);
+            }
+            catch (Exception e)
+            {
+                await _logger.Log($"{typeof(LanguageTeacherController)} OnNewUpdate exception: " + e.Message);
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// For local testing. Won't work till Web hook is enabled.
+        /// </summary>
+        [HttpGet]
+        [Route("GetUpdate")]
+        public async Task GetUpdate()
+        {
+            while (true)
+            {
+                try
+                {
+                    var update = await _telegramBotService.GetUpdate(_lastUpdateId);
+                    if (update == null)
+                        continue;
+
+                    _lastUpdateId = update.Id + 1;
+
+                    await _messageHandlerManager.HandleUpdate(update);
+                }
+                catch (Exception e)
+                {
+                }
+            }
         }
 
         [Route("GetStats")]
@@ -48,11 +107,11 @@ namespace Bot.API.Controllers
             {
                 try
                 {
-                    await TelegramBotService.SendTextMessage(user.TelegramUserId, text);
+                    await _telegramBotService.SendTextMessage(user.TelegramUserId, text);
                 }
                 catch (Exception e)
                 {
-                    await Logger.Log("ERROR: " + e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
+                    await _logger.Log("ERROR: " + e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
                 }
             }
 

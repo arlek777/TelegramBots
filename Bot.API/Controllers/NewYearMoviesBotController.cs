@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -18,23 +19,31 @@ namespace Bot.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class NewYearMoviesBotController : BaseBotController<NewYearMoviesBot>
+    public class NewYearMoviesBotController : ControllerBase
     {
+        private static int _lastUpdateId;
+
+        private readonly IDefaultLogger _logger;
         private readonly IWebHostEnvironment _environment;
         private readonly IMediator _mediator;
         private readonly ITelegramBotsStatisticService _botsStatisticService;
+        private readonly IMessageHandlerManager<NewYearMoviesBot> _messageHandlerManager;
+        private readonly ITelegramBotService<NewYearMoviesBot> _telegramBotService;
 
-        public NewYearMoviesBotController(IMessageHandlerManager<NewYearMoviesBot> messageHandlerManager,
-            ITelegramBotService<NewYearMoviesBot> telegramService,
-            IDefaultLogger logger, 
+        public NewYearMoviesBotController(IDefaultLogger logger, 
             IWebHostEnvironment environment, 
             IMediator mediator,
             ITelegramBotsStatisticService botsStatisticService, 
-            IGenericRepository repository) : base(messageHandlerManager, telegramService, logger)
+            IGenericRepository repository, 
+            IMessageHandlerManager<NewYearMoviesBot> messageHandlerManager, 
+            ITelegramBotService<NewYearMoviesBot> telegramBotService)
         {
+            _logger = logger;
             _environment = environment;
             _mediator = mediator;
             _botsStatisticService = botsStatisticService;
+            _messageHandlerManager = messageHandlerManager;
+            _telegramBotService = telegramBotService;
 
             var dataFilepath = _environment.ContentRootPath + "\\Resources\\Movies\\movies.json";
 
@@ -53,13 +62,63 @@ namespace Bot.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Telegram web hook main method to receive updates.
+        /// </summary>
+        [Route("OnNewUpdate")]
+        [HttpPost]
+        public async Task<IActionResult> OnNewUpdate()
+        {
+            try
+            {
+                var updateJson = await new StreamReader(Request.Body).ReadToEndAsync();
+
+                await _logger.Log($"{typeof(NewYearMoviesBotController)} OnNewUpdate body: " + updateJson);
+
+                Update update = JsonConvert.DeserializeObject<Update>(updateJson);
+                await _messageHandlerManager.HandleUpdate(update);
+            }
+            catch (Exception e)
+            {
+                await _logger.Log($"{typeof(NewYearMoviesBotController)} OnNewUpdate exception: " + e.Message);
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// For local testing. Won't work till Web hook is enabled.
+        /// </summary>
+        [HttpGet]
+        [Route("GetUpdate")]
+        public async Task GetUpdate()
+        {
+            while (true)
+            {
+                try
+                {
+                    var update = await _telegramBotService.GetUpdate(_lastUpdateId);
+                    if (update == null)
+                        continue;
+
+                    _lastUpdateId = update.Id + 1;
+
+                    await _messageHandlerManager.HandleUpdate(update);
+                }
+                catch (Exception e)
+                {
+                }
+            }
+        }
+
         [Route("SendTodayMovies")]
         [HttpGet]
         public async Task<IActionResult> SendTodayMovies()
         {
             try
             {
-                var daysFiles = _environment.ContentRootPath + "/MovieDays/" + DateTime.Now.Day + ".txt";
+                var time = DateTime.UtcNow.AddHours(2);
+
+                var daysFiles = _environment.ContentRootPath + "/MovieDays/" + time.Day + ".txt";
                 if (System.IO.File.Exists(daysFiles))
                 {
                     return Ok("Already sent");
@@ -77,7 +136,7 @@ namespace Bot.API.Controllers
             }
             catch (Exception e)
             {
-                await Logger.Log("EXCEPTION SendTodayMovies " + e.Message);
+                await _logger.Log("EXCEPTION SendTodayMovies " + e.Message);
             }
 
             return Ok();
@@ -94,7 +153,7 @@ namespace Bot.API.Controllers
             }
             catch (Exception e)
             {
-                await Logger.Log("WARN SendTodayMovies in Foreach" + e.Message);
+                await _logger.Log("WARN SendTodayMovies in Foreach" + e.Message);
             }
         }
     }
