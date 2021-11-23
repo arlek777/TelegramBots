@@ -16,7 +16,8 @@ namespace NewYearMovies.Core
     public static class TelegramMessageTexts
     {
         public const string StartText = "Добро пожаловать!\n";
-        public const string TodayMovie = EmojiCodes.Snow + "Фильмы на сегодня, приятного просмотра :)" + EmojiCodes.Snow;
+        public const string TodayMovies = EmojiCodes.Snow + " Фильмы на сегодня, приятного просмотра :) " + EmojiCodes.Snow;
+        public const string TodayMovie = EmojiCodes.Snow + " Фильм на сегодня, приятного просмотра :) " + EmojiCodes.Snow;
 
         public const string NoTodayMovies =
             "На сегодня фильмов еще нету :( У нас есть фильмы с 11 Декабря по 7 Января, в остальное время можно получить список фильмов с помощью /movies команды.";

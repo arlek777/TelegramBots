@@ -114,29 +114,34 @@ namespace Bot.API.Controllers
         [HttpGet]
         public async Task<IActionResult> SendTodayMovies()
         {
-            int sentCount;
+            int sentCount = -1;
 
             try
             {
-                var time = DateTime.UtcNow.AddHours(2);
+                var now = DateTime.UtcNow.AddHours(2);
+                TimeSpan start = new TimeSpan(15, 0, 0); // 15 o'clock
 
-                var daysFiles = _environment.ContentRootPath + "/MovieDays/" + time.Day + ".txt";
+                var daysFiles = _environment.ContentRootPath + "/MovieDays/" + now.Day + ".txt";
+
                 if (System.IO.File.Exists(daysFiles))
                 {
                     return Ok("Already sent");
                 }
-                
-                System.IO.File.Create(daysFiles);
 
-                var stats = await _botsStatisticService.GetStats();
-                var botUsers = stats.Where(s => s.BotType == typeof(NewYearMoviesBot).Name);
-
-                foreach (var botUser in botUsers)
+                if (now.TimeOfDay >= start)
                 {
-                    await SendToUser(botUser.UserId);
-                }
+                    System.IO.File.Create(daysFiles);
 
-                sentCount = botUsers.Count();
+                    var stats = await _botsStatisticService.GetStats();
+                    var botUsers = stats.Where(s => s.BotType == typeof(NewYearMoviesBot).Name);
+
+                    foreach (var botUser in botUsers)
+                    {
+                        await SendToUser(botUser.UserId);
+                    }
+
+                    sentCount = botUsers.Count();
+                }
             }
             catch (Exception e)
             {

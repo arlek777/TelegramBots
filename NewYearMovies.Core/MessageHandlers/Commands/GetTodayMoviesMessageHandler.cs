@@ -56,7 +56,8 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }
             else
             {
-                await _telegramService.SendTextMessage(userId, $"{startMessage}{TelegramMessageTexts.TodayMovie}\n\n");
+                var message = movies.Count > 1 ? TelegramMessageTexts.TodayMovies : TelegramMessageTexts.TodayMovie;
+                await _telegramService.SendTextMessage(userId, $"{startMessage}{message}\n\n");
             }
 
             return true;
