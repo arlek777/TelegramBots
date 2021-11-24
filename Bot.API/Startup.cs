@@ -186,7 +186,7 @@ namespace Bot.API
 
         private void AddNewYearMoviesServices(IServiceCollection services)
         {
-            var bot = new NewYearMoviesBot(TokenConfig.TelegramToken);
+            var bot = new NewYearMoviesBot(NewYearMoviesBotConfig.TelegramToken);
             services.AddTransient<ITelegramBotService<NewYearMoviesBot>>(t => new TelegramBotService<NewYearMoviesBot>(bot));
         }
 

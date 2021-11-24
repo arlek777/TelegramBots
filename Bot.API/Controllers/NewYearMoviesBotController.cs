@@ -53,12 +53,9 @@ namespace Bot.API.Controllers
                 System.IO.File.WriteAllText(dataFilepath, JsonConvert.SerializeObject(movies));
             }
 
-            if (System.IO.File.Exists(dataFilepath))
+            if (System.IO.File.Exists(dataFilepath) && NewYearMoviesStore.Movies == null)
             {
-                var random = new Random();
-                NewYearMoviesStore.Movies = JsonConvert.DeserializeObject<List<Movie>>(System.IO.File.ReadAllText(dataFilepath))
-                    .OrderBy(m => random.Next())
-                    .ToList();
+                NewYearMoviesStore.Movies = JsonConvert.DeserializeObject<List<Movie>>(System.IO.File.ReadAllText(dataFilepath)).ToList();
             }
         }
 
@@ -119,7 +116,7 @@ namespace Bot.API.Controllers
             try
             {
                 var now = DateTime.UtcNow.AddHours(2);
-                TimeSpan start = new TimeSpan(15, 0, 0); // 15 o'clock
+                TimeSpan start = NewYearMoviesBotConfig.DailyStart;
 
                 var daysFiles = _environment.ContentRootPath + "/MovieDays/" + now.Day + ".txt";
 
