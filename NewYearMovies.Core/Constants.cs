@@ -6,7 +6,7 @@ namespace NewYearMovies.Core
     public static class NewYearMoviesBotConfig
     {
         // 15 p.m.
-        public static TimeSpan DailyStart = new TimeSpan(15, 0, 0);
+        public static TimeSpan DailyStart = new TimeSpan(12, 0, 0);
 
 #if DEBUG
         public const string TelegramToken = "1716552741:AAFXAUHKsmdLP_P5JoQZ0YvvGjplRe5IScE";
@@ -19,7 +19,8 @@ namespace NewYearMovies.Core
 
     public static class TelegramMessageTexts
     {
-        public static string StartText = $" {EmojiCodes.Snow} Добро пожаловать в наш календарь Новогодних Фильмов!\n{EmojiCodes.Snow} Начиная с 4го Декабря по 7е Января вас ожидает ежедневная рассылка фильмов в 15:00.\n{EmojiCodes.Snow} Спасибо, что присоединились и хорошего дня :)";
+        public static string StartText = $" {EmojiCodes.Snow} Добро пожаловать в наш календарь Новогодних Фильмов!\n{EmojiCodes.Snow} С 4го Декабря по 7е Января вас ожидает ежедневная рассылка самых лучших новогодних фильмов.\n{EmojiCodes.Snow} Спасибо, что присоединились и хорошего настроения :)";
+        public static string StartText2 = $" {EmojiCodes.Snow} Фильмы дня - нажмите /today\n{EmojiCodes.Snow} Список ТОП фильмов - нажмите /movies";
         public const string TodayMovies = EmojiCodes.Snow + " Фильмы на сегодня, приятного просмотра :) " + EmojiCodes.Snow;
         public const string TodayMovie = EmojiCodes.Snow + " Фильм на сегодня, приятного просмотра :) " + EmojiCodes.Snow;
 

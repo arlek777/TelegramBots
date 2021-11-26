@@ -53,6 +53,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             if (update.IsCommand(TelegramCommands.Start))
             {
                 await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartText);
+                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartText2);
 
                 if (now.TimeOfDay < NewYearMoviesBotConfig.DailyStart)
                 {
