@@ -28,7 +28,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     {
         private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
 
-        private const int PerPage = 4;
+        private const int PerPage = 8;
 
         public GetMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService)
         {

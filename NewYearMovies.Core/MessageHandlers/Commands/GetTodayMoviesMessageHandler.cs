@@ -36,7 +36,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             var userId = update.Message.From.Id;
 
             var now = DateTime.UtcNow.AddHours(2); // new DateTime(2022, 12, 7);
-            var isDecember = now.Month == 12 || now.Month == 11;
+            var isDecember = now.Month == 12;
 
             var movies = isDecember
                 ? NewYearMoviesStore.Movies.Where(m => m.Day == now.Day && m.IsDecember).ToList()
