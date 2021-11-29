@@ -19,10 +19,10 @@ namespace NewYearMovies.Core
 
     public static class TelegramMessageTexts
     {
-        public static string StartText = $" {EmojiCodes.Snow} Добро пожаловать в наш календарь Новогодних Фильмов!\n{EmojiCodes.Snow} С 4го Декабря по 7е Января вас ожидает ежедневная рассылка самых лучших новогодних фильмов.\n{EmojiCodes.Snow} Спасибо, что присоединились и хорошего настроения :)";
-        public static string StartText2 = $" {EmojiCodes.Snow} Фильмы дня - нажмите /today\n{EmojiCodes.Snow} Список ТОП фильмов - нажмите /movies";
-        public const string TodayMovies = EmojiCodes.Snow + " Фильмы на сегодня, приятного просмотра :) " + EmojiCodes.Snow;
-        public const string TodayMovie = EmojiCodes.Snow + " Фильм на сегодня, приятного просмотра :) " + EmojiCodes.Snow;
+        public static string StartText = $" {EmojiCodes.Snow} Добро пожаловать в наш календарь Новогодних Фильмов!\n{EmojiCodes.Snow} С 4го Декабря по 7е Января вас ожидает ежедневная рассылка самых лучших новогодних фильмов.\n{EmojiCodes.Snow} Спасибо, что присоединились и хорошего настроения :)\n\n";
+        public static string StartText2 = $"{EmojiCodes.Snow} Фильмы дня - нажмите /today\n{EmojiCodes.Snow} Список ТОП фильмов - нажмите /movies";
+        public const string TodayMovies = EmojiCodes.Snow + " Фильмы на сегодня, приятного просмотра :) Cписок всех фильмов - /movies " + EmojiCodes.Snow;
+        public const string TodayMovie = EmojiCodes.Snow + " Фильм на сегодня, приятного просмотра :) Cписок всех фильмов - /movies " + EmojiCodes.Snow;
 
         public const string NoTodayMovies =
             "На сегодня фильмов еще нету :( У нас есть фильмы с 4го Декабря по 7е Января, в остальное время можно получить список фильмов с помощью /movies команды.";

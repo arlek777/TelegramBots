@@ -155,6 +155,7 @@ namespace Bot.API.Controllers
             {
                 await _mediator.Send(new GetTodayMoviesMessageRequest()
                 {
+                    IsDailySend = true,
                     Update = new Update() { Message = new Message() { From = new User() { Id = userId } } }
                 });
             }
