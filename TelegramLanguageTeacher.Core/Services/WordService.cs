@@ -11,17 +11,17 @@ namespace TelegramLanguageTeacher.Core.Services
 {
     public interface IWordService
     {
-        Task<Word> AddWord(int userId, Word word);
-        Task<Word> GetNextWord(int userId);
+        Task<Word> AddWord(long userId, Word word);
+        Task<Word> GetNextWord(long userId);
         Task<CachedWord> GetWordFromCache(string original);
-        Task RateWord(int userId, Guid wordId, int rate);
-        Task<Word> GetWord(int userId, Guid wordId);
-        Task<Word> FindWordInUserDict(int userId, string word);
-        Task<List<Word>> GetAllWords(int userId);
-        Task RemoveWord(int userId, Guid wordId);
-        Task RemoveAllWords(int userId);
+        Task RateWord(long userId, Guid wordId, int rate);
+        Task<Word> GetWord(long userId, Guid wordId);
+        Task<Word> FindWordInUserDict(long userId, string word);
+        Task<List<Word>> GetAllWords(long userId);
+        Task RemoveWord(long userId, Guid wordId);
+        Task RemoveAllWords(long userId);
         Task AddWordToCache(CachedWord cachedWord);
-        Task<int> GetTodayRepeatWordsCount(int userId);
+        Task<int> GetTodayRepeatWordsCount(long userId);
     }
 
     public class WordService : IWordService
@@ -33,7 +33,7 @@ namespace TelegramLanguageTeacher.Core.Services
             _repository = repository;
         }
 
-        public async Task<Word> AddWord(int userId, Word word)
+        public async Task<Word> AddWord(long userId, Word word)
         {
             var user = await _repository.Find<User>(u => u.TelegramUserId == userId);
             if (user == null)
@@ -62,7 +62,7 @@ namespace TelegramLanguageTeacher.Core.Services
             return word;
         }
 
-        public async Task RateWord(int userId, Guid wordId, int rate)
+        public async Task RateWord(long userId, Guid wordId, int rate)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var dbWord = user.Dicts.FirstOrDefault()?.Words.Where(w => w?.Original != null)
@@ -79,7 +79,7 @@ namespace TelegramLanguageTeacher.Core.Services
             }
         }
 
-        public async Task<Word> GetWord(int userId, Guid wordId)
+        public async Task<Word> GetWord(long userId, Guid wordId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var dbWord = user.Dicts.FirstOrDefault()?.Words.Where(w => w.Original != null)
@@ -88,7 +88,7 @@ namespace TelegramLanguageTeacher.Core.Services
             return dbWord;
         }
 
-        public async Task<Word> FindWordInUserDict(int userId, string word)
+        public async Task<Word> FindWordInUserDict(long userId, string word)
         {
             var existingUser = await _repository.Find<User>(u => u.TelegramUserId == userId);
             if (existingUser == null)
@@ -110,7 +110,7 @@ namespace TelegramLanguageTeacher.Core.Services
             return word;
         }
 
-        public async Task<List<Word>> GetAllWords(int userId)
+        public async Task<List<Word>> GetAllWords(long userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             var words = user.Dicts.FirstOrDefault()?.Words.Where(w => w.Original != null).OrderByDescending(w => w.AddedDate).ToList();
@@ -118,14 +118,14 @@ namespace TelegramLanguageTeacher.Core.Services
             return words;
         }
 
-        public async Task RemoveWord(int userId, Guid wordId)
+        public async Task RemoveWord(long userId, Guid wordId)
         {
             var word = await _repository.Find<Word>(w => w.Id == wordId);
             _repository.Remove(word);
             await _repository.SaveChanges();
         }
 
-        public async Task RemoveAllWords(int userId)
+        public async Task RemoveAllWords(long userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
             user.Dicts.FirstOrDefault()?.Words.Clear();
@@ -139,7 +139,7 @@ namespace TelegramLanguageTeacher.Core.Services
             await _repository.SaveChanges();
         }
 
-        public async Task<int> GetTodayRepeatWordsCount(int userId)
+        public async Task<int> GetTodayRepeatWordsCount(long userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 
@@ -148,7 +148,7 @@ namespace TelegramLanguageTeacher.Core.Services
             return wordCount ?? 0;
         }
 
-        public async Task<Word> GetNextWord(int userId)
+        public async Task<Word> GetNextWord(long userId)
         {
             var user = await _repository.FindUserInclude(u => u.TelegramUserId == userId);
 

@@ -39,7 +39,7 @@ namespace InstagramHelper.Core.MessageHandlers.CallbackHandlers
 
             var caption = await _hashTagsCaptionsService.GetCaption(keyword);
 
-            await _telegramService.SendInlineButtonMessage(userId, caption, new InlineKeyboardMarkup(new InlineKeyboardButton()
+            await _telegramService.SendInlineButtonMessage(userId, caption, new InlineKeyboardMarkup(new InlineKeyboardButton(InstagramTexts.RegenerateCaption)
             {
                 CallbackData = $"{InstagramHelperCommands.RegenerateCaption}_{keyword}",
                 Text = InstagramTexts.RegenerateCaption

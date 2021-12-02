@@ -31,7 +31,7 @@ namespace IndoTaxHelper.Core.MessageHandlers.Text
         {
             Update update = request.Update;
 
-            int userId = update.Message.From.Id;
+            long userId = update.Message.From.Id;
             string messageText = update.Message.Text.Trim().ToLowerInvariant();
 
             const double tax = 0.1;

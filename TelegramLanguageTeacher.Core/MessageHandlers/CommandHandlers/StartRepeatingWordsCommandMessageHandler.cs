@@ -61,7 +61,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
         {
             return new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton()
+                new InlineKeyboardButton(TelegramMessageTexts.CheckMemory)
                 {
                     CallbackData = $"{TelegramCallbackCommands.CheckMemoryReply}_{wordId}",
                     Text = TelegramMessageTexts.CheckMemory

@@ -43,8 +43,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
         {
             return new InlineKeyboardMarkup(new InlineKeyboardButton[]
             {
-                new InlineKeyboardButton() { CallbackData = TelegramCallbackCommands.RemoveAllWords, Text = "YES" },
-                new InlineKeyboardButton() { CallbackData = "no", Text = "NO" },
+                new InlineKeyboardButton("YES") { CallbackData = TelegramCallbackCommands.RemoveAllWords, Text = "YES" },
+                new InlineKeyboardButton("NO") { CallbackData = "no", Text = "NO" },
             });
         }
     }

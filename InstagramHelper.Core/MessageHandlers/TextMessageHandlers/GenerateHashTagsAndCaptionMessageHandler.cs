@@ -40,7 +40,7 @@ namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
         {
             Update update = request.Update;
 
-            int userId = update.Message.From.Id;
+            var userId = update.Message.From.Id;
             string messageText = update.Message.Text.Trim().ToLowerInvariant();
             bool sendByChunks = messageText.StartsWith('\\');
 
@@ -66,7 +66,7 @@ namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
 
             if (!string.IsNullOrWhiteSpace(caption))
             {
-                await _telegramService.SendInlineButtonMessage(userId, caption, new InlineKeyboardMarkup(new InlineKeyboardButton()
+                await _telegramService.SendInlineButtonMessage(userId, caption, new InlineKeyboardMarkup(new InlineKeyboardButton(InstagramTexts.RegenerateCaption)
                 {
                     CallbackData = $"{InstagramHelperCommands.RegenerateCaption}_{mainKeyword}",
                     Text = InstagramTexts.RegenerateCaption
@@ -76,7 +76,7 @@ namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
             return sendByChunks ? await SendHashTagsByChunks(userId, hashTags) : await SendAllHashTags(userId, hashTags, caption);
         }
 
-        private async Task<bool> SendHashTagsByChunks(int userId, string[] hashTags)
+        private async Task<bool> SendHashTagsByChunks(long userId, string[] hashTags)
         {
             for (int i = 0; i < 30; i += 10)
             {
@@ -89,7 +89,7 @@ namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
             return true;
         }
 
-        private async Task<bool> SendAllHashTags(int userId, string[] hashTags, string caption)
+        private async Task<bool> SendAllHashTags(long userId, string[] hashTags, string caption)
         {
             string hashTagsMessage = string.Join(' ', hashTags);
 

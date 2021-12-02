@@ -61,22 +61,22 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
 
             return new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton()
+                new InlineKeyboardButton(TelegramMessageTexts.RemoveWord)
                 {
                     CallbackData = FormatCallbackRateData(0, word.Id),
                     Text = TelegramMessageTexts.RemoveWord
                 },
-                new InlineKeyboardButton()
+                new InlineKeyboardButton($"{TelegramMessageTexts.HardRate}")
                 {
                     CallbackData = FormatCallbackRateData(1, word.Id), 
                     Text = $"{TelegramMessageTexts.HardRate}"
                 },
-                new InlineKeyboardButton()
+                new InlineKeyboardButton($"{TelegramMessageTexts.NormalRate}")
                 {
                     CallbackData = FormatCallbackRateData(2, word.Id), 
                     Text = $"{TelegramMessageTexts.NormalRate}"
                 },
-                new InlineKeyboardButton()
+                new InlineKeyboardButton($"{TelegramMessageTexts.EasyRate}")
                 {
                     CallbackData = FormatCallbackRateData(3, word.Id), 
                     Text = $"{TelegramMessageTexts.EasyRate}"

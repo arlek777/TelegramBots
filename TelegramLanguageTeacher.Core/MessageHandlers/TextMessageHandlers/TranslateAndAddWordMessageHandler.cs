@@ -108,7 +108,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         }
 
         // Tries to get word from cache, if failed, translate it and add word to cache
-        private async Task<Word> Translate(int userId, string text)
+        private async Task<Word> Translate(long userId, string text)
         {
             Word word = await _wordService.FindWordInUserDict(userId, text);
 
@@ -163,7 +163,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             return word;
         }
 
-        private async Task SendTranslationData(int userId, Word word)
+        private async Task SendTranslationData(long userId, Word word)
         {
             var button = GetButton(word.Id);
             var formattedTranslation = EmojiTextFormatter.FormatFinalTranslationMessage(word);
@@ -188,12 +188,12 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         {
             return new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton()
+                new InlineKeyboardButton(TelegramMessageTexts.RemoveWord)
                 {
                     CallbackData = $"{TelegramCallbackCommands.RemoveWord}_{wordId}",
                     Text = TelegramMessageTexts.RemoveWord
                 },
-                new InlineKeyboardButton()
+                new InlineKeyboardButton(TelegramMessageTexts.AddYourTranslation)
                 {
                     CallbackData = $"{TelegramCallbackCommands.AddYourTranslation}_{wordId}",
                     Text = TelegramMessageTexts.AddYourTranslation

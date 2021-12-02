@@ -149,7 +149,7 @@ namespace Bot.API.Controllers
             return Ok(sentCount);
         }
 
-        private async Task SendToUser(int userId)
+        private async Task SendToUser(long userId)
         {
             try
             {

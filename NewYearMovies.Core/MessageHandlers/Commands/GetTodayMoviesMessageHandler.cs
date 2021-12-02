@@ -73,7 +73,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             return true;
         }
 
-        private async Task SendGreetings(int userId, int moviesCount, DateTime now, bool isDecember)
+        private async Task SendGreetings(long userId, int moviesCount, DateTime now, bool isDecember)
         {
             var day = now.Day;
 
@@ -92,7 +92,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }
         }
 
-        private async Task SendMovies(int userId, List<Movie> movies)
+        private async Task SendMovies(long userId, List<Movie> movies)
         {
             foreach (var m in movies)
             {
@@ -100,7 +100,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }
         }
 
-        private async Task SendMoviesInOneMessage(int userId, List<Movie> movies)
+        private async Task SendMoviesInOneMessage(long userId, List<Movie> movies)
         {
             string mess = "";
             foreach (var m in movies)

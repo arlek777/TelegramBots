@@ -16,7 +16,7 @@ namespace TelegramBots.DomainModels.LanguageTeacher
 
         public string Phone { get; set; }
 
-        public int TelegramUserId { get; set; }
+        public long TelegramUserId { get; set; }
 
         public string UserName { get; set; }
 

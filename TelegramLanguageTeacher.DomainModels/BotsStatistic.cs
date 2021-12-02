@@ -10,7 +10,7 @@ namespace TelegramBots.DomainModels
 
         public string BotType { get; set; }
 
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         public string UserName { get; set; }
 

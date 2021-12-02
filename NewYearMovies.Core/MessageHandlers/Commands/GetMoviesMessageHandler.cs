@@ -58,7 +58,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 return true;
             }
            
-            await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton()
+            await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton("Загрузить больше")
             {
                 CallbackData = TelegramCallbackCommands.LoadNextMoviesPage + (page + 1),
                 Text = "Загрузить больше"
