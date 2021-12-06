@@ -47,7 +47,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             int page = isCommand ? 0 : int.Parse(update.CallbackQuery.Data.Split('_')[1]);
 
             var allMovies = NewYearMoviesStore.Movies;
-            var sortedMovies = allMovies.OrderByDescending(m => m.Day).ToList().Skip(page * PerPage).Take(PerPage).ToList();
+            var sortedMovies = allMovies.OrderByDescending(m => m.Rating).ToList().Skip(page * PerPage).Take(PerPage).ToList();
             var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 
             string message = string.Join("\n\n", sortedMovies.Select(m => $"<a href='https://www.google.com/search?q={HttpUtility.UrlEncode(m.Name + " смотреть онлайн", Encoding.UTF8)}'>{m.Name}</a>").ToList());

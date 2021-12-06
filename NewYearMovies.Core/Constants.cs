@@ -21,8 +21,8 @@ namespace NewYearMovies.Core
     {
         public static string StartText = $" {EmojiCodes.Snow} Добро пожаловать в наш календарь Новогодних Фильмов!\n{EmojiCodes.Snow} С 4го Декабря по 7е Января вас ожидает ежедневная рассылка самых лучших новогодних фильмов.\n{EmojiCodes.Snow} Спасибо, что присоединились и хорошего настроения :)\n\n";
         public static string StartText2 = $"{EmojiCodes.Snow} Фильмы дня - нажмите /today\n{EmojiCodes.Snow} Список ТОП фильмов - нажмите /movies";
-        public const string TodayMovies = EmojiCodes.Snow + " Фильмы на сегодня, приятного просмотра :) Cписок всех фильмов - /movies " + EmojiCodes.Snow;
-        public const string TodayMovie = EmojiCodes.Snow + " Фильм на сегодня, приятного просмотра :) Cписок всех фильмов - /movies " + EmojiCodes.Snow;
+        public const string TodayMovies = EmojiCodes.Snow + " Фильмы на сегодня, приятного просмотра :) Cписок всех фильмов /movies " + EmojiCodes.Snow;
+        public const string TodayMovie = EmojiCodes.Snow + " Фильм на сегодня, приятного просмотра :) Cписок всех фильмов /movies " + EmojiCodes.Snow;
 
         public const string NoTodayMovies =
             "На сегодня фильмов еще нету :( У нас есть фильмы с 4го Декабря по 7е Января, в остальное время можно получить список фильмов с помощью /movies команды.";
@@ -34,18 +34,18 @@ namespace NewYearMovies.Core
             { 7, EmojiCodes.Snow + "ОХО-ХО-ХО, Хороший день для хороших фильмов :) " + EmojiCodes.Snow },
             { 10, EmojiCodes.XTree + " ДО НГ осталось 22 дня! " + EmojiCodes.XTree },
             { 12, EmojiCodes.Snow + " Хорошего Воскресенья, посмотрим пару фильмов?) " + EmojiCodes.XTree },
-            { 13, EmojiCodes.Snow +" Ух, Понедельник день тяжелый, но с хорошим фильмом после работы, станет легче " + EmojiCodes.Snow },
+            { 13, EmojiCodes.Snow +" Ух, Понедельник день тяжелый, но с хорошим фильмом после работы, станет легче :) " + EmojiCodes.Snow },
             { 17, EmojiCodes.Snowman + " С Пятницой! До НГ осталось 15 дней! " + EmojiCodes.Snowman },
             { 19, EmojiCodes.Snow + EmojiCodes.XTree + " Воскресенье, идеальное время для просмотра теплых новогодних фильмов :) " + EmojiCodes.Snow },
             { 24, EmojiCodes.Snow + EmojiCodes.XTree + " Сочельник католического Рождества, самое время смотреть лучшие фильмы! " + EmojiCodes.Snow + EmojiCodes.XTree },
-            { 25, EmojiCodes.Snowman + EmojiCodes.XTree + " С Рождеством!! Сегодня праздник фильмов, посмотрим все самое лучшее " + EmojiCodes.Snowman + EmojiCodes.XTree },
+            { 25, EmojiCodes.Snowman + EmojiCodes.XTree + " С Рождеством!! Сегодня праздник фильмов, посмотрим все самое лучшее :) " + EmojiCodes.Snowman + EmojiCodes.XTree },
             { 30, EmojiCodes.XTree + " До НГ осталось всего 2 дня! Начинаем смотреть больше фильмов, больше :)) " + EmojiCodes.XTree },
             { 31, EmojiCodes.XTree + " С Наступающим!! Готовим Оливье под самые лучшие фильмы и готовимся.. "+ EmojiCodes.XTree }
         };
 
         public static Dictionary<int, string> JanDailyMessages { get; } = new Dictionary<int, string>()
         {
-            { 1, EmojiCodes.Snowman + EmojiCodes.Firework + " С НОВЫМ ГОДОМ!!! Всего самого лучшего в этом году, пусть сбываются мечты! Давайте доставать оливье и садиться смотреть Один Дома " + EmojiCodes.Firework + EmojiCodes.Snowman },
+            { 1, EmojiCodes.Snowman + EmojiCodes.Firework + " С НОВЫМ ГОДОМ!!! Всего самого лучшего в этом году, пусть сбываются мечты! Давайте доставать оливье и садиться смотреть Один Дома. " + EmojiCodes.Firework + EmojiCodes.Snowman },
             { 2, EmojiCodes.Snow + " Ну как вам 2022?) Посмотрим немного фильмов? " + EmojiCodes.Snow },
             { 6, EmojiCodes.Snowman + " Скоро Рождество, а значит пора смотреть лучшие фильмы, приятного просмотра :) " + EmojiCodes.Snowman },
             { 7,  EmojiCodes.XTree + " С Рождеством, семейного счастья и тепла вам! А у нас сегодня последний день киномарафона, спасибо, что были с нами все это время. Надеюсь вам было тепло и уютно на эти праздники. Увидимся в следующем Декабре!) " + EmojiCodes.XTree }
