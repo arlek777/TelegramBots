@@ -50,7 +50,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             var sortedMovies = allMovies.OrderByDescending(m => m.Rating).ToList().Skip(page * PerPage).Take(PerPage).ToList();
             var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 
-            string message = string.Join("\n\n", sortedMovies.Select(m => $"<a href='https://www.google.com/search?q={HttpUtility.UrlEncode(m.Name + " смотреть онлайн", Encoding.UTF8)}'>{m.Name}</a>").ToList());
+            string message = string.Join("\n\n", sortedMovies.Select(m => $"<a href='https://www.google.com/search?q={HttpUtility.UrlEncode(m.Name + " дивитися онлайн на українській", Encoding.UTF8)}'>{m.Name}</a>").ToList());
 
             if (!nextPage.Any())
             {
@@ -58,10 +58,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 return true;
             }
            
-            await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton("Загрузить больше")
+            await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton("Завантажити більше")
             {
                 CallbackData = TelegramCallbackCommands.LoadNextMoviesPage + (page + 1),
-                Text = "Загрузить больше"
+                Text = "Завантажити більше"
             }));
 
             return true;
