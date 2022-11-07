@@ -12,19 +12,4 @@
     <ProjectReference Include="..\TelegramBots.Common\TelegramBots.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resources\IndoTaxHelper-en.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>IndoTaxHelper-en.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Resources\IndoTaxHelper-en.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>IndoTaxHelper-en.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>
