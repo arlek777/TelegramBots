@@ -2,13 +2,13 @@
 
 namespace NewYearMovies.Core
 {
-    public class NewYearMoviesBot: TelegramBotInstance
+    public class NewYearMoviesBot: ITelegramBot
     {
         public NewYearMoviesBot(string token)
         {
             Token = token;
         }
 
-        public override string Token { get; }
+        public string Token { get; }
     }
 }

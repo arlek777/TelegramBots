@@ -13,22 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\InstaCaptions\captions.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\EnglishNormalizationData\full7z-mlteast-en.lem">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\EnglishNormalizationData\full7z-multext-en.lem">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\InstaCaptions\captions.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
   </ItemGroup>
@@ -42,13 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Movies\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="MovieDays\empty.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 

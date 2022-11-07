@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using TelegramBots.Common;
-using TelegramBots.Common.Services;
+using TelegramBots.Common.Services.Interfaces;
 
 namespace Bot.API.Controllers
 {
@@ -12,9 +12,9 @@ namespace Bot.API.Controllers
     public class LogStatisticController : ControllerBase
     {
         private readonly IDefaultLogger _logger;
-        private readonly ITelegramBotsStatisticService _botsStatisticService;
+        private readonly IBotsUsageStatisticService _botsStatisticService;
 
-        public LogStatisticController(IDefaultLogger logger, ITelegramBotsStatisticService botsStatisticService)
+        public LogStatisticController(IDefaultLogger logger, IBotsUsageStatisticService botsStatisticService)
         {
             _logger = logger;
             _botsStatisticService = botsStatisticService;

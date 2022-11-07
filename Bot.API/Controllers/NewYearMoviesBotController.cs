@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,8 +9,8 @@ using Newtonsoft.Json;
 using NewYearMovies.Core;
 using NewYearMovies.Core.MessageHandlers.Commands;
 using Telegram.Bot.Types;
-using TelegramBots.Common.MessageHandling;
-using TelegramBots.Common.Services;
+using TelegramBots.Common.MessageHandling.Interfaces;
+using TelegramBots.Common.Services.Interfaces;
 using TelegramBots.DataAccess;
 using TelegramBots.DomainModels.NewYearMovies;
 
@@ -21,29 +20,24 @@ namespace Bot.API.Controllers
     [Route("[controller]")]
     public class NewYearMoviesBotController : ControllerBase
     {
-        private static int _lastUpdateId;
-
         private readonly IDefaultLogger _logger;
         private readonly IWebHostEnvironment _environment;
         private readonly IMediator _mediator;
-        private readonly ITelegramBotsStatisticService _botsStatisticService;
-        private readonly IMessageHandlerManager<NewYearMoviesBot> _messageHandlerManager;
-        private readonly ITelegramBotService<NewYearMoviesBot> _telegramBotService;
+        private readonly IBotsUsageStatisticService _botsStatisticService;
+        private readonly IBotNewMessageHandler<NewYearMoviesBot> _botNewMessageHandler;
 
         public NewYearMoviesBotController(IDefaultLogger logger, 
             IWebHostEnvironment environment, 
             IMediator mediator,
-            ITelegramBotsStatisticService botsStatisticService, 
+            IBotsUsageStatisticService botsStatisticService, 
             IGenericRepository repository, 
-            IMessageHandlerManager<NewYearMoviesBot> messageHandlerManager, 
-            ITelegramBotService<NewYearMoviesBot> telegramBotService)
+            IBotNewMessageHandler<NewYearMoviesBot> botNewMessageHandler)
         {
             _logger = logger;
             _environment = environment;
             _mediator = mediator;
             _botsStatisticService = botsStatisticService;
-            _messageHandlerManager = messageHandlerManager;
-            _telegramBotService = telegramBotService;
+            _botNewMessageHandler = botNewMessageHandler;
 
             var dataFilepath = _environment.ContentRootPath + "\\Resources\\Movies\\movies.json";
 
@@ -66,19 +60,7 @@ namespace Bot.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            try
-            {
-                var updateJson = await new StreamReader(Request.Body).ReadToEndAsync();
-
-                await _logger.Log($"{typeof(NewYearMoviesBotController)} OnNewUpdate body: " + updateJson);
-
-                Update update = JsonConvert.DeserializeObject<Update>(updateJson);
-                await _messageHandlerManager.HandleUpdate(update);
-            }
-            catch (Exception e)
-            {
-                await _logger.Log($"{typeof(NewYearMoviesBotController)} OnNewUpdate exception: " + e.Message);
-            }
+            await _botNewMessageHandler.HandleWebhookUpdate(Request.Body);
             return Ok();
         }
 
@@ -87,25 +69,7 @@ namespace Bot.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("GetUpdate")]
-        public async Task GetUpdate()
-        {
-            while (true)
-            {
-                try
-                {
-                    var update = await _telegramBotService.GetUpdate(_lastUpdateId);
-                    if (update == null)
-                        continue;
-
-                    _lastUpdateId = update.Id + 1;
-
-                    await _messageHandlerManager.HandleUpdate(update);
-                }
-                catch (Exception e)
-                {
-                }
-            }
-        }
+        public Task GetUpdate() => _botNewMessageHandler.HandleGetLastUpdate();
 
         [Route("SendTodayMovies")]
         [HttpGet]
@@ -116,7 +80,7 @@ namespace Bot.API.Controllers
             try
             {
                 var now = DateTime.UtcNow.AddHours(2);
-                TimeSpan start = NewYearMoviesBotConfig.DailyStart;
+                TimeSpan start = Constants.DailyStart;
 
                 var daysFiles = _environment.ContentRootPath + "/MovieDays/" + now.Day + ".txt";
 

@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
-using TelegramBots.Common.Services;
+using TelegramBots.Common.MessageHandling.Interfaces;
+using TelegramBots.Common.MessageHandling.Requests;
 
 namespace TelegramBots.Common.MessageHandling
 {
-    public interface IMediatrRequestsRepository<T> where T : TelegramBotInstance
-    {
-        IEnumerable<BaseRequest> Requests { get; }
-    }
-
-    public class MediatrRequestsRepository<T> : IMediatrRequestsRepository<T> where T : TelegramBotInstance
+    public class MediatrRequestsRepository<T> : IMediatrRequestsRepository<T> where T : ITelegramBot
     {
         public MediatrRequestsRepository(IEnumerable<BaseRequest> requests)
         {

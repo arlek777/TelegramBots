@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,20 +7,19 @@ using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.Extensions;
-using TelegramBots.Common.MessageHandling;
-using TelegramBots.Common.Services;
+using TelegramBots.Common.MessageHandling.Requests;
+using TelegramBots.Common.Services.Interfaces;
 using TelegramBots.DomainModels.LanguageTeacher;
 using TelegramLanguageTeacher.Core.Helpers;
-using TelegramLanguageTeacher.Core.Models;
 using TelegramLanguageTeacher.Core.Models.Responses;
-using TelegramLanguageTeacher.Core.Services;
+using TelegramLanguageTeacher.Core.Services.Interfaces;
 using User = TelegramBots.DomainModels.LanguageTeacher.User;
 
 namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 {
     public class TranslateAndAddWordMessageRequest : BaseRequest
     {
-        public override bool AcceptUpdate(Update update)
+        public override bool CanHandle(Update update)
         {
             Update = update;
             return update.IsTextMessage();
@@ -33,14 +31,14 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         private readonly IWordService _wordService;
         private readonly IUserService _userService;
         private readonly ITranslatorService _translatorService;
-        private readonly ITelegramBotService<LanguageTeacherBot> _telegramService;
+        private readonly ITelegramBotClientService<LanguageTeacherBot> _telegramService;
         private readonly IWordNormalizationService _normalizationService;
         private readonly IDefaultLogger _logger;
 
         public TranslateAndAddWordMessageHandler(IWordService wordService, 
             IUserService userService, 
             ITranslatorService translatorService, 
-            ITelegramBotService<LanguageTeacherBot> telegramService,
+            ITelegramBotClientService<LanguageTeacherBot> telegramService,
             IWordNormalizationService normalizationService, 
             IDefaultLogger logger)
         {
@@ -73,8 +71,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
 
             if (string.IsNullOrWhiteSpace(translatedWord.Translate) && string.IsNullOrWhiteSpace(translatedWord.Definition))
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTranslationFound + "\n\n" 
-                                                                                                       + TelegramMessageTexts.AddCustomTranslation);
+                await _telegramService.SendTextMessage(userId, MessageTexts.NoTranslationFound + "\n\n" 
+                                                                                                       + MessageTexts.AddCustomTranslation);
                 return true;
             }
 
@@ -120,8 +118,8 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             {
                 WordTranslationResponse translationResponse = await _translatorService.Translate(text);
 
-                var translations = translationResponse.Translations.Select(t => t.Translation).Take(LanguageTeacherConstants.TranslationCounts);
-                var examples = translationResponse.Examples.Take(LanguageTeacherConstants.ExamplesCount);
+                var translations = translationResponse.Translations.Select(t => t.Translation).Take(Constants.TranslationCounts);
+                var examples = translationResponse.Examples.Take(Constants.ExamplesCount);
                 var definitions = translationResponse.Definitions.Where(d => d != null).Select(d => $"{d.PartOfSpeech}-{d.Definition}");
 
                 var joinedTranslations = string.Join('\n', translations);
@@ -188,15 +186,15 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
         {
             return new InlineKeyboardMarkup(new[]
             {
-                new InlineKeyboardButton(TelegramMessageTexts.RemoveWord)
+                new InlineKeyboardButton(MessageTexts.RemoveWord)
                 {
-                    CallbackData = $"{TelegramCallbackCommands.RemoveWord}_{wordId}",
-                    Text = TelegramMessageTexts.RemoveWord
+                    CallbackData = $"{CallbackCommands.RemoveWord}_{wordId}",
+                    Text = MessageTexts.RemoveWord
                 },
-                new InlineKeyboardButton(TelegramMessageTexts.AddYourTranslation)
+                new InlineKeyboardButton(MessageTexts.AddYourTranslation)
                 {
-                    CallbackData = $"{TelegramCallbackCommands.AddYourTranslation}_{wordId}",
-                    Text = TelegramMessageTexts.AddYourTranslation
+                    CallbackData = $"{CallbackCommands.AddYourTranslation}_{wordId}",
+                    Text = MessageTexts.AddYourTranslation
                 }
             });
         }

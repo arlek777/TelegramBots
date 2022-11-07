@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NewYearMovies.Core
 {
-    public static class NewYearMoviesBotConfig
+    public static class Constants
     {
         // 15 p.m.
         public static TimeSpan DailyStart = new TimeSpan(12, 0, 0);
@@ -17,7 +17,7 @@ namespace NewYearMovies.Core
 #endif
     }
 
-    public static class TelegramMessageTexts
+    public static class MessageTexts
     {
         public static string StartText = $" {EmojiCodes.XTree} Незважаючи на надважкі часи, я вирішив все ж таки зробити розсилку новорічних фільмів і цього року. \nВ надії, що хороші та добрі фільми, це те, що трохи допомагає та відволікає. \nАле я вірю, що скоро ми переможемо і ми будемо святкувати свято, набагато важливіше ніж Новий Рік! \nНу, а поки, подивимося трохи фільмів)\nВсе буде Україна!\n\n";
         public static string StartText2 = $"{EmojiCodes.XTree} Фільми дня - натисніть /today\n{EmojiCodes.XTree} Повний список фільмів - натисніть /movies";
@@ -60,12 +60,12 @@ namespace NewYearMovies.Core
         public const string Snowman = "\U00002603";
     }
 
-    public static class TelegramCallbackCommands
+    public static class CallbackCommands
     {
         public const string LoadNextMoviesPage = "next_";
     }
 
-    public static class TelegramCommands
+    public static class Commands
     {
         public const string Start = "/start";
         public const string GetTodayMovies = "/today";

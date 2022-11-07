@@ -8,7 +8,9 @@ using MediatR;
 using Telegram.Bot.Types;
 using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
+using TelegramBots.Common.MessageHandling.Requests;
 using TelegramBots.Common.Services;
+using TelegramBots.Common.Services.Interfaces;
 using TelegramBots.DomainModels.NewYearMovies;
 
 namespace NewYearMovies.Core.MessageHandlers.Commands
@@ -17,18 +19,18 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     {
         public bool IsDailySend { get; set; }
 
-        public override bool AcceptUpdate(Update update)
+        public override bool CanHandle(Update update)
         {
             Update = update;
-            return update.IsCommand(TelegramCommands.GetTodayMovies) || update.IsCommand(TelegramCommands.Start);
+            return update.IsCommand(Core.Commands.GetTodayMovies) || update.IsCommand(Core.Commands.Start);
         }
     }
 
     public class GetTodayMoviesMessageHandler : IRequestHandler<GetTodayMoviesMessageRequest, bool>
     {
-        private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
+        private readonly ITelegramBotClientService<NewYearMoviesBot> _telegramService;
 
-        public GetTodayMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService)
+        public GetTodayMoviesMessageHandler(ITelegramBotClientService<NewYearMoviesBot> telegramService)
         {
             _telegramService = telegramService;
         }
@@ -47,11 +49,11 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             var isDecember = now.Month == 12;
 
             // Don't send movies for today if it's not start time yet
-            if (update.IsCommand(TelegramCommands.Start))
+            if (update.IsCommand(Core.Commands.Start))
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.StartText + TelegramMessageTexts.StartText2);
+                await _telegramService.SendTextMessage(userId, MessageTexts.StartText + MessageTexts.StartText2);
 
-                if (now.TimeOfDay < NewYearMoviesBotConfig.DailyStart)
+                if (now.TimeOfDay < Constants.DailyStart)
                 {
                     return true;
                 }
@@ -65,9 +67,9 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             if (!movies.Any())
             {
                 // Don't send empty message if it's daily sending and not time yet
-                if (!request.IsDailySend && !update.IsCommand(TelegramCommands.Start))
+                if (!request.IsDailySend && !update.IsCommand(Core.Commands.Start))
                 {
-                    await _telegramService.SendTextMessage(userId, TelegramMessageTexts.NoTodayMovies);
+                    await _telegramService.SendTextMessage(userId, MessageTexts.NoTodayMovies);
                 }
 
                 return true;
@@ -83,17 +85,17 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
         {
             var day = now.Day;
 
-            if (isDecember && TelegramMessageTexts.DecDailyMessages.ContainsKey(day))
+            if (isDecember && MessageTexts.DecDailyMessages.ContainsKey(day))
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.DecDailyMessages[day]);
+                await _telegramService.SendTextMessage(userId, MessageTexts.DecDailyMessages[day]);
             }
-            else if (now.Month == 1 && TelegramMessageTexts.JanDailyMessages.ContainsKey(day))
+            else if (now.Month == 1 && MessageTexts.JanDailyMessages.ContainsKey(day))
             {
-                await _telegramService.SendTextMessage(userId, TelegramMessageTexts.JanDailyMessages[day]);
+                await _telegramService.SendTextMessage(userId, MessageTexts.JanDailyMessages[day]);
             }
             else
             {
-                var message = moviesCount > 1 ? TelegramMessageTexts.TodayMovies : TelegramMessageTexts.TodayMovie;
+                var message = moviesCount > 1 ? MessageTexts.TodayMovies : MessageTexts.TodayMovie;
                 await _telegramService.SendTextMessage(userId, $"{message}\n");
             }
         }

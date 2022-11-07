@@ -5,16 +5,10 @@ using System.Threading.Tasks;
 using TelegramBots.DataAccess;
 using TelegramBots.DataAccess.LanguageTeacher;
 using TelegramBots.DomainModels.LanguageTeacher;
+using TelegramLanguageTeacher.Core.Services.Interfaces;
 
 namespace TelegramLanguageTeacher.Core.Services
 {
-    public interface IUserService
-    {
-        Task CreateNewUser(User user);
-        Task<IEnumerable<User>> GetAllUsers();
-        Task RemoveUserWords(string userId);
-    }
-
     public class UserService : IUserService
     {
         private readonly IGenericRepository _repository;

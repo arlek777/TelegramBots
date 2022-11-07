@@ -1,15 +1,14 @@
 ﻿using TelegramBots.Common;
-using TelegramBots.Common.Services;
 
 namespace IndoTaxHelper.Core
 {
-    public class IndoTaxHelperBot: TelegramBotInstance
+    public class IndoTaxHelperBot: ITelegramBot
     {
         public IndoTaxHelperBot(string token)
         {
             Token = token;
         }
 
-        public override string Token { get; }
+        public string Token { get; }
     }
 }

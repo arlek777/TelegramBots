@@ -1,15 +1,14 @@
 ﻿using TelegramBots.Common;
-using TelegramBots.Common.Services;
 
 namespace TelegramLanguageTeacher.Core
 {
-    public class LanguageTeacherBot: TelegramBotInstance
+    public class LanguageTeacherBot: ITelegramBot
     {
         public LanguageTeacherBot(string token)
         {
             Token = token;
         }
 
-        public override string Token { get; }
+        public string Token { get; }
     }
 }

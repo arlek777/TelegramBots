@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using InstagramHelper.Core.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using TelegramBots.Common.Helpers;
-using TelegramBots.Common.Services;
 
 namespace InstagramHelper.Core.Services
 {
-    public interface IHashTagsCaptionsService
-    {
-        Task<string[]> GetHashTags(string[] keywords, int totalHashTagsCount);
-        Task<string> GetCaption(string keyword);
-    }
-
     public class HashTagsCaptionsService: IHashTagsCaptionsService
     {
         private readonly string _captionsPath;

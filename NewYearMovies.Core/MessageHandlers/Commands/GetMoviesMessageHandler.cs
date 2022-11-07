@@ -8,16 +8,18 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.Extensions;
 using TelegramBots.Common.MessageHandling;
+using TelegramBots.Common.MessageHandling.Requests;
 using TelegramBots.Common.Services;
+using TelegramBots.Common.Services.Interfaces;
 
 namespace NewYearMovies.Core.MessageHandlers.Commands
 {
     public class GetMoviesMessageRequest : BaseRequest
     {
-        public override bool AcceptUpdate(Update update)
+        public override bool CanHandle(Update update)
         {
             Update = update;
-            return update.IsCommand(TelegramCommands.GetAllMovies) || update.IsCallback(TelegramCallbackCommands.LoadNextMoviesPage);
+            return update.IsCommand(Core.Commands.GetAllMovies) || update.IsCallback(CallbackCommands.LoadNextMoviesPage);
         }
     }
 
@@ -26,11 +28,11 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     /// </summary>
     public class GetMoviesMessageHandler : IRequestHandler<GetMoviesMessageRequest, bool>
     {
-        private readonly ITelegramBotService<NewYearMoviesBot> _telegramService;
+        private readonly ITelegramBotClientService<NewYearMoviesBot> _telegramService;
 
         private const int PerPage = 8;
 
-        public GetMoviesMessageHandler(ITelegramBotService<NewYearMoviesBot> telegramService)
+        public GetMoviesMessageHandler(ITelegramBotClientService<NewYearMoviesBot> telegramService)
         {
             _telegramService = telegramService;
         }
@@ -39,7 +41,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
         {
             Update update = request.Update;
 
-            var isCommand = update.IsCommand(TelegramCommands.GetAllMovies);
+            var isCommand = update.IsCommand(Core.Commands.GetAllMovies);
             var userId = isCommand
                 ? update.Message.From.Id
                 : update.CallbackQuery.From.Id;
@@ -60,7 +62,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
            
             await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton("Завантажити більше")
             {
-                CallbackData = TelegramCallbackCommands.LoadNextMoviesPage + (page + 1),
+                CallbackData = CallbackCommands.LoadNextMoviesPage + (page + 1),
                 Text = "Завантажити більше"
             }));
 

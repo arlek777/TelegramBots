@@ -1,14 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
+using InstagramHelper.Core;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Telegram.Bot.Types;
 using TelegramBots.Common;
-using TelegramBots.Common.MessageHandling;
-using TelegramBots.Common.Services;
+using TelegramBots.Common.MessageHandling.Interfaces;
+using TelegramBots.Common.Services.Interfaces;
 using TelegramLanguageTeacher.Core;
-using TelegramLanguageTeacher.Core.Services;
+using TelegramLanguageTeacher.Core.Services.Interfaces;
 
 namespace Bot.API.Controllers
 {
@@ -16,24 +15,23 @@ namespace Bot.API.Controllers
     [Route("[controller]")]
     public class LanguageTeacherController : ControllerBase
     {
-        private static int _lastUpdateId;
-
         private readonly IUserService _userService;
-        private readonly ITelegramBotService<LanguageTeacherBot> _telegramBotService;
+        private readonly ITelegramBotClientService<LanguageTeacherBot> _telegramBotService;
+        private readonly IBotNewMessageHandler<InstagramHelperBot> _botNewMessageHandler;
         private readonly IDefaultLogger _logger;
-        private readonly IMessageHandlerManager<LanguageTeacherBot> _messageHandlerManager;
 
         public LanguageTeacherController(
             IUserService userService, 
-            ITelegramBotService<LanguageTeacherBot> telegramBotService, 
-            IDefaultLogger logger, 
-            IMessageHandlerManager<LanguageTeacherBot> messageHandlerManager)
+            ITelegramBotClientService<LanguageTeacherBot> telegramBotService, 
+            IDefaultLogger logger,
+            IBotNewMessageHandler<InstagramHelperBot> botNewMessageHandler)
         {
             _userService = userService;
             _telegramBotService = telegramBotService;
             _logger = logger;
-            _messageHandlerManager = messageHandlerManager;
+            _botNewMessageHandler = botNewMessageHandler;
         }
+
 
         /// <summary>
         /// Telegram web hook main method to receive updates.
@@ -42,19 +40,7 @@ namespace Bot.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            try
-            {
-                var updateJson = await new StreamReader(Request.Body).ReadToEndAsync();
-
-                await _logger.Log($"{typeof(LanguageTeacherController)} OnNewUpdate body: " + updateJson);
-
-                Update update = JsonConvert.DeserializeObject<Update>(updateJson);
-                await _messageHandlerManager.HandleUpdate(update);
-            }
-            catch (Exception e)
-            {
-                await _logger.Log($"{typeof(LanguageTeacherController)} OnNewUpdate exception: " + e.Message);
-            }
+            await _botNewMessageHandler.HandleWebhookUpdate(Request.Body);
             return Ok();
         }
 
@@ -63,25 +49,7 @@ namespace Bot.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("GetUpdate")]
-        public async Task GetUpdate()
-        {
-            while (true)
-            {
-                try
-                {
-                    var update = await _telegramBotService.GetUpdate(_lastUpdateId);
-                    if (update == null)
-                        continue;
-
-                    _lastUpdateId = update.Id + 1;
-
-                    await _messageHandlerManager.HandleUpdate(update);
-                }
-                catch (Exception e)
-                {
-                }
-            }
-        }
+        public Task GetUpdate() => _botNewMessageHandler.HandleGetLastUpdate();
 
         [Route("GetStats")]
         [HttpGet]

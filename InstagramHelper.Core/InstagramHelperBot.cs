@@ -1,15 +1,14 @@
 ﻿using TelegramBots.Common;
-using TelegramBots.Common.Services;
 
 namespace InstagramHelper.Core
 {
-    public class InstagramHelperBot : TelegramBotInstance
+    public class InstagramHelperBot : ITelegramBot
     {
         public InstagramHelperBot(string token)
         {
             Token = token;
         }
 
-        public override string Token { get; }
+        public string Token { get; }
     }
 }
