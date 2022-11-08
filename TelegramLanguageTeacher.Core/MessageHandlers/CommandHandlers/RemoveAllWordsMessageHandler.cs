@@ -38,10 +38,13 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CommandHandlers
 
         private InlineKeyboardMarkup GetButton()
         {
+            var yes = MessageTexts.Yes.ToUpper();
+            var no = MessageTexts.No.ToUpper();
+
             return new InlineKeyboardMarkup(new InlineKeyboardButton[]
             {
-                new InlineKeyboardButton("YES") { CallbackData = CallbackCommands.RemoveAllWords, Text = "YES" },
-                new InlineKeyboardButton("NO") { CallbackData = "no", Text = "NO" },
+                new (yes) { CallbackData = CallbackCommands.RemoveAllWords, Text = yes },
+                new (no) { CallbackData = MessageTexts.Yes.ToLower(), Text = no },
             });
         }
     }

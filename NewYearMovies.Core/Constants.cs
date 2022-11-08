@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TelegramBots.Common;
 
 namespace NewYearMovies.Core
 {
@@ -9,7 +10,7 @@ namespace NewYearMovies.Core
         public static TimeSpan DailyStart = new TimeSpan(12, 0, 0);
 
 #if DEBUG
-        public const string TelegramToken = "1716552741:AAFXAUHKsmdLP_P5JoQZ0YvvGjplRe5IScE";
+        public const string TelegramToken = CommonConstants.TestTelegramToken;
 #endif
 
 #if !DEBUG
@@ -26,6 +27,8 @@ namespace NewYearMovies.Core
 
         public const string NoTodayMovies =
             "На сьогодні фільмів немає :( Повний список фільмів - натисніть /movies";
+
+        public const string LoadMore = "Завантажити більше";
 
         public static Dictionary<int, string> DecDailyMessages { get; } = new Dictionary<int, string>() 
         { 
@@ -50,6 +53,10 @@ namespace NewYearMovies.Core
             //{ 6, EmojiCodes.Snowman + " Скоро Рождество, а значит пора смотреть лучшие фильмы, приятного просмотра :) " + EmojiCodes.Snowman },
             //{ 7,  EmojiCodes.XTree + " С Рождеством, семейного счастья и тепла вам! А у нас сегодня последний день киномарафона, спасибо, что были с нами все это время. Надеюсь вам было тепло и уютно на эти праздники. Увидимся в следующем Декабре!) " + EmojiCodes.XTree }
         };
+
+        public const string DecemberMonth = "Грудня";
+        public const string JanuaryMonth = "Січня";
+        public const string MoviesText = "Фільми на";
     }
 
     public static class EmojiCodes

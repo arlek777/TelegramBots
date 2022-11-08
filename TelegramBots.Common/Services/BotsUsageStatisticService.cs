@@ -39,7 +39,7 @@ namespace TelegramBots.Common.Services
 
         public async Task<IEnumerable<BotsStatistic>> GetStats()
         {
-            return await _genericRepository.GetAll<BotsStatistic>();
+            return await _genericRepository.GetAllAsync<BotsStatistic>();
         }
     }
 }

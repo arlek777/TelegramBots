@@ -32,13 +32,13 @@ public static class BotRegistration
         var bot = new LanguageTeacherBot(Constants.TelegramToken);
         services.AddTransient<ITelegramBotClientService<LanguageTeacherBot>>(t => new TelegramBotClientService<LanguageTeacherBot>(bot));
 
-        services.AddTransient<ITranslatorService, TranslatorService>();
+        services.AddTransient<ITranslatorService, EnglishUkrainianTranslatorService>();
         services.AddTransient<IWordService, WordService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IWordNormalizationService, WordNormalizationService>();
         services.AddTransient<IAzureServicesSettings, DefaultAzureServicesSettings>();
 
-        var dataFilepath = contentRootFolder + "\\Resources\\EnglishNormalizationData\\full7z-mlteast-en.lem";
+        var dataFilepath = $"{contentRootFolder}\\Resources\\EnglishNormalizationData\\full7z-mlteast-en.lem";
         var stream = File.OpenRead(dataFilepath);
 
         services.AddSingleton(i => new Lemmatizer(stream));

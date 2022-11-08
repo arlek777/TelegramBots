@@ -32,12 +32,12 @@ namespace TelegramBots.DataAccess
             return await _context.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAll<T>() where T : class
+        public async Task<IEnumerable<T>> GetAllAsync<T>() where T : class
         {
             return await _context.Set<T>().ToListAsync();
         }
 
-        public IEnumerable<T> GetAllNotAsync<T>() where T : class
+        public IEnumerable<T> GetAll<T>() where T : class
         {
             return _context.Set<T>().ToList();
         }

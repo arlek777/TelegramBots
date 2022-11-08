@@ -37,7 +37,6 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             string[] splittedData = update.CallbackQuery.Data.Split('_');
 
             await _wordService.RemoveWord(userId, Guid.Parse(splittedData[1]));
-
             await _telegramService.SendTextMessage(userId, MessageTexts.Done);
 
             return true;

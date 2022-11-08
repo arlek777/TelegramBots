@@ -11,13 +11,13 @@ namespace InstagramHelper.Core.Services
 {
     public class HashTagsCaptionsService: IHashTagsCaptionsService
     {
-        private readonly string _captionsPath;
+        private const string HashTagsUri = "http://best-hashtags.com/hashtag/";
+        private const string CaptionsUri = "https://www.brainyquote.com/search_results?x=0&y=0&q=";
 
         private readonly IMemoryCache _memoryCache;
 
         public HashTagsCaptionsService(IMemoryCache memoryCache)
         {
-            // _captionsPath = captionsPath
             _memoryCache = memoryCache;
         }
 
@@ -28,7 +28,7 @@ namespace InstagramHelper.Core.Services
 
             foreach (var word in keywords)
             {
-                var hashTagsResult = await GetHashTagsFromWeb(word);
+                var hashTagsResult = await SearchHashTags(word);
                 hashTags.AddRange(CleanAndChunkHashTags(hashTagsResult, tagsChunkSize));
             }
 
@@ -39,17 +39,58 @@ namespace InstagramHelper.Core.Services
         {
             try
             {
-                var caption = await SearchCaptionInWeb(keyword);
+                var cacheKey = keyword.Replace(" ", "_");
 
-                //if (string.IsNullOrWhiteSpace(caption))
-                //{
-                //    var captions = await System.IO.File.ReadAllLinesAsync(_captionsPath, Encoding.UTF8);
-                //    caption = captions[new Random().Next(0, captions.Length - 1)];
-                //}
+                if (_memoryCache.TryGetValue(cacheKey, out List<string> captionsResult))
+                {
+                    var newCaption = captionsResult[new Random().Next(0, captionsResult.Count - 1)];
+                    captionsResult.Remove(keyword);
+
+                    _memoryCache.Remove(cacheKey);
+                    _memoryCache.Set(cacheKey, captionsResult, TimeSpan.FromHours(1));
+
+                    return newCaption;
+                }
+
+                captionsResult = new List<string>();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    var url = $"{CaptionsUri}{keyword}";
+
+                    if (i > 0)
+                    {
+                        url += $"&pg={i+1}";
+                    }
+
+                    var html = await HtmlPageDownloader.DownloadPage(url);
+                    var document = new HtmlDocument();
+                    document.LoadHtml(html);
+
+                    var captionElements = document.DocumentNode.SelectNodes("//a[@title=\"view quote\"]");
+
+                    var captions = captionElements
+                        .Where(l => l.InnerText != null && l.InnerText.Contains(" ") && l.InnerText.Length <= 100)
+                        .Select(l => l.InnerText)
+                        .ToList();
+
+                    if (!captions.Any())
+                        break;
+
+                    captionsResult.AddRange(captions);
+                }
+
+                var caption = captionsResult.Any() ? captionsResult[new Random().Next(0, captionsResult.Count - 1)] : null;
+
+                if (captionsResult.Any())
+                {
+                    captionsResult.Remove(keyword);
+                    _memoryCache.Set(cacheKey, captionsResult, TimeSpan.FromHours(1));
+                }
 
                 return caption;
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }
@@ -76,10 +117,10 @@ namespace InstagramHelper.Core.Services
             return result;
         }
 
-        private async Task<string> GetHashTagsFromWeb(string keyword)
+        private async Task<string> SearchHashTags(string keyword)
         {
             string hashTags;
-            var url = "http://best-hashtags.com/hashtag/" + keyword;
+            var url = $"{HashTagsUri}{keyword}";
 
             try
             {
@@ -100,60 +141,6 @@ namespace InstagramHelper.Core.Services
             }
 
             return hashTags;
-        }
-
-        private async Task<string> SearchCaptionInWeb(string keyword)
-        {
-            var cacheKey = keyword.Replace(" ", "_");
-
-            if (_memoryCache.TryGetValue(cacheKey, out List<string> captionsResult))
-            {
-                var newCaption = captionsResult[new Random().Next(0, captionsResult.Count - 1)];
-                captionsResult.Remove(keyword);
-
-                _memoryCache.Remove(cacheKey);
-                _memoryCache.Set(cacheKey, captionsResult, TimeSpan.FromHours(1));
-
-                return newCaption;
-            }
-
-            captionsResult = new List<string>();
-
-            for (int i = 0; i < 5; i++)
-            {
-                var url = "https://www.brainyquote.com/search_results?x=0&y=0&q=" + keyword;
-
-                if (i > 0)
-                {
-                    url += $"&pg={i+1}";
-                }
-
-                var html = await HtmlPageDownloader.DownloadPage(url);
-                var document = new HtmlDocument();
-                document.LoadHtml(html);
-
-                var captionElements = document.DocumentNode.SelectNodes("//a[@title=\"view quote\"]");
-
-                var captions = captionElements
-                    .Where(l => l.InnerText != null && l.InnerText.Contains(" ") && l.InnerText.Length <= 100)
-                    .Select(l => l.InnerText)
-                    .ToList();
-
-                if (!captions.Any())
-                    break;
-
-                captionsResult.AddRange(captions);
-            }
-
-            var caption = captionsResult.Any() ? captionsResult[new Random().Next(0, captionsResult.Count - 1)] : null;
-
-            if (captionsResult.Any())
-            {
-                captionsResult.Remove(keyword);
-                _memoryCache.Set(cacheKey, captionsResult, TimeSpan.FromHours(1));
-            }
-
-            return caption;
         }
     }
 }

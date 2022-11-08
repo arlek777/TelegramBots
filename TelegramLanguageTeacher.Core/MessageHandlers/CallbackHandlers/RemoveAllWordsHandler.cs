@@ -35,7 +35,6 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.CallbackHandlers
             var userId = update.CallbackQuery.From.Id;
 
             await _wordService.RemoveAllWords(userId);
-
             await _telegramService.SendTextMessage(userId, MessageTexts.Done);
 
             return true;

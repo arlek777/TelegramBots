@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NewYearMovies.Core.MessageHandlers.Commands;
+using NewYearMovies.Core.Services;
+using NewYearMovies.Core.Services.Interfaces;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Interfaces;
 using TelegramBots.Common.MessageHandling.Requests;
@@ -27,6 +29,8 @@ public static class BotRegistration
 
         services.AddSingleton<IMediatrRequestsRepository<NewYearMoviesBot>>(s => new MediatrRequestsRepository<NewYearMoviesBot>(requests));
         services.AddTransient<IBotNewMessageHandler<NewYearMoviesBot>, BotNewMessageHandler<NewYearMoviesBot>>();
+
+        services.AddTransient<IMoviesService, MoviesService>();
 
         return services;
     }

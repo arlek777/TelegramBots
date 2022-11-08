@@ -27,7 +27,7 @@ namespace TelegramBots.Common.Services
 
         public async Task<IEnumerable<Log>> GetLogs()
         {
-            return await _repository.GetAll<Log>();
+            return await _repository.GetAllAsync<Log>();
         }
     }
 }

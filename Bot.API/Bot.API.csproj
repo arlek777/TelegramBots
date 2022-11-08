@@ -13,6 +13,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\EnglishNormalizationData\full7z-mlteast-en.lem" />
+    <None Remove="Resources\EnglishNormalizationData\full7z-multext-en.lem" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\EnglishNormalizationData\full7z-mlteast-en.lem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\EnglishNormalizationData\full7z-multext-en.lem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
   </ItemGroup>
@@ -26,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Resources\MovieDays\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

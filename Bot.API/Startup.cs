@@ -27,6 +27,7 @@ namespace Bot.API
         {
             services.AddControllers();
             services.AddMemoryCache();
+            services.AddHttpClient();
 
             AddDbServices(services);
 

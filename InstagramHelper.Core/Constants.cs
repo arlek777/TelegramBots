@@ -1,9 +1,11 @@
-﻿namespace InstagramHelper.Core
+﻿using TelegramBots.Common;
+
+namespace InstagramHelper.Core
 {
     public static class Constants
     {
 #if DEBUG
-        public const string TelegramToken = "1716552741:AAFXAUHKsmdLP_P5JoQZ0YvvGjplRe5IScE";
+        public const string TelegramToken = CommonConstants.TestTelegramToken;
 #endif
 
 #if !DEBUG

@@ -4,12 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using MediatR;
+using NewYearMovies.Core.Services.Interfaces;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBots.Common.Extensions;
-using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Requests;
-using TelegramBots.Common.Services;
 using TelegramBots.Common.Services.Interfaces;
 
 namespace NewYearMovies.Core.MessageHandlers.Commands
@@ -28,13 +27,15 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     /// </summary>
     public class GetMoviesMessageHandler : IRequestHandler<GetMoviesMessageRequest, bool>
     {
-        private readonly ITelegramBotClientService<NewYearMoviesBot> _telegramService;
-
         private const int PerPage = 8;
 
-        public GetMoviesMessageHandler(ITelegramBotClientService<NewYearMoviesBot> telegramService)
+        private readonly ITelegramBotClientService<NewYearMoviesBot> _telegramService;
+        private readonly IMoviesService _moviesService;
+
+        public GetMoviesMessageHandler(ITelegramBotClientService<NewYearMoviesBot> telegramService, IMoviesService moviesService)
         {
             _telegramService = telegramService;
+            _moviesService = moviesService;
         }
 
         public async Task<bool> Handle(GetMoviesMessageRequest request, CancellationToken cancellationToken)
@@ -46,9 +47,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 ? update.Message.From.Id
                 : update.CallbackQuery.From.Id;
 
+            var allMovies = await _moviesService.GetMoviesAsync();
+
             int page = isCommand ? 0 : int.Parse(update.CallbackQuery.Data.Split('_')[1]);
 
-            var allMovies = NewYearMoviesStore.Movies;
             var sortedMovies = allMovies.OrderByDescending(m => m.Rating).ToList().Skip(page * PerPage).Take(PerPage).ToList();
             var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 
@@ -60,10 +62,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 return true;
             }
            
-            await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton("Завантажити більше")
+            await _telegramService.SendInlineButtonMessage(userId, message, new InlineKeyboardMarkup(new InlineKeyboardButton(MessageTexts.LoadMore)
             {
                 CallbackData = CallbackCommands.LoadNextMoviesPage + (page + 1),
-                Text = "Завантажити більше"
+                Text = MessageTexts.LoadMore
             }));
 
             return true;

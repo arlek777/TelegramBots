@@ -176,7 +176,7 @@ namespace TelegramLanguageTeacher.Core.MessageHandlers.TextMessageHandlers
             var randomReminder = new Random().Next(0, 3);
             if (randomReminder == 2)
             {
-                await _telegramService.SendTextMessage(userId, "Let's /repeat your words. Just click /repeat.");
+                await _telegramService.SendTextMessage(userId, MessageTexts.RepeatWordsReminder);
             }
 
             await _logger.Log("SendTextMessage with translation: " + formattedTranslation);

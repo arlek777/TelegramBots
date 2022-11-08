@@ -4,9 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TelegramBots.DataAccess;
 using TelegramBots.DomainModels.LanguageTeacher;
 
-namespace TelegramBots.DataAccess.LanguageTeacher
+namespace TelegramLanguageTeacher.Core.Extensions
 {
     public static class EntityFrameworkRepositoryExtensions
     {

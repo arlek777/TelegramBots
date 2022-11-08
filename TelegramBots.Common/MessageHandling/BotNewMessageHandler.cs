@@ -6,7 +6,6 @@ using MediatR;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using TelegramBots.Common.MessageHandling.Interfaces;
-using TelegramBots.Common.Models;
 using TelegramBots.Common.Services.Interfaces;
 
 namespace TelegramBots.Common.MessageHandling
@@ -48,7 +47,13 @@ namespace TelegramBots.Common.MessageHandling
             }
             catch (Exception e)
             {
+#if DEBUG
+                throw;
+#endif
+#if !DEBUG
+
                 await _logger.Log($"{typeof(T).Name} OnNewUpdate exception: " + e.Message);
+#endif
             }
         }
 
@@ -70,6 +75,13 @@ namespace TelegramBots.Common.MessageHandling
                 }
                 catch (Exception e)
                 {
+#if DEBUG
+                    throw;
+#endif
+#if !DEBUG
+
+                    await _logger.Log($"{typeof(T).Name} HandleGetLastUpdate exception: " + e.Message);
+#endif
                 }
             }
         }

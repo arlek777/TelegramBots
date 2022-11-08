@@ -1,4 +1,6 @@
-﻿namespace TelegramLanguageTeacher.Core
+﻿using TelegramBots.Common;
+
+namespace TelegramLanguageTeacher.Core
 {
     public static class Constants
     {
@@ -12,7 +14,7 @@
         public const int TimeToShowWordOfTheDayUtcMinute = 15; // 14 Kiev Summer Time
 
 #if DEBUG
-        public const string TelegramToken = "1716552741:AAFXAUHKsmdLP_P5JoQZ0YvvGjplRe5IScE";
+        public const string TelegramToken = CommonConstants.TestTelegramToken;
 #endif
 
 #if !DEBUG
@@ -42,6 +44,8 @@
 
         public const string AddCustomTranslation = "Try re-phrase it or add your translation in format\n\n word::your translation";
 
+        public const string RepeatWordsReminder = "Let's /repeat your words. Just click /repeat.";
+
         public const string StartRepeating = "Start Repeating";
         public const string RemoveWord = "Remove";
         public const string AddYourTranslation = "Add Your Translation";
@@ -49,6 +53,9 @@
         public const string NormalRate = "Normal";
         public const string EasyRate = "Easy";
         public const string Done = "Done";
+
+        public const string Yes = "Yes";
+        public const string No = "No";
     }
 
     public static class CallbackCommands

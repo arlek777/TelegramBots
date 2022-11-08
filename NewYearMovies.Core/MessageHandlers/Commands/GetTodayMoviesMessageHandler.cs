@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using NewYearMovies.Core.Services.Interfaces;
 using Telegram.Bot.Types;
 using TelegramBots.Common.Extensions;
-using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Requests;
-using TelegramBots.Common.Services;
 using TelegramBots.Common.Services.Interfaces;
 using TelegramBots.DomainModels.NewYearMovies;
 
@@ -29,10 +28,12 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     public class GetTodayMoviesMessageHandler : IRequestHandler<GetTodayMoviesMessageRequest, bool>
     {
         private readonly ITelegramBotClientService<NewYearMoviesBot> _telegramService;
+        private readonly IMoviesService _moviesService;
 
-        public GetTodayMoviesMessageHandler(ITelegramBotClientService<NewYearMoviesBot> telegramService)
+        public GetTodayMoviesMessageHandler(ITelegramBotClientService<NewYearMoviesBot> telegramService, IMoviesService moviesService)
         {
             _telegramService = telegramService;
+            _moviesService = moviesService;
         }
 
         public async Task<bool> Handle(GetTodayMoviesMessageRequest request, CancellationToken cancellationToken)
@@ -40,8 +41,10 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             Update update = request.Update;
             var userId = update.Message.From.Id;
 
-            await SendMovies(userId, NewYearMoviesStore.Movies.Where(m => m.IsDecember).OrderBy(m => m.Day).ToList());
-            await SendMovies(userId, NewYearMoviesStore.Movies.Where(m => !m.IsDecember).OrderBy(m => m.Day).ToList(), false);
+            var movies = await _moviesService.GetMoviesAsync();
+
+            await SendMovies(userId, movies.Where(m => !m.IsDecember).OrderByDescending(m => m.Day).ToList(), false);
+            await SendMovies(userId, movies.Where(m => m.IsDecember).OrderByDescending(m => m.Day).ToList());
 
             return true;
 
@@ -59,9 +62,9 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 }
             }
 
-            var movies = isDecember
-                ? NewYearMoviesStore.Movies.Where(m => m.Day == now.Day && m.IsDecember).ToList()
-                : NewYearMoviesStore.Movies.Where(m => m.Day == now.Day && !m.IsDecember).ToList();
+            movies = isDecember
+                ? movies.Where(m => m.Day == now.Day && m.IsDecember).ToList()
+                : movies.Where(m => m.Day == now.Day && !m.IsDecember).ToList();
 
             // No movies
             if (!movies.Any())
@@ -100,18 +103,19 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }
         }
 
-        private async Task SendMovies(long userId, List<Movie> movies, bool isDecember = true)
+        private async Task SendMovies(long userId, IList<Movie> movies, bool isDecember = true)
         {
-            var month = isDecember ? "Грудня" : "Січня";
-            foreach (var group in movies.GroupBy(m => m.Day))
+            var month = isDecember ? MessageTexts.DecemberMonth : MessageTexts.JanuaryMonth;
+            foreach (var group in movies.GroupBy(m => m.Day).DistinctBy(m => m.Key))
             {
                 var moviesTitles = new StringBuilder();
                 foreach (var m in group)
                 {
-                    moviesTitles.AppendLine($"<a href='{m.Url}'>{m.Name}</a>");
+                    moviesTitles.AppendLine($"{EmojiCodes.XTree} <a href='{m.Url}'>{m.Name}</a> {EmojiCodes.XTree}");
                 }
 
-                await _telegramService.SendTextMessage(userId, $"{EmojiCodes.Snow} Фільми на {group.Key} {month} {EmojiCodes.Snow}\n{moviesTitles}");
+                await _telegramService.SendTextMessage(userId,
+                    $"{EmojiCodes.Snow} {MessageTexts.MoviesText} {group.Key} {month} {EmojiCodes.Snow}\n\n{moviesTitles}");
             }
         }
 
