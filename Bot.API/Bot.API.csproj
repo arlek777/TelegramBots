@@ -6,9 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="Services\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Services\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Services\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
 
@@ -41,7 +45,6 @@
 
   <ItemGroup>
     <Folder Include="Resources\MovieDays\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 
