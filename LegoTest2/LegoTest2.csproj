@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpBrick.PoweredUp" Version="3.4.0" />
+    <PackageReference Include="SharpBrick.PoweredUp.WinRT" Version="3.4.0" />
+  </ItemGroup>
+
+
+</Project>
