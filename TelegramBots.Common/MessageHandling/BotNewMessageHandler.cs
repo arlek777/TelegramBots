@@ -45,7 +45,7 @@ namespace TelegramBots.Common.MessageHandling
                 Update update = JsonConvert.DeserializeObject<Update>(updateJson);
                 await HandleUpdate(update);
             }
-            catch (Exception e)
+            catch
             {
 #if DEBUG
                 throw;
@@ -73,14 +73,12 @@ namespace TelegramBots.Common.MessageHandling
 
                     await HandleUpdate(update);
                 }
-                catch (Exception e)
+                catch
                 {
 #if DEBUG
-                    throw;
 #endif
 #if !DEBUG
 
-                    await _logger.Log($"{typeof(T).Name} HandleGetLastUpdate exception: " + e.Message);
 #endif
                 }
             }
