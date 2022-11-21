@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TelegramLanguageTeacher.DomainModels\TelegramBots.DomainModels.csproj" />
+    <ProjectReference Include="..\TelegramBots.DomainModels\TelegramBots.DomainModels.csproj" />
   </ItemGroup>
 
 </Project>
