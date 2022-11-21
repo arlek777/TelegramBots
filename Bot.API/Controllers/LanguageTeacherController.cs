@@ -79,7 +79,7 @@ namespace Bot.API.Controllers
                 }
                 catch (Exception e)
                 {
-                    await _logger.Log("ERROR: " + e.Message + " " + e.StackTrace + " " + e.Source + " Inner: " + e.InnerException?.Message);
+                    await _logger.Log($"${nameof(SendBotUpdateMessage)} Error: {e.Message} {e.StackTrace} {e.Source} {e.InnerException?.Message}");
                 }
             }
 

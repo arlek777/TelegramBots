@@ -41,7 +41,7 @@ namespace InstagramHelper.Core.MessageHandlers.CallbackHandlers
 
             var keyword = splittedData[1];
 
-            var caption = await _hashTagsCaptionsService.GetCaption(keyword);
+            var caption = await _hashTagsCaptionsService.TryGetCaption(keyword);
 
             await _telegramService.SendInlineButtonMessage(userId.Value, caption, new InlineKeyboardMarkup(new InlineKeyboardButton(Texts.RegenerateCaption)
             {

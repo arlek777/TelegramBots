@@ -28,6 +28,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
     public class GetMoviesMessageHandler : IRequestHandler<GetMoviesMessageRequest, bool>
     {
         private const int PerPage = 8;
+        private const string MovieSearchUrlFormat = "https://www.google.com/search?q={0}";
 
         private readonly ITelegramBotClientService<NewYearMoviesBot> _telegramService;
         private readonly IMoviesService _moviesService;
@@ -47,14 +48,14 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 ? update.Message.From.Id
                 : update.CallbackQuery.From.Id;
 
-            var allMovies = await _moviesService.GetMoviesAsync();
+            var allMovies = await _moviesService.GetAsync();
 
             int page = isCommand ? 0 : int.Parse(update.CallbackQuery.Data.Split('_')[1]);
 
             var sortedMovies = allMovies.OrderByDescending(m => m.Rating).ToList().Skip(page * PerPage).Take(PerPage).ToList();
             var nextPage = allMovies.Skip((page + 1) * PerPage).Take(PerPage).ToList();
 
-            string message = string.Join("\n\n", sortedMovies.Select(m => $"<a href='https://www.google.com/search?q={HttpUtility.UrlEncode(m.Name + " дивитися онлайн на українській", Encoding.UTF8)}'>{m.Name}</a>").ToList());
+            string message = string.Join("\n\n", sortedMovies.Select(m => $"<a href='{GetMovieSearchUrl(m.Name)}'>{m.Name}</a>").ToList());
 
             if (!nextPage.Any())
             {
@@ -69,6 +70,11 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             }));
 
             return true;
+        }
+
+        private string GetMovieSearchUrl(string movieName)
+        {
+            return string.Format(MovieSearchUrlFormat, HttpUtility.UrlEncode($"{movieName} {MessageTexts.SearchMovie}", Encoding.UTF8));
         }
     }
 }

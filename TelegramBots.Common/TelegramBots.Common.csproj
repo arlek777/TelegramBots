@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TelegramLanguageTeacher.DataAccess\TelegramBots.DataAccess.csproj" />
-    <ProjectReference Include="..\TelegramLanguageTeacher.DomainModels\TelegramBots.DomainModels.csproj" />
+    <ProjectReference Include="..\TelegramBots.DataAccess\TelegramBots.DataAccess.csproj" />
+    <ProjectReference Include="..\TelegramBots.DomainModels\TelegramBots.DomainModels.csproj" />
   </ItemGroup>
 
 </Project>

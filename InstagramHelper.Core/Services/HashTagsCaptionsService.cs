@@ -28,14 +28,14 @@ namespace InstagramHelper.Core.Services
 
             foreach (var word in keywords)
             {
-                var hashTagsResult = await SearchHashTags(word);
+                var hashTagsResult = await TryGetHashTags(word);
                 hashTags.AddRange(CleanAndChunkHashTags(hashTagsResult, tagsChunkSize));
             }
 
             return hashTags.ToArray();
         }
 
-        public async Task<string> GetCaption(string keyword)
+        public async Task<string> TryGetCaption(string keyword)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace InstagramHelper.Core.Services
             return result;
         }
 
-        private async Task<string> SearchHashTags(string keyword)
+        private async Task<string> TryGetHashTags(string keyword)
         {
             string hashTags;
             var url = $"{HashTagsUri}{keyword}";
@@ -135,7 +135,7 @@ namespace InstagramHelper.Core.Services
                 hashTags = hashTagHtml.InnerText;
 
             }
-            catch (Exception e)
+            catch
             {
                 return null;
             }

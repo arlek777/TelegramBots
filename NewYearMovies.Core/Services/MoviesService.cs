@@ -13,6 +13,7 @@ namespace NewYearMovies.Core.Services;
 public class MoviesService : IMoviesService
 {
     private const string MoviesCacheKey = "movies";
+    private readonly TimeSpan _cacheExpiration = TimeSpan.FromDays(30);
 
     private readonly IMemoryCache _memoryCache;
     private readonly IGenericRepository _repository;
@@ -23,7 +24,7 @@ public class MoviesService : IMoviesService
         _repository = repository;
     }
 
-    public async Task<IList<Movie>> GetMoviesAsync()
+    public async Task<IList<Movie>> GetAsync()
     {
         List<Movie> movies;
 
@@ -34,7 +35,7 @@ public class MoviesService : IMoviesService
         }
 
         movies = (await _repository.GetAllAsync<Movie>())?.ToList();
-        _memoryCache.Set(MoviesCacheKey, JsonConvert.SerializeObject(movies), TimeSpan.FromDays(30));
+        _memoryCache.Set(MoviesCacheKey, JsonConvert.SerializeObject(movies), _cacheExpiration);
 
         return movies;
     }

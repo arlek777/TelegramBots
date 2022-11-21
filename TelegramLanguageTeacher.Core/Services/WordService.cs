@@ -25,8 +25,11 @@ namespace TelegramLanguageTeacher.Core.Services
                 return null;
 
             var defaultDict = await _repository.Find<Dict>(d => d.UserId == user.Id);
+
             if (defaultDict == null || word.Original == null)
-                throw new ArgumentException("Dictionary is not found or translation is null");
+            {
+                throw new ArgumentException("Dictionary is not found or translation is null.");
+            }
 
             var duplicatedWord = defaultDict.Words.Where(w => w?.Original != null).FirstOrDefault(
                 w => w.Original.Equals(word.Original, StringComparison.InvariantCultureIgnoreCase));

@@ -53,7 +53,7 @@ namespace InstagramHelper.Core.MessageHandlers.TextMessageHandlers
             var keywords = messageText.Split(' ').Take(MaxWordsToSplit).ToArray();
             var mainKeyword = keywords[0];
 
-            var caption = await _hashTagGenerator.GetCaption(mainKeyword);
+            var caption = await _hashTagGenerator.TryGetCaption(mainKeyword);
             var hashTags = await _hashTagGenerator.GetHashTags(keywords, MaxHashTagAmount);
 
             if (hashTags == null || !hashTags.Any())

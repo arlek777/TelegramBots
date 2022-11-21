@@ -160,9 +160,7 @@ namespace TelegramLanguageTeacher.Core.Services
             {
                 return json[0]["phonetics"]?[0]["audio"]?.ToString();
             }
-            catch
-            {
-            }
+            catch { }
 
             return null;
         }
@@ -181,10 +179,7 @@ namespace TelegramLanguageTeacher.Core.Services
                     Example = TryGetValue(meanings[0]["definitions"]?[index], "example")
                 };
             }
-            catch
-            {
-                // ignored
-            }
+            catch { }
 
             return null;
         }

@@ -6,5 +6,5 @@ namespace NewYearMovies.Core.Services.Interfaces;
 
 public interface IMoviesService
 {
-    Task<IList<Movie>> GetMoviesAsync();
+    Task<IList<Movie>> GetAsync();
 }

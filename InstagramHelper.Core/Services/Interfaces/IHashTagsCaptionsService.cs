@@ -6,5 +6,5 @@ public interface IHashTagsCaptionsService
 {
     Task<string[]> GetHashTags(string[] keywords, int totalHashTagsCount);
 
-    Task<string> GetCaption(string keyword);
+    Task<string> TryGetCaption(string keyword);
 }

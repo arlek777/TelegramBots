@@ -87,7 +87,7 @@ namespace Bot.API.Controllers
             }
             catch (Exception e)
             {
-                await _logger.Log(e.Message);
+                await _logger.Log($"{nameof(SendTodayMovies)} Error: {e.Message}");
                 throw;
             }
 
@@ -101,12 +101,12 @@ namespace Bot.API.Controllers
                 await _mediator.Send(new GetTodayMoviesMessageRequest()
                 {
                     IsDailySend = true,
-                    Update = new Update() { Message = new Message() { From = new User() { Id = userId } } }
+                    Update = new Update() { Message = new Message { From = new User { Id = userId } } }
                 });
             }
             catch (Exception e)
             {
-                await _logger.Log("Error in SendTodayMovies: " + e.Message);
+                await _logger.Log($"{nameof(SendToUser)} Error: ${e.Message}");
             }
         }
     }

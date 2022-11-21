@@ -41,7 +41,7 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
             Update update = request.Update;
             var userId = update.Message.From.Id;
 
-            var movies = await _moviesService.GetMoviesAsync();
+            var movies = await _moviesService.GetAsync();
 
             await SendMovies(userId, movies.Where(m => !m.IsDecember).OrderByDescending(m => m.Day).ToList(), false);
             await SendMovies(userId, movies.Where(m => m.IsDecember).OrderByDescending(m => m.Day).ToList());
