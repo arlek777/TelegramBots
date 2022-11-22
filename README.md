@@ -1,9 +1,10 @@
+#TelegramBots
 <h1>Core Technologies</h1>
 <hr/>
 
-- ASP.NET Core (.NET 6)
-- EntityFramework with MS SQL
-- MediatR
+- ASP.NET Core (.NET 6);
+- EntityFramework with MS SQL;
+- MediatR.
 
 <h1>Decsription</h1>
 <hr/>
