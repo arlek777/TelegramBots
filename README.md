@@ -1,5 +1,13 @@
 # TelegramBots
 <hr/>
+<h1>Core Technologies</h1>
+- ASP.NET Core (.NET 6)
+- EntityFramework with MS SQL
+- MediatR
+
+<hr/>
+
+<h1>Decsription</h1>
 
 - The project is aimed to host any kind of Telegram bot which can solve a variety of small to medium tasks for everyday life.
 - The project provides the necessary infrastructure and support to create a new Telegram bot easily and fast.
