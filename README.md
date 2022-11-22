@@ -9,3 +9,4 @@
   - InstagramHelperBot can be used to get the most popular hashtags by keywords as well as captions for them. 
   - IndoTaxHelperBot is a tiny bot to add Indonesian taxes to the price. It's very useful in cafes because all prices usually don't include taxes by default.  
   
+![telegrambots drawio](https://user-images.githubusercontent.com/23040546/203381341-67a7f80f-0de6-42ff-8203-b2940ee2190a.png)
