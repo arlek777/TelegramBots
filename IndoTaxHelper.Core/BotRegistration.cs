@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using IndoTaxHelper.Core.MessageHandlers;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Interfaces;
@@ -12,12 +13,12 @@ namespace IndoTaxHelper.Core;
 
 public static class BotRegistration
 {
-    public static IServiceCollection AddIndoTaxHelperBot(this IServiceCollection services)
+    public static IServiceCollection AddIndoTaxHelperBot(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMediatR(typeof(BotRegistration).Assembly);
 
-        var bot = new IndoTaxHelperBot(Constants.TelegramToken);
-        services.AddTransient<ITelegramBotClientService<IndoTaxHelperBot>>(t => new TelegramBotClientService<IndoTaxHelperBot>(bot));
+        services.AddTransient<IndoTaxHelperBot>();
+        services.AddTransient<ITelegramBotClientService<IndoTaxHelperBot>, TelegramBotClientService<IndoTaxHelperBot>>();
 
         var requests = new List<BaseRequest>()
         {

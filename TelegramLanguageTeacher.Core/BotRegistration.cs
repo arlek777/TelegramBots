@@ -2,6 +2,8 @@
 using System.IO;
 using LemmaSharp;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Interfaces;
@@ -19,9 +21,9 @@ namespace TelegramLanguageTeacher.Core;
 
 public static class BotRegistration
 {
-    public static IServiceCollection AddLanguageTeacherBot(this IServiceCollection services, string contentRootFolder)
+    public static IServiceCollection AddLanguageTeacherBot(this IServiceCollection services, IConfiguration configuration)
     {
-        AddServices(services, contentRootFolder);
+        AddServices(services, configuration[WebHostDefaults.ContentRootKey]);
         AddMediatR(services);
 
         return services;
@@ -29,8 +31,8 @@ public static class BotRegistration
 
     private static void AddServices(IServiceCollection services, string contentRootFolder)
     {
-        var bot = new LanguageTeacherBot(Constants.TelegramToken);
-        services.AddTransient<ITelegramBotClientService<LanguageTeacherBot>>(t => new TelegramBotClientService<LanguageTeacherBot>(bot));
+        services.AddTransient<LanguageTeacherBot>();
+        services.AddTransient<ITelegramBotClientService<LanguageTeacherBot>, TelegramBotClientService<LanguageTeacherBot>>();
 
         services.AddTransient<ITranslatorService, EnglishUkrainianTranslatorService>();
         services.AddTransient<IWordService, WordService>();

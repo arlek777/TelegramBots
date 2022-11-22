@@ -1,14 +1,11 @@
-﻿using TelegramBots.Common;
+﻿using Microsoft.Extensions.Configuration;
+using TelegramBots.Common;
 
-namespace InstagramHelper.Core
+namespace InstagramHelper.Core;
+
+public class InstagramHelperBot : TelegramBot
 {
-    public class InstagramHelperBot : ITelegramBot
+    public InstagramHelperBot(IConfiguration configuration) : base(configuration)
     {
-        public InstagramHelperBot(string token)
-        {
-            Token = token;
-        }
-
-        public string Token { get; }
     }
 }

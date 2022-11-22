@@ -22,7 +22,6 @@ namespace Bot.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -31,22 +30,14 @@ namespace Bot.API
 
             AddDbServices(services);
 
-            var contentRoot = Configuration.GetValue<string>(WebHostDefaults.ContentRootKey);
-
-            services.AddIndoTaxHelperBot();
-            services.AddInstagramHelperBot();
-            services.AddNewYearMoviesBot();
-            services.AddLanguageTeacherBot(contentRoot);
+            services.AddIndoTaxHelperBot(Configuration);
+            services.AddInstagramHelperBot(Configuration);
+            services.AddNewYearMoviesBot(Configuration);
+            services.AddLanguageTeacherBot(Configuration);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-            //if (env.IsDevelopment())
-           // {
-                app.UseDeveloperExceptionPage();
-            //}
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -70,7 +61,6 @@ namespace Bot.API
                 return context;
             });
 
-            // TODO logger
             services.AddTransient<IDefaultLogger, SqlDbLogger>();
             services.AddTransient<IBotsUsageStatisticService, BotsUsageStatisticService>();
             services.AddTransient<IGenericRepository, EntityFrameworkRepository>();

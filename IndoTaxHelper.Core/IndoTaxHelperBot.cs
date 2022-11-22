@@ -1,14 +1,11 @@
-﻿using TelegramBots.Common;
+﻿using Microsoft.Extensions.Configuration;
+using TelegramBots.Common;
 
-namespace IndoTaxHelper.Core
+namespace IndoTaxHelper.Core;
+
+public class IndoTaxHelperBot: TelegramBot
 {
-    public class IndoTaxHelperBot: ITelegramBot
+    public IndoTaxHelperBot(IConfiguration configuration) : base(configuration)
     {
-        public IndoTaxHelperBot(string token)
-        {
-            Token = token;
-        }
-
-        public string Token { get; }
     }
 }

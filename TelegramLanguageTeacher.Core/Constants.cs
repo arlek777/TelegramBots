@@ -1,6 +1,4 @@
-﻿using TelegramBots.Common;
-
-namespace TelegramLanguageTeacher.Core
+﻿namespace TelegramLanguageTeacher.Core
 {
     public static class Constants
     {
@@ -12,14 +10,6 @@ namespace TelegramLanguageTeacher.Core
 
         public const int TimeToRepeatUtcMinute = 15; // 12 Kiev Summer Time
         public const int TimeToShowWordOfTheDayUtcMinute = 15; // 14 Kiev Summer Time
-
-#if DEBUG
-        public const string TelegramToken = CommonConstants.TestTelegramToken;
-#endif
-
-#if !DEBUG
-        public const string TelegramToken = "1627596588:AAE2BopqdDI041d5CPbDsnHvPrhx8KBcKKM";
-#endif
     }
 
     public static class MessageTexts

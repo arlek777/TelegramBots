@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using TelegramBots.Common;
 
 namespace NewYearMovies.Core
 {
@@ -8,14 +7,6 @@ namespace NewYearMovies.Core
     {
         // 15 p.m.
         public static TimeSpan DailyStart = new TimeSpan(12, 0, 0);
-
-#if DEBUG
-        public const string TelegramToken = "2138223315:AAEgMSuKO7ElvODbZA4NNqc7EhIbpiMDGek";//CommonConstants.TestTelegramToken;
-#endif
-
-#if !DEBUG
-        public const string TelegramToken = "2138223315:AAEgMSuKO7ElvODbZA4NNqc7EhIbpiMDGek";
-#endif
     }
 
     public static class MessageTexts

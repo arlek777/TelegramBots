@@ -4,6 +4,7 @@ using InstagramHelper.Core.MessageHandlers.TextMessageHandlers;
 using InstagramHelper.Core.Services;
 using InstagramHelper.Core.Services.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Interfaces;
@@ -15,12 +16,12 @@ namespace InstagramHelper.Core;
 
 public static class BotRegistration
 {
-    public static IServiceCollection AddInstagramHelperBot(this IServiceCollection services)
+    public static IServiceCollection AddInstagramHelperBot(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMediatR(typeof(BotRegistration).Assembly);
 
-        var bot = new InstagramHelperBot(Constants.TelegramToken);
-        services.AddTransient<ITelegramBotClientService<InstagramHelperBot>>(t => new TelegramBotClientService<InstagramHelperBot>(bot));
+        services.AddTransient<InstagramHelperBot>();
+        services.AddTransient<ITelegramBotClientService<InstagramHelperBot>, TelegramBotClientService<InstagramHelperBot>>();
         
         var requests = new List<BaseRequest>()
         {

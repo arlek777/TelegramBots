@@ -1,14 +1,12 @@
-﻿using TelegramBots.Common;
+﻿using Microsoft.Extensions.Configuration;
+using TelegramBots.Common;
 
-namespace NewYearMovies.Core
+namespace NewYearMovies.Core;
+
+public class NewYearMoviesBot: TelegramBot
 {
-    public class NewYearMoviesBot: ITelegramBot
+    public NewYearMoviesBot(IConfiguration configuration) 
+        : base(configuration)
     {
-        public NewYearMoviesBot(string token)
-        {
-            Token = token;
-        }
-
-        public string Token { get; }
     }
 }

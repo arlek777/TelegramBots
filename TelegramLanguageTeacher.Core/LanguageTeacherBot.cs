@@ -1,14 +1,12 @@
-﻿using TelegramBots.Common;
+﻿using Microsoft.Extensions.Configuration;
+using TelegramBots.Common;
 
-namespace TelegramLanguageTeacher.Core
+namespace TelegramLanguageTeacher.Core;
+
+public class LanguageTeacherBot : TelegramBot
 {
-    public class LanguageTeacherBot: ITelegramBot
+    public LanguageTeacherBot(IConfiguration configuration) 
+        : base(configuration)
     {
-        public LanguageTeacherBot(string token)
-        {
-            Token = token;
-        }
-
-        public string Token { get; }
     }
 }

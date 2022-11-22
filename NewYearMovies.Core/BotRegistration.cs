@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewYearMovies.Core.MessageHandlers.Commands;
 using NewYearMovies.Core.Services;
@@ -14,12 +15,12 @@ namespace NewYearMovies.Core;
 
 public static class BotRegistration
 {
-    public static IServiceCollection AddNewYearMoviesBot(this IServiceCollection services)
+    public static IServiceCollection AddNewYearMoviesBot(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMediatR(typeof(BotRegistration).Assembly);
 
-        var bot = new NewYearMoviesBot(Constants.TelegramToken);
-        services.AddTransient<ITelegramBotClientService<NewYearMoviesBot>>(t => new TelegramBotClientService<NewYearMoviesBot>(bot));
+        services.AddTransient<NewYearMoviesBot>();
+        services.AddTransient<ITelegramBotClientService<NewYearMoviesBot>, TelegramBotClientService<NewYearMoviesBot>>();
 
         var requests = new List<BaseRequest>()
         {
