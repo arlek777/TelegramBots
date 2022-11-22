@@ -1,5 +1,6 @@
 # TelegramBots
 <hr/>
+
 - The project is aimed to host any kind of Telegram bot which can solve a variety of small to medium tasks for everyday life.
 - The project provides the necessary infrastructure and support to create a new Telegram bot easily and fast.
 - Currently consists of the next bots:
