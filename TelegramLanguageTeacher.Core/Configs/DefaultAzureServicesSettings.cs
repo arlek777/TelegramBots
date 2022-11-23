@@ -10,5 +10,5 @@ public class DefaultAzureServicesSettings : IAzureServicesSettings
 
     public string AzureLocation { get; set; } = "global";
 
-    public string AzureAuthorizationToken { get; set; } = "ecf368aea57a4d40a49cd4a24bbab704";
+    public string AzureAuthorizationToken { get; set; }
 }

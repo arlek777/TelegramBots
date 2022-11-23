@@ -20,19 +20,19 @@ namespace Bot.API.Controllers
         private readonly IWebHostEnvironment _environment;
         private readonly IMediator _mediator;
         private readonly IBotsUsageStatisticService _botsStatisticService;
-        private readonly IBotNewMessageHandler<NewYearMoviesBot> _botNewMessageHandler;
+        private readonly IBotMessageHandler<NewYearMoviesBot> _botMessageHandler;
 
         public NewYearMoviesController(IDefaultLogger logger, 
             IWebHostEnvironment environment, 
             IMediator mediator,
             IBotsUsageStatisticService botsStatisticService, 
-            IBotNewMessageHandler<NewYearMoviesBot> botNewMessageHandler)
+            IBotMessageHandler<NewYearMoviesBot> botMessageHandler)
         {
             _logger = logger;
             _environment = environment;
             _mediator = mediator;
             _botsStatisticService = botsStatisticService;
-            _botNewMessageHandler = botNewMessageHandler;
+            _botMessageHandler = botMessageHandler;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Bot.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            await _botNewMessageHandler.HandleWebhookUpdate(Request.Body);
+            await _botMessageHandler.HandleWebhookUpdate(Request.Body);
             return Ok();
         }
 
@@ -51,7 +51,7 @@ namespace Bot.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("GetUpdate")]
-        public Task GetUpdate() => _botNewMessageHandler.HandleGetLastUpdate();
+        public Task GetUpdate() => _botMessageHandler.HandleGetLastUpdate();
 
         [Route("SendTodayMovies")]
         [HttpGet]

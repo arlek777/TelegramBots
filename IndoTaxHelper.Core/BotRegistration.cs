@@ -26,7 +26,7 @@ public static class BotRegistration
         };
 
         services.AddSingleton<IMediatrRequestsRepository<IndoTaxHelperBot>>(s => new MediatrRequestsRepository<IndoTaxHelperBot>(requests));
-        services.AddTransient<IBotNewMessageHandler<IndoTaxHelperBot>, BotNewMessageHandler<IndoTaxHelperBot>>();
+        services.AddTransient<IBotMessageHandler<IndoTaxHelperBot>, BotMessageHandler<IndoTaxHelperBot>>();
 
         return services;
     }

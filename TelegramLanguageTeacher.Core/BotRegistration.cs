@@ -23,13 +23,13 @@ public static class BotRegistration
 {
     public static IServiceCollection AddLanguageTeacherBot(this IServiceCollection services, IConfiguration configuration)
     {
-        AddServices(services, configuration[WebHostDefaults.ContentRootKey]);
+        AddServices(services, configuration);
         AddMediatR(services);
 
         return services;
     }
 
-    private static void AddServices(IServiceCollection services, string contentRootFolder)
+    private static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<LanguageTeacherBot>();
         services.AddTransient<ITelegramBotClientService<LanguageTeacherBot>, TelegramBotClientService<LanguageTeacherBot>>();
@@ -38,9 +38,12 @@ public static class BotRegistration
         services.AddTransient<IWordService, WordService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IWordNormalizationService, WordNormalizationService>();
-        services.AddTransient<IAzureServicesSettings, DefaultAzureServicesSettings>();
+        services.AddTransient<IAzureServicesSettings>(p => new DefaultAzureServicesSettings()
+        {
+            AzureAuthorizationToken = configuration[nameof(DefaultAzureServicesSettings.AzureAuthorizationToken)]
+        });
 
-        var dataFilepath = $"{contentRootFolder}\\Resources\\EnglishNormalizationData\\full7z-mlteast-en.lem";
+        var dataFilepath = $"{configuration[WebHostDefaults.ContentRootKey]}\\Resources\\EnglishNormalizationData\\full7z-mlteast-en.lem";
         var stream = File.OpenRead(dataFilepath);
 
         services.AddSingleton(i => new Lemmatizer(stream));
@@ -69,6 +72,6 @@ public static class BotRegistration
         };
 
         services.AddSingleton<IMediatrRequestsRepository<LanguageTeacherBot>>(s => new MediatrRequestsRepository<LanguageTeacherBot>(requests));
-        services.AddTransient<IBotNewMessageHandler<LanguageTeacherBot>, BotNewMessageHandler<LanguageTeacherBot>>();
+        services.AddTransient<IBotMessageHandler<LanguageTeacherBot>, BotMessageHandler<LanguageTeacherBot>>();
     }
 }

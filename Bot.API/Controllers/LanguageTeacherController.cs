@@ -17,19 +17,19 @@ namespace Bot.API.Controllers
     {
         private readonly IUserService _userService;
         private readonly ITelegramBotClientService<LanguageTeacherBot> _telegramBotService;
-        private readonly IBotNewMessageHandler<InstagramHelperBot> _botNewMessageHandler;
+        private readonly IBotMessageHandler<InstagramHelperBot> _botMessageHandler;
         private readonly IDefaultLogger _logger;
 
         public LanguageTeacherController(
             IUserService userService, 
             ITelegramBotClientService<LanguageTeacherBot> telegramBotService, 
             IDefaultLogger logger,
-            IBotNewMessageHandler<InstagramHelperBot> botNewMessageHandler)
+            IBotMessageHandler<InstagramHelperBot> botMessageHandler)
         {
             _userService = userService;
             _telegramBotService = telegramBotService;
             _logger = logger;
-            _botNewMessageHandler = botNewMessageHandler;
+            _botMessageHandler = botMessageHandler;
         }
 
 
@@ -40,7 +40,7 @@ namespace Bot.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            await _botNewMessageHandler.HandleWebhookUpdate(Request.Body);
+            await _botMessageHandler.HandleWebhookUpdate(Request.Body);
             return Ok();
         }
 
@@ -49,7 +49,7 @@ namespace Bot.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("GetUpdate")]
-        public Task GetUpdate() => _botNewMessageHandler.HandleGetLastUpdate();
+        public Task GetUpdate() => _botMessageHandler.HandleGetLastUpdate();
 
         [Route("GetStats")]
         [HttpGet]

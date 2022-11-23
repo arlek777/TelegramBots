@@ -29,7 +29,7 @@ public static class BotRegistration
         };
 
         services.AddSingleton<IMediatrRequestsRepository<NewYearMoviesBot>>(s => new MediatrRequestsRepository<NewYearMoviesBot>(requests));
-        services.AddTransient<IBotNewMessageHandler<NewYearMoviesBot>, BotNewMessageHandler<NewYearMoviesBot>>();
+        services.AddTransient<IBotMessageHandler<NewYearMoviesBot>, BotMessageHandler<NewYearMoviesBot>>();
 
         services.AddTransient<IMoviesService, MoviesService>();
 

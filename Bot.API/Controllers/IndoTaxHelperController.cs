@@ -9,11 +9,11 @@ namespace Bot.API.Controllers
     [Route("[controller]")]
     public class IndoTaxHelperController : ControllerBase
     {
-        private readonly IBotNewMessageHandler<IndoTaxHelperBot> _botNewMessageHandler;
+        private readonly IBotMessageHandler<IndoTaxHelperBot> _botMessageHandler;
 
-        public IndoTaxHelperController(IBotNewMessageHandler<IndoTaxHelperBot> botNewMessageHandler)
+        public IndoTaxHelperController(IBotMessageHandler<IndoTaxHelperBot> botMessageHandler)
         {
-            _botNewMessageHandler = botNewMessageHandler;
+            _botMessageHandler = botMessageHandler;
         }
 
 
@@ -24,7 +24,7 @@ namespace Bot.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OnNewUpdate()
         {
-            await _botNewMessageHandler.HandleWebhookUpdate(Request.Body);
+            await _botMessageHandler.HandleWebhookUpdate(Request.Body);
             return Ok();
         }
 
@@ -33,6 +33,6 @@ namespace Bot.API.Controllers
         /// </summary>
         [HttpGet]
         [Route("GetUpdate")]
-        public Task GetUpdate() => _botNewMessageHandler.HandleGetLastUpdate();
+        public Task GetUpdate() => _botMessageHandler.HandleGetLastUpdate();
     }
 }

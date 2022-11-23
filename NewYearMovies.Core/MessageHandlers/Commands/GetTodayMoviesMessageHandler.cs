@@ -43,10 +43,8 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
 
             var movies = await _moviesService.GetAsync();
 
-            await SendMovies(userId, movies.Where(m => !m.IsDecember).OrderByDescending(m => m.Day).ToList(), false);
-            await SendMovies(userId, movies.Where(m => m.IsDecember).OrderByDescending(m => m.Day).ToList());
-
-            return true;
+            // await SendMovies(userId, movies.Where(m => !m.IsDecember).OrderByDescending(m => m.Day).ToList(), false);
+            // await SendMovies(userId, movies.Where(m => m.IsDecember).OrderByDescending(m => m.Day).ToList());
 
             var now = DateTime.UtcNow.AddHours(2); // new DateTime(2022, 12, 7);
             var isDecember = now.Month == 12;
@@ -117,16 +115,6 @@ namespace NewYearMovies.Core.MessageHandlers.Commands
                 await _telegramService.SendTextMessage(userId,
                     $"{EmojiCodes.Snow} {MessageTexts.MoviesText} {group.Key} {month} {EmojiCodes.Snow}\n\n{moviesTitles}");
             }
-        }
-
-        private async Task SendMoviesInOneMessage(long userId, List<Movie> movies)
-        {
-            string mess = "";
-            foreach (var m in movies)
-            {
-                mess += $"<a href='{m.Url}'>{m.Name}</a>\n\n";
-            }
-            await _telegramService.SendTextMessage(userId, mess);
         }
     }
 }

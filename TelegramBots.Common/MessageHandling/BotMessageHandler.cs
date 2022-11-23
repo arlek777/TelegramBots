@@ -10,7 +10,7 @@ using TelegramBots.Common.Services.Interfaces;
 
 namespace TelegramBots.Common.MessageHandling
 {
-    public class BotNewMessageHandler<T> : IBotNewMessageHandler<T> where T : ITelegramBot
+    public class BotMessageHandler<T> : IBotMessageHandler<T> where T : ITelegramBot
     {
         private readonly ITelegramBotClientService<T> _telegramBotClientService;
         private readonly IDefaultLogger _logger;
@@ -19,7 +19,7 @@ namespace TelegramBots.Common.MessageHandling
         private readonly IBotsUsageStatisticService _usageStatisticService;
         private readonly IMediator _mediator;
 
-        public BotNewMessageHandler(
+        public BotMessageHandler(
             ITelegramBotClientService<T> telegramClientService,
             IDefaultLogger logger,
             IMediatrRequestsRepository<T> requestsRepository,
@@ -75,11 +75,6 @@ namespace TelegramBots.Common.MessageHandling
                 }
                 catch
                 {
-#if DEBUG
-#endif
-#if !DEBUG
-
-#endif
                 }
             }
         }

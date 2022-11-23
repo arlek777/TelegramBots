@@ -3,9 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Telegram.Bot.Types;
 using TelegramBots.Common.Extensions;
-using TelegramBots.Common.MessageHandling;
 using TelegramBots.Common.MessageHandling.Requests;
-using TelegramBots.Common.Services;
 using TelegramBots.Common.Services.Interfaces;
 
 namespace IndoTaxHelper.Core.MessageHandlers

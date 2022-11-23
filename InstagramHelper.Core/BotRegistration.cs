@@ -30,7 +30,7 @@ public static class BotRegistration
         };
 
         services.AddSingleton<IMediatrRequestsRepository<InstagramHelperBot>>(s => new MediatrRequestsRepository<InstagramHelperBot>(requests));
-        services.AddTransient<IBotNewMessageHandler<InstagramHelperBot>, BotNewMessageHandler<InstagramHelperBot>>();
+        services.AddTransient<IBotMessageHandler<InstagramHelperBot>, BotMessageHandler<InstagramHelperBot>>();
 
         services.AddTransient<IHashTagsCaptionsService, HashTagsCaptionsService>();
 
