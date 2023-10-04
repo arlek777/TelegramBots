@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,9 +24,7 @@ namespace TelegramBots.Common.Services
         public async Task<Update> GetUpdate(int lastUpdateId)
         {
             var updates = await _bot.GetUpdatesAsync(timeout: 2000, offset: lastUpdateId);
-            return updates.Where(u => (u.Type == UpdateType.Message
-                                      && u.Message.Type == MessageType.Text
-                                      && !u.Message.From.IsBot) || u.Type == UpdateType.CallbackQuery)
+            return updates.Where(u => (u.Type == UpdateType.Message && !u.Message.From.IsBot))
                 .OrderByDescending(u => u.Id)
                 .FirstOrDefault();
         }
@@ -35,7 +34,12 @@ namespace TelegramBots.Common.Services
             return await _bot.SendTextMessageAsync(new ChatId(userId), text, parseMode);
         }
 
-        public async Task SendAudioMessage(long userId, string audioLink, string name)
+        public async Task<Message> SendImageMessage(long userId, InputOnlineFile photo)
+        {
+	        return await _bot.SendPhotoAsync(userId, photo);
+        }
+
+		public async Task SendAudioMessage(long userId, string audioLink, string name)
         {
             try
             {
@@ -53,6 +57,14 @@ namespace TelegramBots.Common.Services
         {
             return await _bot.SendTextMessageAsync(new ChatId(userId), text,
                 replyMarkup: markup, parseMode: ParseMode.Html);
+        }
+
+        public async Task DeleteMessages(long userId, List<int> ids)
+        {
+	        foreach (var id in ids)
+	        {
+		        await _bot.DeleteMessageAsync(userId, id);
+	        }
         }
 
         public async Task SetWebHook(string url)

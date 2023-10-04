@@ -24,7 +24,17 @@ namespace TelegramBots.Common.Extensions
             return isText;
         }
 
-        public static bool IsCallback(this Update update, string name)
+        public static bool IsTextCommandMessage(this Update update, string text)
+        {
+	        var isText = update.Message?.Text != null
+	                     && update.Message?.From != null
+	                     && !update.Message.From.IsBot
+	                     && update.Message.Text == text;
+
+	        return isText;
+        }
+
+		public static bool IsCallback(this Update update, string name)
         {
             return update.CallbackQuery?.Data != null && update.CallbackQuery.Data.Contains(name, StringComparison.InvariantCultureIgnoreCase);
         }

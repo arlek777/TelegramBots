@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EarningsProof.Core\EarningsProof.Core.csproj" />
     <ProjectReference Include="..\IndoTaxHelper.Core\IndoTaxHelper.Core.csproj" />
     <ProjectReference Include="..\InstagramHelper.Core\InstagramHelper.Core.csproj" />
     <ProjectReference Include="..\NewYearMovies.Core\NewYearMovies.Core.csproj" />

@@ -1,3 +1,4 @@
+using EarningsProof.Core;
 using IndoTaxHelper.Core;
 using InstagramHelper.Core;
 using Microsoft.AspNetCore.Builder;
@@ -30,10 +31,11 @@ namespace Bot.API
 
             AddDbServices(services);
 
-            services.AddIndoTaxHelperBot(Configuration);
-            services.AddInstagramHelperBot(Configuration);
-            services.AddNewYearMoviesBot(Configuration);
-            services.AddLanguageTeacherBot(Configuration);
+            //services.AddIndoTaxHelperBot(Configuration);
+            //services.AddInstagramHelperBot(Configuration);
+            //services.AddNewYearMoviesBot(Configuration);
+            //services.AddLanguageTeacherBot(Configuration);
+            services.AddEarningsProofBot(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
